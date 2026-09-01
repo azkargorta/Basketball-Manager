@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm');
+globalThis.document={getElementById:()=>null};
+globalThis.localStorage={getItem:()=>null,setItem:()=>{}};
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/engine.js','utf8'),{filename:'engine.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/data.js','utf8'),{filename:'data.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/app.js','utf8'),{filename:'app.js'});
+const B=globalThis.BBGM,A=globalThis.BBGM_APP_TEST,w=B.createWorld();
+const st={version:'0.14.0',season:'2026/27',currentDate:'2026-09-01',userClubId:1,world:w,academy:{players:B.createYouthClass(1,7,12345)},lockerRoom:{},agentRelations:{},board:{confidence:55}};
+A.setState(st);A.ensureV14State();
+const bask=w.clubs.find(c=>c.id===1),p=bask.roster[0],q=bask.roster[1];
+if(!Object.keys(st.agentRelations).length)throw new Error('No se inicializaron relaciones con agentes');
+const ap=A.agentProfile(p.agent);if(!(ap.toughness>=38&&ap.toughness<=95))throw new Error('Perfil de agente fuera de rango');
+const before=A.chemistryPair(p,q);A.changeRelationship(p,q,10);const after=A.chemistryPair(p,q);if(after<=before)throw new Error('La relación persistente no modifica química');
+if(!st.lockerRoom.mentorPairs)throw new Error('No existe estructura de mentorías');
+const arch=A.personalityArchetype(p);if(!arch)throw new Error('Sin arquetipo');
+const desire=A.playerDesire(p,bask);if(!desire.code)throw new Error('Sin deseo');
+const rel=A.agentRelation(p.agent);A.changeAgentRelation(p.agent,4);if(A.agentRelation(p.agent)<=rel)throw new Error('No cambia relación con agente');
+console.log(JSON.stringify({agents:Object.keys(st.agentRelations).length,agent:ap,relationship:[before,after],mentors:st.lockerRoom.mentorPairs.length,archetype:arch,desire:desire.code,ok:true},null,2));

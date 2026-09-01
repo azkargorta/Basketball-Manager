@@ -1,0 +1,8 @@
+DATOS Y LICENCIAS - v0.17
+=========================
+
+- Los clubes se usan como referencias del universo deportivo del prototipo.
+- Los jugadores son ficticios y sus nombres se generan según nacionalidad.
+- Los ratings son propios del juego y buscan representar jerarquías plausibles, no valoraciones oficiales.
+- No se incluyen fotografías de jugadores ni logos oficiales.
+- La NBA funciona con franquicias como mercado externo, Draft y derechos; no se simula su calendario completo posesión a posesión.

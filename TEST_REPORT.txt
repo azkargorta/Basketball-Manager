@@ -1,0 +1,19 @@
+BASKETBALL GM v0.17 - TEST REPORT
+=================================
+
+Pruebas ejecutadas:
+- Sintaxis JavaScript de app.js: OK.
+- Smoke test del motor: OK.
+- 150 clubes cargados: OK.
+- 1.890 jugadores iniciales en clubes: OK.
+- Rotacion reglamentaria: 200 minutos: OK.
+- Gestion medica en rotacion: OK.
+- 500 partidos de control: 0 errores de minutos.
+- Marcador medio de control: 79.3 - 82.3.
+- Pretemporada: 3 amistosos generados: OK.
+- Rivales variados de pretemporada: OK.
+- Busqueda global de jugador: OK.
+- Calculo de encaje jugador/equipo: rango valido: OK.
+- Version de save v0.17.0: OK.
+
+Nota: el entorno de compilacion no permite una prueba automatizada completa de clicks de Chromium de forma estable. Se ha validado sintaxis, motor y logica desacoplada con Node, ademas de revisar las rutas de navegacion añadidas.

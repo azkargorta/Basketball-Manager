@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm');
+globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
+globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/engine.js','utf8'),{filename:'engine.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/data.js','utf8'),{filename:'data.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/app.js','utf8'),{filename:'app.js'});
+const B=globalThis.BBGM,A=globalThis.BBGM_APP_TEST,w=B.createWorld();
+const st={version:'0.17.0',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,world:w,calendar:[],inbox:[],planning:{priorityPosition:null},scouting:{staff:w.scoutStaff||[],assignments:[],knowledge:{}},academy:{players:[],loans:[],bStats:{}},lockerRoom:{captainId:null,relationships:{},mentorPairs:[]},board:{confidence:72,objectives:[]},preseason:{active:false,weeksRemaining:0,focus:'BALANCED',friendlies:[]},weeklySummaries:[],weeklyMeta:{lastDate:'2026-09-01'},notificationPrefs:{filter:'ALL'},scheduleUi:{mode:'month',month:'2026-09'},medical:{doctor:{diagnosis:80,recovery:80,prevention:80},injuryHistory:[]},marketNews:[],worldFreeAgents:[],manager:{reputation:50},sponsorship:{active:null,offers:[]}};
+A.setState(st);A.ensureV17State();
+const p=w.clubs[0].roster[0],fit=A.fitScoreV17(p);if(!Number.isFinite(fit)||fit<20||fit>98)throw new Error('Fit inválido: '+fit);
+const f=A.createPreseasonFriendlies('2026/27','2026-09-01');if(f.length!==3)throw new Error('Se esperaban 3 amistosos');if(new Set(f.map(x=>x.opponentId)).size<2)throw new Error('Amistosos poco variados');
+const sea=A.searchAllEntities(w.clubs[0].roster[0].lastName.slice(0,3));if(!sea.players.length)throw new Error('Búsqueda global no encuentra jugador');
+console.log(JSON.stringify({ok:true,fit:+fit.toFixed(1),friendlies:f.map(x=>({date:x.date,opponentId:x.opponentId})),searchPlayers:sea.players.length,version:A.getState().version},null,2));

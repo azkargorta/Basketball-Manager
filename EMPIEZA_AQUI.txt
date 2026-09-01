@@ -1,0 +1,19 @@
+BASKETBALL GM v0.17
+===================
+
+1) Descomprime esta carpeta completa.
+2) Ejecuta JUGAR.bat.
+3) Pulsa NUEVA PARTIDA para probar todas las novedades de v0.17.
+
+PRUEBA ESPECIALMENTE:
+- Inicio > Pretemporada activa.
+- Tres amistosos y foco de preparacion.
+- Calendario > vista Mes.
+- Boton Buscar de la barra superior.
+- Más > Centro de notificaciones.
+- Inicio > Resumen semanal despues de avanzar varios dias.
+- Perfil de jugador > nuevo resumen de encaje, valor y estadisticas.
+- Mercado > Seguimiento > comparar 2 o 3 jugadores.
+- Más > Planificacion > primera y segunda unidad.
+
+Todo se guarda localmente y funciona offline.

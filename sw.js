@@ -1,4 +1,4 @@
-const CACHE_NAME = 'basketball-gm-beta-v021-stable-pwa';
+const CACHE_NAME = 'basketball-gm-beta-v021-mobile2';
 const CORE = [
   './',
   './index.html',
@@ -7,7 +7,11 @@ const CORE = [
   './js/engine.js',
   './js/data.js',
   './js/app.js',
-  './js/pwa.js'
+  './js/pwa.js',
+  './manifest.webmanifest',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-180.png'
 ];
 
 self.addEventListener('install', event => {
@@ -17,8 +21,7 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

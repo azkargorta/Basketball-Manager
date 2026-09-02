@@ -3,6 +3,7 @@
 const BBGM=g.BBGM=g.BBGM||{};
 if(typeof BBGM.createFreeAgents!=='function')return;
 const original=BBGM.createFreeAgents;
+BBGM.createGeneratedFreeAgentsOriginal=original;
 const REAL_FREE_AGENTS=[
  {name:'Max Abmas',position:'PG',age:25,ovr:73,potential:76,source:'G League'},
  {name:'Jonas Aidoo',position:'C',age:23,ovr:69,potential:76,source:'NCAA'},

@@ -1,83 +1,124 @@
-/* Basketball GM v0.21 Beta — mobile usability patch */
+/* Basketball GM v0.21 Beta — mobile usability + iPhone safe-area patch */
+
+/* Keep the app aware of modern mobile viewport/safe-area dimensions. */
+html, body, #app {
+  min-height: 100%;
+  min-height: 100dvh;
+}
 
 @media (max-width: 900px) {
-  /* Keep the top bar below iPhone Dynamic Island / notch. */
+  body {
+    overflow-x: hidden;
+  }
+
+  .shell,
+  .main {
+    min-height: 100dvh;
+  }
+
+  /* iPhone notch / Dynamic Island: the bar starts below the unsafe top area. */
   .topbar {
     box-sizing: border-box;
-    height: calc(64px + env(safe-area-inset-top));
-    min-height: calc(64px + env(safe-area-inset-top));
+    height: calc(68px + env(safe-area-inset-top));
+    min-height: calc(68px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
 
   .club-title {
-    font-size: 18px;
+    font-size: 19px;
     line-height: 1.15;
   }
 
   .club-meta {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.2;
   }
 
-  /* Give page content enough room above the larger bottom navigation. */
+  /* Leave enough room for the larger navigation and the iPhone home indicator. */
   .content {
-    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+    padding-top: 16px;
+    padding-bottom: calc(124px + env(safe-area-inset-bottom));
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
 
-  /* Larger, easier-to-read mobile navigation. */
+  /* Larger mobile navigation: easier to read and tap with one hand. */
   .bottom-nav {
-    min-height: calc(76px + env(safe-area-inset-bottom));
-    padding-top: 6px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    min-height: calc(88px + env(safe-area-inset-bottom));
+    padding-top: 8px;
+    padding-bottom: max(9px, env(safe-area-inset-bottom));
     padding-left: max(5px, env(safe-area-inset-left));
     padding-right: max(5px, env(safe-area-inset-right));
-    gap: 2px;
+    gap: 3px;
+    align-items: stretch;
   }
 
   .bottom-nav button {
     min-width: 0;
-    min-height: 58px;
-    padding: 9px 3px 8px;
-    border-radius: 12px;
-    font-size: 12.5px;
+    min-height: 66px;
+    padding: 10px 4px 9px;
+    border-radius: 13px;
+    font-size: 14px;
     line-height: 1.12;
     font-weight: 750;
+    letter-spacing: -0.01em;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     overflow-wrap: anywhere;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   .bottom-nav button.active {
+    color: var(--accent);
     background: var(--panel2);
   }
 
-  /* Full-screen and start views also respect device safe areas. */
+  /* Full-screen/start views and modals also stay clear of notches/home indicators. */
   .start-screen {
     min-height: 100dvh;
-    padding-top: max(24px, env(safe-area-inset-top));
-    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-top: max(28px, env(safe-area-inset-top));
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
 
   .modal-backdrop {
-    padding-top: max(12px, env(safe-area-inset-top));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    padding-top: max(14px, env(safe-area-inset-top));
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
     padding-left: max(12px, env(safe-area-inset-left));
     padding-right: max(12px, env(safe-area-inset-right));
   }
+
+  .modal {
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 28px);
+  }
 }
 
+/* Very narrow iPhones: retain readable labels without overflowing. */
 @media (max-width: 390px) {
   .bottom-nav button {
-    font-size: 12px;
+    font-size: 13px;
     padding-left: 2px;
     padding-right: 2px;
+  }
+
+  .club-title {
+    font-size: 18px;
+  }
+}
+
+/* Installed PWA on iOS: explicitly preserve the safe top/bottom breathing room. */
+@media (display-mode: standalone) and (max-width: 900px) {
+  .topbar {
+    padding-top: max(env(safe-area-inset-top), 4px);
+  }
+
+  .bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 10px);
   }
 }

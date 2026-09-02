@@ -1,0 +1,1410 @@
+{
+  "snapshot": "2026-09-02",
+  "clubs_total": 150,
+  "clubs_complete": 0,
+  "players_total": 0,
+  "coverage_pct": 0.0,
+  "sources": {
+    "Liga ACB": {
+      "url": "https://basketball.realgm.com/international/league/4/Spanish-ACB/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/4/Spanish-ACB/players"
+    },
+    "Primera FEB": {
+      "url": "https://basketball.realgm.com/international/league/55/Spanish-LEB-Gold/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/55/Spanish-LEB-Gold/players"
+    },
+    "LNB Élite": {
+      "url": "https://basketball.realgm.com/international/league/12/French-Jeep-Elite/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/12/French-Jeep-Elite/players"
+    },
+    "LBA Serie A": {
+      "url": "https://basketball.realgm.com/international/league/6/Italian-Lega-Basket-Serie-A/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/6/Italian-Lega-Basket-Serie-A/players"
+    },
+    "easyCredit BBL": {
+      "url": "https://basketball.realgm.com/international/league/15/German-BBL/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/15/German-BBL/players"
+    },
+    "Basketbol Süper Ligi": {
+      "url": "https://basketball.realgm.com/international/league/7/Turkish-BSL/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/7/Turkish-BSL/players"
+    },
+    "Greek Basket League": {
+      "url": "https://basketball.realgm.com/international/league/8/Greek-HEBA-A1/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/8/Greek-HEBA-A1/players"
+    },
+    "ABA League": {
+      "url": "https://basketball.realgm.com/international/league/18/Adriatic-League-Liga-ABA/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/18/Adriatic-League-Liga-ABA/players"
+    },
+    "LKL": {
+      "url": "https://basketball.realgm.com/international/league/10/Lithuanian-LKL/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/10/Lithuanian-LKL/players"
+    },
+    "Israeli Premier League": {
+      "url": "https://basketball.realgm.com/international/league/11/Israeli-BSL/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/11/Israeli-BSL/players"
+    },
+    "Liga Nacional Argentina": {
+      "url": "https://basketball.realgm.com/international/league/58/Argentinian-Liga-A/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/international/league/58/Argentinian-Liga-A/players"
+    },
+    "NBA": {
+      "url": "https://basketball.realgm.com/nba/players",
+      "error": "reader HTTP 403 for https://basketball.realgm.com/nba/players"
+    }
+  },
+  "clubs": {},
+  "missing": [
+    {
+      "id": 1,
+      "name": "Baskonia",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 2,
+      "name": "Real Madrid",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 3,
+      "name": "Barcelona",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 4,
+      "name": "Valencia Basket",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 5,
+      "name": "Unicaja",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 6,
+      "name": "Asisa Joventut",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 7,
+      "name": "Dreamland Gran Canaria",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 8,
+      "name": "UCAM Murcia",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 9,
+      "name": "Olympiacos",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 10,
+      "name": "Panathinaikos",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 11,
+      "name": "Fenerbahçe",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 12,
+      "name": "AS Monaco",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 13,
+      "name": "Casademont Zaragoza",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 14,
+      "name": "FIATC Girona",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 15,
+      "name": "iLERNA Lleida",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 16,
+      "name": "Kids&Us Manresa",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 17,
+      "name": "La Laguna Tenerife",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 18,
+      "name": "Leyma Coruña",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 19,
+      "name": "Monbus Obradoiro",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 20,
+      "name": "MoraBanc Andorra",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 21,
+      "name": "San Pablo Burgos",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 22,
+      "name": "Río Breogán",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 23,
+      "name": "Surne Bilbao",
+      "league": "Liga ACB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 24,
+      "name": "Dubai Basketball",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 25,
+      "name": "Anadolu Efes",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 26,
+      "name": "Hapoel Tel Aviv",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 27,
+      "name": "Partizán Belgrado",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 28,
+      "name": "Olimpia Milano",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 29,
+      "name": "ASVEL Villeurbanne",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 30,
+      "name": "Maccabi Tel Aviv",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 31,
+      "name": "Estrella Roja",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 32,
+      "name": "Besiktas",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 33,
+      "name": "Zalgiris Kaunas",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 34,
+      "name": "Paris Basketball",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 35,
+      "name": "Bayern Múnich",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 36,
+      "name": "Virtus Bolonia",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 37,
+      "name": "Movistar Estudiantes",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 38,
+      "name": "Flexicar Fuenlabrada",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 39,
+      "name": "Palencia Baloncesto",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 40,
+      "name": "HLA Alicante",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 41,
+      "name": "Real Valladolid",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 42,
+      "name": "Gipuzkoa Basket",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 43,
+      "name": "Club Ourense Baloncesto",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 44,
+      "name": "Tizona Burgos",
+      "league": "Primera FEB",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 45,
+      "name": "JL Bourg",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 46,
+      "name": "Nanterre 92",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 47,
+      "name": "Le Mans Sarthe Basket",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 48,
+      "name": "Cholet Basket",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 49,
+      "name": "SIG Strasbourg",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 50,
+      "name": "Limoges CSP",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 51,
+      "name": "JDA Dijon",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 52,
+      "name": "Le Portel",
+      "league": "LNB Élite",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 53,
+      "name": "Germani Brescia",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 54,
+      "name": "Reyer Venezia",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 55,
+      "name": "Dolomiti Energia Trento",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 56,
+      "name": "Derthona Basket",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 57,
+      "name": "Pallacanestro Reggiana",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 58,
+      "name": "Pallacanestro Trieste",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 59,
+      "name": "Dinamo Sassari",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 60,
+      "name": "Pallacanestro Varese",
+      "league": "LBA Serie A",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 61,
+      "name": "ALBA Berlin",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 62,
+      "name": "ratiopharm Ulm",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 63,
+      "name": "Würzburg Baskets",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 64,
+      "name": "MHP RIESEN Ludwigsburg",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 65,
+      "name": "Telekom Baskets Bonn",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 66,
+      "name": "NINERS Chemnitz",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 67,
+      "name": "EWE Baskets Oldenburg",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 68,
+      "name": "Veolia Towers Hamburg",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 69,
+      "name": "Basketball Löwen Braunschweig",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 70,
+      "name": "ROSTOCK SEAWOLVES",
+      "league": "easyCredit BBL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 71,
+      "name": "Galatasaray",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 72,
+      "name": "Türk Telekom",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 73,
+      "name": "Bahçeşehir Koleji",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 74,
+      "name": "TOFAŞ Bursa",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 75,
+      "name": "Bursaspor",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 76,
+      "name": "Mersin SK",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 77,
+      "name": "Petkim Spor",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 78,
+      "name": "Darüşşafaka",
+      "league": "Basketbol Süper Ligi",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 79,
+      "name": "AEK Athens",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 80,
+      "name": "Aris Thessaloniki",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 81,
+      "name": "PAOK Thessaloniki",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 82,
+      "name": "Promitheas Patras",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 83,
+      "name": "Peristeri",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 84,
+      "name": "Panionios",
+      "league": "Greek Basket League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 85,
+      "name": "Budućnost VOLI",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 86,
+      "name": "Cedevita Olimpija",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 87,
+      "name": "Cibona",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 88,
+      "name": "FMP Beograd",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 89,
+      "name": "Igokea",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 90,
+      "name": "Krka Novo Mesto",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 91,
+      "name": "Bosna Sarajevo",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 92,
+      "name": "Mega Basket",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 93,
+      "name": "SC Derby",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 94,
+      "name": "Spartak Subotica",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 95,
+      "name": "U-BT Cluj-Napoca",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 96,
+      "name": "Zadar",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 97,
+      "name": "Rytas Vilnius",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 98,
+      "name": "Lietkabelis",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 99,
+      "name": "Neptūnas Klaipėda",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 100,
+      "name": "Juventus Utena",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 101,
+      "name": "Šiauliai",
+      "league": "LKL",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 102,
+      "name": "Hapoel Jerusalem",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 103,
+      "name": "Bnei Herzliya",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 104,
+      "name": "Hapoel Holon",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 105,
+      "name": "Hapoel Be’er Sheva",
+      "league": "Israeli Premier League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 106,
+      "name": "Borac Čačak",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 107,
+      "name": "HKK Široki",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 108,
+      "name": "Slovan Bratislava",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 109,
+      "name": "Perspektiva Ilirija",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 110,
+      "name": "BC Vienna",
+      "league": "ABA League",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 111,
+      "name": "Instituto Córdoba",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 112,
+      "name": "Boca Juniors",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 113,
+      "name": "Quimsa",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 114,
+      "name": "Olímpico La Banda",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 115,
+      "name": "San Lorenzo",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 116,
+      "name": "Obras Basket",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 117,
+      "name": "Regatas Corrientes",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 118,
+      "name": "Peñarol Mar del Plata",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 119,
+      "name": "Ferro Carril Oeste",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 120,
+      "name": "Gimnasia Comodoro",
+      "league": "Liga Nacional Argentina",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 121,
+      "name": "Atlanta Hawks",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 122,
+      "name": "Boston Celtics",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 123,
+      "name": "Brooklyn Nets",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 124,
+      "name": "Charlotte Hornets",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 125,
+      "name": "Chicago Bulls",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 126,
+      "name": "Cleveland Cavaliers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 127,
+      "name": "Dallas Mavericks",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 128,
+      "name": "Denver Nuggets",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 129,
+      "name": "Detroit Pistons",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 130,
+      "name": "Golden State Warriors",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 131,
+      "name": "Houston Rockets",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 132,
+      "name": "Indiana Pacers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 133,
+      "name": "LA Clippers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 134,
+      "name": "Los Angeles Lakers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 135,
+      "name": "Memphis Grizzlies",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 136,
+      "name": "Miami Heat",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 137,
+      "name": "Milwaukee Bucks",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 138,
+      "name": "Minnesota Timberwolves",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 139,
+      "name": "New Orleans Pelicans",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 140,
+      "name": "New York Knicks",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 141,
+      "name": "Oklahoma City Thunder",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 142,
+      "name": "Orlando Magic",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 143,
+      "name": "Philadelphia 76ers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 144,
+      "name": "Phoenix Suns",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 145,
+      "name": "Portland Trail Blazers",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 146,
+      "name": "Sacramento Kings",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 147,
+      "name": "San Antonio Spurs",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 148,
+      "name": "Toronto Raptors",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 149,
+      "name": "Utah Jazz",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    },
+    {
+      "id": 150,
+      "name": "Washington Wizards",
+      "league": "NBA",
+      "matched": null,
+      "score": 0,
+      "players": 0,
+      "fallback_url": null
+    }
+  ]
+}

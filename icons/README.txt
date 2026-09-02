@@ -1,0 +1,1 @@
+PWA icons are maintained by ChatGPT.

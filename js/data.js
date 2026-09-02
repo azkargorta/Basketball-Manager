@@ -234,7 +234,7 @@
   }
 
   function makeRoster(clubId,seed,clubRep,clubBase,homeNation=null,rosterSize=12){
-    const rng=new BBGM.RNG(seed),out=[],profile=(CLUB_PROFILES[clubId]||genericProfile(clubBase||74,clubRep,rng)).slice();
+    const rng=new BBGM.RNG(seed),out=[],profile=((typeof V20_BLUEPRINTS!=='undefined'&&V20_BLUEPRINTS[clubId])||CLUB_PROFILES[clubId]||genericProfile(clubBase||74,clubRep,rng)).slice();
     const extraPos=['PG','SG','SF','PF','C'];
     while(profile.length<rosterSize){const i=profile.length;profile.push({p:extraPos[i%5],o:Math.round(BBGM.clamp((clubBase||74)-4.5-(i-12)*.7+rng.gaussian()*.6,58,90)),r:i<13?'ROTATION':'BENCH',age:20+Math.floor(rng.next()*12)})}
     for(let i=0;i<profile.length;i++){
@@ -248,7 +248,7 @@
 
   function makeClub(id,name,shortName,base,seed,rep,salaryBudget,cashBudget,opts={}){
     const rng=new BBGM.RNG(seed);
-    const roster=makeRoster(id,seed+50,rep,base,opts.homeNation||null,opts.rosterSize||12);
+    const roster=makeRoster(id,seed+50,rep,base,opts.homeNation||null,opts.rosterSize||rosterSizeV20(id,opts.leagueLevel||'EUROPE'));
     if(opts.leagueLevel==='NBA'){for(const p of roster){p.salary=Math.round((p.salary*6.5)/50000)*50000;p.releaseClause=null;p.publicKnowledge=Math.max(p.publicKnowledge||0,BBGM.overall(p)>=84?1:0)}}
     const wageBill=roster.reduce((s,p)=>s+p.salary,0);
     const coachNation=weightedNationality(rng,id,opts.homeNation||null),coachName=generatedName(coachNation,rng);
@@ -309,7 +309,7 @@
   }
 
 
-  function createYouthClass(clubId,count=7,seed=26092026){
+  function createYouthClass(clubId,count=7,seed=26092026,homeNation=null){
     const rng=new BBGM.RNG(seed+clubId*1009),out=[];
     const posCycle=['PG','SG','SF','PF','C'];
     for(let i=0;i<count;i++){
@@ -317,17 +317,142 @@
       const pos=posCycle[(i+Math.floor(rng.next()*5))%5];
       const ageBase={16:50,17:53,18:56,19:59,20:62}[age]||56;
       const qualityBoost=(clubId===1?3.5:2.0)+rng.gaussian()*3.0;
-      const target=BBGM.clamp(ageBase+qualityBoost,47,71);
       const rare=rng.next();
+      let target=BBGM.clamp(ageBase+qualityBoost,47,71);
+      // Un porcentaje muy pequeño llega ya más preparado: evita que el mundo pierda estrellas a largo plazo.
+      if(rare<.025)target=BBGM.clamp(target+5+rng.next()*4,52,76);
       let potBoost=age<=17?20:age===18?17:age===19?14:11;
-      if(rare<.08)potBoost+=8+rng.next()*5; else if(rare<.25)potBoost+=3+rng.next()*4;
-      const potential=BBGM.clamp(target+potBoost+rng.gaussian()*3,Math.max(target+4,64),95);
-      const p=makePlayer(70000+clubId*100+i,target,pos,'DEVELOPMENT',rng,{age,targetOverall:target,potentialReal:potential,clubId,contractYears:Math.max(1,22-age),publicKnowledge:0});
+      if(rare<.025)potBoost+=14+rng.next()*7; else if(rare<.10)potBoost+=8+rng.next()*5; else if(rare<.27)potBoost+=3+rng.next()*4;
+      const potential=BBGM.clamp(target+potBoost+rng.gaussian()*3,Math.max(target+4,64),96);
+      const p=makePlayer(70000+clubId*100+i,target,pos,'DEVELOPMENT',rng,{age,targetOverall:target,potentialReal:potential,clubId,homeNation,contractYears:Math.max(1,22-age),publicKnowledge:0});
       p.salary=Math.round((50000+(target-45)*4500+rng.next()*30000)/5000)*5000;
       p.releaseClause=null;p.academy=true;p.generated=true;p.academyEntryAge=age;p.trainingFocus='BALANCED';
       out.push(p);
     }
     return out;
+  }
+
+
+
+  // ===== v0.20 — Realismo inicial y contenido =====
+  const V20_BLUEPRINTS={
+    2:[
+      {p:'C',o:90,r:'STAR',age:34},{p:'PG',o:89,r:'STAR',age:35},{p:'PG',o:86,r:'STARTER',age:25},{p:'SF',o:85,r:'STARTER',age:31},{p:'PF',o:84,r:'STARTER',age:28},
+      {p:'PF',o:83,r:'IMPORTANT',age:30},{p:'PF',o:82,r:'IMPORTANT',age:25},{p:'SF',o:82,r:'IMPORTANT',age:31},{p:'C',o:81,r:'IMPORTANT',age:31},{p:'PG',o:80,r:'ROTATION',age:29},
+      {p:'PF',o:80,r:'ROTATION',age:24},{p:'SG',o:80,r:'ROTATION',age:24},{p:'SF',o:79,r:'ROTATION',age:24},{p:'C',o:79,r:'ROTATION',age:27},{p:'PF',o:78,r:'BENCH',age:24},{p:'SG',o:77,r:'BENCH',age:38},{p:'SF',o:77,r:'BENCH',age:25}
+    ],
+    3:[
+      {p:'SG',o:87,r:'STAR',age:33},{p:'C',o:85,r:'STAR',age:29},{p:'PG',o:84,r:'STARTER',age:28},{p:'SF',o:83,r:'STARTER',age:27},{p:'PF',o:82,r:'STARTER',age:26},
+      {p:'PG',o:81,r:'IMPORTANT',age:22},{p:'SG',o:81,r:'IMPORTANT',age:31},{p:'SF',o:80,r:'ROTATION',age:26},{p:'C',o:80,r:'ROTATION',age:25},{p:'PF',o:79,r:'ROTATION',age:25},
+      {p:'PG',o:78,r:'ROTATION',age:28},{p:'SF',o:78,r:'BENCH',age:27},{p:'C',o:78,r:'BENCH',age:26},{p:'SF',o:76,r:'DEVELOPMENT',age:23}
+    ],
+    4:[
+      {p:'PG',o:87,r:'STAR',age:28},{p:'SG',o:83,r:'STARTER',age:28},{p:'SF',o:82,r:'STARTER',age:31},{p:'PF',o:82,r:'STARTER',age:30},{p:'PF',o:81,r:'IMPORTANT',age:31},
+      {p:'SG',o:81,r:'IMPORTANT',age:28},{p:'C',o:80,r:'IMPORTANT',age:29},{p:'PG',o:80,r:'ROTATION',age:22},{p:'SG',o:79,r:'ROTATION',age:27},{p:'PF',o:79,r:'ROTATION',age:27},
+      {p:'C',o:79,r:'ROTATION',age:30},{p:'SF',o:78,r:'ROTATION',age:26},{p:'PF',o:77,r:'BENCH',age:22},{p:'SG',o:76,r:'BENCH',age:23},{p:'PG',o:75,r:'DEVELOPMENT',age:21},{p:'SG',o:73,r:'DEVELOPMENT',age:20}
+    ]
+  };
+
+  const REALISM_V20={
+    version:'2026_27_fictional',
+    description:'Perfiles ficticios calibrados por nivel de club, rol, edad y mercado. No usa nombres ni estadísticas reales de jugadores.'
+  };
+  const CLUB_IDENTITY_V20={
+    1:{rosterSize:13,pace:62,perimeter:64,pressure:55,oreb:47,salaryScale:1.08},
+    2:{rosterSize:17,pace:52,perimeter:49,pressure:61,oreb:57,salaryScale:1.18},
+    3:{rosterSize:14,pace:56,perimeter:61,pressure:56,oreb:50,salaryScale:1.15},
+    4:{rosterSize:16,pace:63,perimeter:58,pressure:60,oreb:54,salaryScale:1.10},
+    5:{rosterSize:13,pace:55,perimeter:54,pressure:63,oreb:55,salaryScale:.94},
+    6:{rosterSize:13,pace:54,perimeter:56,pressure:56,oreb:51,salaryScale:.82},
+    9:{rosterSize:14,pace:55,perimeter:52,pressure:66,oreb:59,salaryScale:1.20},
+    10:{rosterSize:14,pace:61,perimeter:61,pressure:63,oreb:55,salaryScale:1.22},
+    11:{rosterSize:14,pace:58,perimeter:58,pressure:64,oreb:54,salaryScale:1.18},
+    12:{rosterSize:14,pace:60,perimeter:61,pressure:55,oreb:48,salaryScale:1.14}
+  };
+  const ARCHETYPE_LABELS={
+    PLAYMAKER:'Organizador',SCORING_GUARD:'Base anotador',POINT_DEFENDER:'Base defensivo',
+    SHOOTER:'Tirador',SHOT_CREATOR:'Anotador',TWO_WAY_GUARD:'Escolta two-way',
+    THREE_D:'3&D',WING_CREATOR:'Alero creador',SLASHER:'Alero físico',
+    STRETCH_FOUR:'Ala-pívot abierto',INTERIOR_FOUR:'Interior móvil',DEFENSIVE_FORWARD:'Ala-pívot defensivo',
+    RIM_PROTECTOR:'Protector del aro',FINISHING_BIG:'Finalizador',SKILLED_BIG:'Pívot técnico'
+  };
+  function rosterSizeV20(id,leagueLevel){
+    if(CLUB_IDENTITY_V20[id]?.rosterSize)return CLUB_IDENTITY_V20[id].rosterSize;
+    if(leagueLevel==='NBA')return 15;
+    if(leagueLevel==='EUROLEAGUE')return 14;
+    if(leagueLevel==='ACB')return 13;
+    return 12;
+  }
+  function pickArchetypeV20(pos,rng){
+    const m={PG:['PLAYMAKER','SCORING_GUARD','POINT_DEFENDER'],SG:['SHOOTER','SHOT_CREATOR','TWO_WAY_GUARD'],SF:['THREE_D','WING_CREATOR','SLASHER'],PF:['STRETCH_FOUR','INTERIOR_FOUR','DEFENSIVE_FORWARD'],C:['RIM_PROTECTOR','FINISHING_BIG','SKILLED_BIG']};
+    return rng.pick(m[pos]||m.SF);
+  }
+  function applyArchetypeV20(p,rng){
+    const a=p.attributes,arch=pickArchetypeV20(p.primaryPosition,rng);p.archetype=arch;p.archetypeLabel=ARCHETYPE_LABELS[arch];
+    const bump=(keys,n)=>keys.forEach(k=>a[k]=BBGM.clamp(a[k]+n,20,98));
+    const cut=(keys,n)=>keys.forEach(k=>a[k]=BBGM.clamp(a[k]-n,20,98));
+    if(arch==='PLAYMAKER'){bump(['passing','ballHandling','pickAndRoll','decisionMaking'],5);cut(['postPlay','offensiveRebound'],3);p.tendencies.passingTendency+=12;p.tendencies.usage-=7}
+    if(arch==='SCORING_GUARD'){bump(['shotCreation','threePoint','finishing'],5);cut(['helpDefense','defensiveRebound'],2);p.tendencies.usage+=12}
+    if(arch==='POINT_DEFENDER'){bump(['perimeterDefense','steal','strength'],5);cut(['shotCreation'],3);p.tendencies.usage-=5}
+    if(arch==='SHOOTER'){bump(['threePoint','offBall','freeThrow'],6);cut(['postPlay'],3);p.tendencies.threePointTendency+=14}
+    if(arch==='SHOT_CREATOR'){bump(['shotCreation','midRange','ballHandling'],5);cut(['helpDefense'],2);p.tendencies.usage+=10}
+    if(arch==='TWO_WAY_GUARD'){bump(['perimeterDefense','threePoint','steal'],4);cut(['postPlay'],2)}
+    if(arch==='THREE_D'){bump(['threePoint','perimeterDefense','helpDefense'],5);cut(['shotCreation','ballHandling'],2);p.tendencies.usage-=6}
+    if(arch==='WING_CREATOR'){bump(['shotCreation','passing','ballHandling'],4);cut(['interiorDefense'],2);p.tendencies.usage+=7}
+    if(arch==='SLASHER'){bump(['finishing','speed','vertical'],5);cut(['threePoint'],3);p.tendencies.insideTendency+=12}
+    if(arch==='STRETCH_FOUR'){bump(['threePoint','offBall','midRange'],5);cut(['offensiveRebound','postPlay'],2);p.tendencies.threePointTendency+=15}
+    if(arch==='INTERIOR_FOUR'){bump(['finishing','postPlay','offensiveRebound'],5);cut(['threePoint'],3);p.tendencies.insideTendency+=12}
+    if(arch==='DEFENSIVE_FORWARD'){bump(['interiorDefense','helpDefense','defensiveRebound'],5);cut(['shotCreation'],3);p.tendencies.usage-=5}
+    if(arch==='RIM_PROTECTOR'){bump(['block','interiorDefense','defensiveRebound'],6);cut(['threePoint','ballHandling'],3);p.tendencies.usage-=6}
+    if(arch==='FINISHING_BIG'){bump(['finishing','strength','offensiveRebound'],6);cut(['threePoint','ballHandling'],3);p.tendencies.insideTendency+=14}
+    if(arch==='SKILLED_BIG'){bump(['passing','postPlay','midRange'],5);cut(['speed'],2);p.tendencies.passingTendency+=8}
+    for(const k of Object.keys(p.tendencies))p.tendencies[k]=BBGM.clamp(p.tendencies[k],5,95);
+    normalizeOverall(p,p.targetOverall||BBGM.overall(p));
+  }
+  function realisticSalaryV20(p,club,rng){
+    const o=BBGM.overall(p),role={STAR:1.20,STARTER:1.08,IMPORTANT:1.0,ROTATION:.82,SPECIALIST:.72,DEVELOPMENT:.48,BENCH:.55}[p.role]||1;
+    if(club.leagueLevel==='NBA'){
+      const base=1800000+Math.pow(Math.max(0,o-68),2)*105000;
+      return Math.round(base*role/50000)*50000;
+    }
+    const level={EUROLEAGUE:1.08,ACB:.72,EUROPE:.62,PRIMERA_FEB:.27,INTERNATIONAL:.33}[club.leagueLevel]||.55;
+    const rep=.78+Math.max(0,(club.reputation||70)-55)/110;
+    const identity=CLUB_IDENTITY_V20[club.id]?.salaryScale||1;
+    const base=90000+Math.pow(Math.max(0,o-62),2)*3000;
+    const age=p.age>=33?.88:p.age<=22?.82:1;
+    return Math.max(70000,Math.round(base*level*rep*identity*role*age/5000)*5000);
+  }
+  function contractYearsV20(p,rng){
+    if(p.age>=34)return 1;
+    if(p.age>=31)return rng.next()<.72?1:2;
+    if(p.age<=22)return 2+(rng.next()<.58?1:0)+(rng.next()<.15?1:0);
+    if(['STAR','STARTER'].includes(p.role))return 2+(rng.next()<.38?1:0);
+    return 1+(rng.next()<.62?1:0)+(rng.next()<.12?1:0);
+  }
+  function calibratePlayerV20(p,club,rng){
+    p.promisedRole=p.promisedRole||p.role;
+    p.salary=realisticSalaryV20(p,club,rng);
+    p.contractYears=contractYearsV20(p,rng);
+    if(club.leagueLevel==='NBA')p.releaseClause=null;
+    else{
+      const mult=(p.age<=23&&p.potentialReal>=84?5.0:3.0)+rng.next()*2.2;
+      p.releaseClause=Math.round(p.salary*mult/50000)*50000;
+    }
+    applyArchetypeV20(p,rng);
+  }
+  function applyClubIdentityV20(club){
+    const i=CLUB_IDENTITY_V20[club.id];if(!i)return;
+    club.style.pace=i.pace;club.style.perimeterFocus=i.perimeter;club.style.pressure=i.pressure;club.style.offensiveReboundEmphasis=i.oreb;
+  }
+  function applyWorldRealismV20(clubs){
+    for(const club of clubs){
+      const rng=new BBGM.RNG(20262000+club.id*811);
+      applyClubIdentityV20(club);
+      for(const p of club.roster)calibratePlayerV20(p,club,rng);
+      const bill=club.roster.reduce((s,p)=>s+(p.salary||0),0);
+      club.salaryBudget=Math.max(Math.round(bill*1.10/50000)*50000,Math.round((club.salaryBudget||0)*.82/50000)*50000);
+      club.realismV20={dataPack:'fictional_2026_27',rosterModel:'club_level',salaryModel:'role_level_age'};
+    }
   }
 
   function createWorld(){
@@ -510,6 +635,7 @@
       makeClub(149,'Utah Jazz','UTA',78.0,14901,82,185000000,35000000,{country:'USA',leagueLevel:'NBA',leagueName:'NBA',homeNation:'USA',loanEligible:false,rosterSize:15}),
       makeClub(150,'Washington Wizards','WAS',78.5,15001,82,186000000,35750000,{country:'USA',leagueLevel:'NBA',leagueName:'NBA',homeNation:'USA',loanEligible:false,rosterSize:15})
     ];
+    applyWorldRealismV20(clubs);
     const acb=[1,2,3,4,5,6,8,13,14,15,16,17,18,19,20,21,22,23];
     const el=[1,2,3,4,9,10,11,24,25,26,27,28,29,30,31,32,33,34,35,36];
     const comps=[
@@ -523,7 +649,7 @@
       {id:'EL_F4',name:'Final Four Euroliga',clubIds:[],rounds:[],knockout:true}
     ];
     const leagues=[...new Set(clubs.map(c=>c.leagueName).filter(Boolean))].sort().map(name=>({name,clubIds:clubs.filter(c=>c.leagueName===name).map(c=>c.id)}));
-    return {clubs,competitions:comps,leagues,freeAgents:createFreeAgents(),agents:AGENTS.slice(),scoutStaff:createScoutStaff(),scoutMarket:createScoutMarket(),coachMarket:createCoachMarket()};
+    return {clubs,competitions:comps,leagues,freeAgents:createFreeAgents(),agents:AGENTS.slice(),scoutStaff:createScoutStaff(),scoutMarket:createScoutMarket(),coachMarket:createCoachMarket(),realismPack:REALISM_V20};
   }
 
   BBGM.createWorld=createWorld;
@@ -533,4 +659,7 @@
   BBGM.createCoachMarket=createCoachMarket;
   BBGM.createYouthClass=createYouthClass;
   BBGM.clubProfiles=CLUB_PROFILES;
+  BBGM.realismV20=REALISM_V20;
+  BBGM.applyWorldRealismV20=applyWorldRealismV20;
+  BBGM.archetypeLabelsV20=ARCHETYPE_LABELS;
 })(typeof globalThis!=='undefined'?globalThis:this);

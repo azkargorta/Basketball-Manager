@@ -1,0 +1,28 @@
+CÓMO COMPARTIR LA BETA
+======================
+
+OPCIÓN RECOMENDADA: GITHUB PAGES
+--------------------------------
+1. Crea un repositorio, por ejemplo: basketball-gm-beta.
+2. Sube el CONTENIDO de esta carpeta a la raíz del repositorio (index.html, css, js, icons, manifest.webmanifest, sw.js...).
+3. En GitHub: Settings > Pages.
+4. Selecciona Deploy from a branch.
+5. Branch: main / carpeta root.
+6. Guarda.
+7. GitHub te mostrará una dirección HTTPS.
+8. Comparte ese enlace con los testers.
+
+Al estar publicado mediante HTTPS, la beta puede instalarse como PWA en dispositivos compatibles.
+
+OPCIÓN ALTERNATIVA: ITCH.IO
+---------------------------
+- Crea una página de juego HTML5.
+- Sube un ZIP cuya raíz contenga index.html.
+- Es muy cómodo para conseguir testers y tener una página pública del juego.
+- Para la experiencia PWA instalable, un hosting estático propio/GitHub Pages es normalmente más directo.
+
+ACTUALIZAR UNA BETA
+-------------------
+1. Pide a los testers que exporten sus partidas antes de una actualización importante.
+2. Sustituye los archivos publicados por la nueva versión.
+3. El service worker usa una caché versionada; al volver a abrir online recibirá la actualización y conservará el guardado local cuando sea compatible.

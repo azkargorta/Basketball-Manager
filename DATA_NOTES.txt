@@ -1,8 +1,8 @@
-DATOS Y LICENCIAS - v0.17
-=========================
+DATA PACK v0.20
 
-- Los clubes se usan como referencias del universo deportivo del prototipo.
-- Los jugadores son ficticios y sus nombres se generan según nacionalidad.
-- Los ratings son propios del juego y buscan representar jerarquías plausibles, no valoraciones oficiales.
-- No se incluyen fotografías de jugadores ni logos oficiales.
-- La NBA funciona con franquicias como mercado externo, Draft y derechos; no se simula su calendario completo posesión a posesión.
+- Jugadores: nombres ficticios.
+- Ratings: propios del juego.
+- Arquetipos: propios del juego.
+- Plantillas 2026/27: calibradas en tamaño, posiciones y jerarquía por nivel de club; no son copias de bases de datos oficiales.
+- No se incluyen fotos ni escudos.
+- El motor y los datos siguen separados para facilitar una futura versión publicable.

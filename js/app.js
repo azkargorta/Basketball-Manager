@@ -155,7 +155,7 @@ const injuryCatalog=[
 ];
 function ensureV13State(){
   if(!state)return;
-  state.version='0.17.0';
+  state.version='0.21-beta';
   state.medical=state.medical||{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:state.currentDate};
   state.medical.injuryHistory=state.medical.injuryHistory||[];
   state.nba=state.nba||{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]};
@@ -237,7 +237,7 @@ function coachTrust(p){const c=userClub(),rot=BBGM.rotation(c),mins=rot.playerMi
 function positionDepth(pos){const rot=BBGM.rotation(userClub());return userClub().roster.filter(p=>p.primaryPosition===pos||p.secondaryPosition===pos).map(p=>({p,ovr:BBGM.overall(p,pos),mins:rot.playerMinutes[p.id]||0})).sort((a,b)=>b.ovr-a.ovr)}
 function squadNeed(pos){const d=positionDepth(pos),top=d[0]?.ovr||0,second=d[1]?.ovr||0,count=d.length;let severity=0;if(count<2)severity+=38;if(count<3)severity+=12;if(top<76)severity+=(76-top)*2;if(second<70)severity+=(70-second)*1.5;return {pos,depth:d,severity:Math.round(severity),label:severity>=35?'Alta':severity>=18?'Media':'Baja'}}
 function allSquadNeeds(){return ['PG','SG','SF','PF','C'].map(squadNeed).sort((a,b)=>b.severity-a.severity)}
-function ensureV12State(){if(!state)return;state.version='0.17.0';state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
+function ensureV12State(){if(!state)return;state.version='0.21-beta';state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
 function ensureCoachSquadRequest(){if(!state?.coachManagement||state.coachManagement.squadRequest?.season===state.season)return;const need=allSquadNeeds()[0],low=userClub().roster.slice().sort((a,b)=>coachTrust(a)-coachTrust(b))[0];state.coachManagement.squadRequest={season:state.season,position:need.pos,severity:need.severity,status:'PENDING',exitPlayerId:low&&coachTrust(low)<54?low.id:null}}
 function setPlanningPriority(pos){state.planning.priorityPosition=pos||null;saveLocal(false);render();toast(pos?`Prioridad: ${positionLabel[pos]}`:'Prioridad eliminada')}
 function setCaptain(id){const p=userClub().roster.find(x=>x.id===id);if(!p)return;state.lockerRoom.captainId=id;p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100);saveLocal(false);render();toast(`${fullName(p)} es el capitán`)}
@@ -281,7 +281,7 @@ function ensureMentorPairs(){
 }
 function mentorEffectAfterUserMatch(){ensureMentorPairs();for(const m of state.lockerRoom.mentorPairs||[]){const v=userClub().roster.find(p=>p.id===m.mentorId),y=playerLocation(m.youngId)?.player;if(!v||!y)continue;y.state.confidence=BBGM.clamp((y.state.confidence||65)+.12,0,100);y.state.morale=BBGM.clamp((y.state.morale||65)+.06,0,100)}}
 function ensureV14State(){
-  if(!state)return;state.version='0.17.0';state.agentRelations=state.agentRelations||{};state.lockerRoom=state.lockerRoom||{};state.lockerRoom.relationshipOverrides=state.lockerRoom.relationshipOverrides||{};state.lockerRoom.mentorPairs=state.lockerRoom.mentorPairs||[];state.lockerRoom.lastPersonalityGame=state.lockerRoom.lastPersonalityGame||0;
+  if(!state)return;state.version='0.21-beta';state.agentRelations=state.agentRelations||{};state.lockerRoom=state.lockerRoom||{};state.lockerRoom.relationshipOverrides=state.lockerRoom.relationshipOverrides||{};state.lockerRoom.mentorPairs=state.lockerRoom.mentorPairs||[];state.lockerRoom.lastPersonalityGame=state.lockerRoom.lastPersonalityGame||0;
   const all=[...state.world.clubs.flatMap(c=>c.roster),...(state.world.freeAgents||[]),...(state.academy?.players||[])];for(const p of all){p.personality=p.personality||{};for(const k of ['professionalism','ambition','loyalty','temperament','pressure','adaptability','ego'])if(p.personality[k]==null)p.personality[k]=50;p.state=p.state||{};if(p.state.roleSatisfaction==null)p.state.roleSatisfaction=72;if(p.state.contractSatisfaction==null)p.state.contractSatisfaction=72;if(p.agent&&!Object.prototype.hasOwnProperty.call(state.agentRelations,p.agent))state.agentRelations[p.agent]=50}
   ensureMentorPairs();
 }
@@ -346,7 +346,7 @@ const ACHIEVEMENT_DEFS=[
 // ===== v0.17 experiencia de juego: pretemporada, agenda, centro de avisos, búsqueda y resúmenes =====
 function ensureV17State(){
   if(!state)return;
-  state.version='0.17.0';
+  state.version='0.21-beta';
   state.preseason=state.preseason||{active:false,weeksRemaining:0,focus:'BALANCED',friendlies:[],season:null};
   state.weeklySummaries=Array.isArray(state.weeklySummaries)?state.weeklySummaries:[];
   state.weeklyMeta=state.weeklyMeta||{lastDate:state.currentDate};
@@ -370,7 +370,7 @@ function fitScoreV17(p,c=userClub()){
 function fitLabelV17(p,c=userClub()){const v=fitScoreV17(p,c);return {value:Math.round(v),label:v>=84?'Excelente':v>=72?'Bueno':v>=58?'Normal':v>=45?'Dudoso':'Malo'}}
 function playerV17SummaryHtml(p,ownerClub){
   const st=seasonStatsMap()[p.id],fit=fitLabelV17(p,userClub()),mv=BBGM.marketValue(p),isOwn=ownerClub?.id===state.userClubId;
-  return `<div class="profile-summary-grid"><div><small>Encaje Baskonia</small><b>${fit.label}</b><span>${fit.value}/100</span></div><div><small>Valor estimado</small><b>${fmtMoney(mv)}</b><span>${p.age} años</span></div><div><small>Temporada</small><b>${st?`${st.ppg.toFixed(1)} PTS`:'Sin datos'}</b><span>${st?`${st.rpg.toFixed(1)} REB · ${st.apg.toFixed(1)} AST`:'—'}</span></div><div><small>Situación</small><b>${isOwn?roleLabel[p.role]:(ownerClub?.shortName||'Libre')}</b><span>${p.contractYears?`${p.contractYears} año(s)`:'Agente libre'}</span></div></div>`
+  return `<div class="profile-summary-grid"><div><small>Encaje Baskonia</small><b>${fit.label}</b><span>${fit.value}/100</span></div><div><small>Valor estimado</small><b>${fmtMoney(mv)}</b><span>${p.age} años</span></div><div><small>Temporada</small><b>${st?`${st.ppg.toFixed(1)} PTS`:'Sin datos'}</b><span>${st?`${st.rpg.toFixed(1)} REB · ${st.apg.toFixed(1)} AST`:'—'}</span></div><div><small>Perfil</small><b>${pArchetypeV20(p)}</b><span>${isOwn?roleLabel[p.role]:(ownerClub?.shortName||'Libre')} · ${p.contractYears?`${p.contractYears} año(s)`:'Agente libre'}</span></div></div>`
 }
 function createPreseasonFriendlies(season=state.season,startDate=state.currentDate){
   const rng=new BBGM.RNG(hashCode(`${season}-preseason-v17`)),cands=state.world.clubs.filter(c=>c.id!==state.userClubId&&c.leagueLevel!=='NBA'&&!['Real Madrid','Barcelona','Panathinaikos','Olympiacos'].includes(c.name)).filter(c=>c.baseRating>=70&&c.baseRating<=82);
@@ -396,7 +396,7 @@ function contractAgendaHtml(){const exp=userClub().roster.filter(p=>p.contractYe
 function runAiFrontOfficeV17(){ensureV17State();const month=state.currentDate.slice(0,7);if(state.aiFrontOffice.lastMonth===month)return;state.aiFrontOffice.lastMonth=month;const rng=new BBGM.RNG(hashCode(`${month}-frontoffice-v17`)),clubs=state.world.clubs.filter(c=>c.id!==state.userClubId&&c.leagueLevel!=='NBA');for(let k=0;k<Math.min(12,clubs.length);k++){const c=rng.pick(clubs),exp=c.roster.filter(p=>p.contractYears===1);if(exp.length){const p=exp.sort((a,b)=>aiFitScore(c,b)-aiFitScore(c,a))[0];if(p&&aiFitScore(c,p)>52&&rng.next()<.62){p.contractYears=2+(rng.next()<.25?1:0);p.salary=Math.round(Math.max(p.salary,BBGM.salaryExpectation(p,c.reputation)*.92)/50000)*50000;if(rng.next()<.22)state.marketNews.unshift({date:state.currentDate,text:`${c.name} renueva a ${fullName(p)} por ${p.contractYears} temporadas.`})}}}for(const c of clubs.filter(c=>['ACB','EL'].some(cid=>state.standings[cid]?.[c.id]?.gp>=8))){const rows=['ACB','EL'].map(cid=>state.standings[cid]?.[c.id]).filter(Boolean),gp=rows.reduce((n,x)=>n+x.gp,0),w=rows.reduce((n,x)=>n+x.w,0);if(gp>=10&&w/gp<.29&&rng.next()<.12&&state.world.coachMarket?.length){const old=c.coach,nw=state.world.coachMarket.shift();c.coach={...nw};state.world.coachMarket.push({...old,id:`M-${Date.now()}-${c.id}`});state.marketNews.unshift({date:state.currentDate,text:`${c.name} destituye a ${old.name} y contrata a ${nw.name}.`})}}}
 function ensureV16State(){
   if(!state)return;
-  state.version='0.17.0';
+  state.version='0.21-beta';
   state.seasonArchive=Array.isArray(state.seasonArchive)?state.seasonArchive:[];
   state.achievements=state.achievements||{unlocked:{}};
   state.achievements.unlocked=state.achievements.unlocked||{};
@@ -707,6 +707,8 @@ function resolveDecision(id,choiceIndex){
   if(ch.effect==='TALK_COACH_REST'&&p){setCoachMinuteRequest(p,-6,4,'REST');p.state.morale=BBGM.clamp(p.state.morale+2,0,100);p.state.fatigue=BBGM.clamp((p.state.fatigue||0)-5,0,100)}
   if(ch.effect==='KEEP_LOAD'&&p){p.state.morale=BBGM.clamp(p.state.morale-1.5,0,100)}
   if(ch.effect==='HOLD_ROLE'&&p){p.state.morale=BBGM.clamp(p.state.morale-3,0,100);state.manager.reputation=BBGM.clamp(state.manager.reputation+.3,0,100)}
+  if(ch.effect==='V20_RENEW_NOW'&&p){ev.resolved=true;ev.decision=ch.label;saveLocal(false);openContractNegotiation(p,{type:'RENEW'});return}
+  if(ch.effect==='V20_RENEW_WAIT'&&p){p.state.contractSatisfaction=BBGM.clamp((p.state.contractSatisfaction||70)-3,0,100);changeAgentRelation(p.agent,-.5)}
   if(ch.effect==='LIST_PLAYER'&&p){p.transferListed=true;p.state.morale=BBGM.clamp(p.state.morale-1,0,100)}
   if(ch.effect==='CLUB_NOT_FOR_SALE'&&p){p.state.morale=BBGM.clamp(p.state.morale+2.5,0,100);p.transferListed=false}
   if(ch.effect==='CLUB_INVITE_OFFER'&&p&&ev.fromClubId){const buyer=club(ev.fromClubId),fee=Math.round(BBGM.marketValue(p)*(1.00+.18*Math.random())/50000)*50000;addInbox('TRANSFER_OFFER',`Oferta por ${fullName(p)}`,`${buyer.name} responde a tu apertura y ofrece ${fmtMoney(fee)}.`,{playerId:p.id,fromClubId:buyer.id,fee})}
@@ -1024,8 +1026,8 @@ function upgradeState(s){
   if(!state.scouting.assignments)state.scouting.assignments=[];if(!state.scouting.knowledge)state.scouting.knowledge={};
   state.scouting.nextAssignmentId=state.scouting.nextAssignmentId||Math.max(0,...state.scouting.assignments.map(a=>a.id||0))+1;
   ensureAcademy();
-  state.version='0.17.0';
-  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();
+  state.version='0.21-beta';
+  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   return state;
 }
 
@@ -1034,17 +1036,18 @@ function newGame(){
   const calendar=BBGM.buildCalendar(world.competitions.filter(c=>c.standings),'2026-09-25');
   calendar.push(...initialSupercopaMatches(2026));calendar.sort((a,b)=>a.date.localeCompare(b.date));
   state={
-    version:'0.17.0',saveName:'Carrera Baskonia',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,
+    version:'0.21-beta',saveName:'Carrera Baskonia',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,
     manager:{name:'Director deportivo',reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},
     world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[{id:'ACB',label:'Finalizar entre los 6 primeros de ACB',target:6},{id:'EL',label:'Alcanzar al menos el Play-In de Euroliga',target:10},{id:'YOUTH',label:'Desarrollar talento joven',target:1},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(1,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
   };
   ensureAcademy();
-  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();
+  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   activatePreseason('2026-09-01');
   world.clubs.forEach(c=>c.coachMinuteRequests={});
   state.sponsorship.offers=createSponsorOffers(state.season);
   for(const c of world.competitions.filter(c=>c.standings))state.standings[c.id]=Object.fromEntries(c.clubIds.map(id=>[id,{clubId:id,gp:0,w:0,l:0,pf:0,pa:0}]));
   addInbox('INFO','Bienvenido a Baskonia','La directiva espera una temporada competitiva en ACB y Euroliga.');
+  addInbox('INFO','Data Pack ficticio 2026/27','La plantilla inicial usa nombres ficticios y ratings propios, pero su jerarquía, tamaño de rotación, salarios y perfiles se han calibrado por nivel de club para una experiencia más realista.');
   addInbox('SCOUTING','Scouting disponible','Tienes tres ojeadores. Los jugadores externos muestran información parcial hasta que los investigues.');
   addInbox('TRAINING','Plan mensual pendiente','Puedes asignar un foco de entrenamiento a cada jugador desde Plantilla.');
   addInbox('SPONSOR','Decisión de patrocinio pendiente','Tienes cuatro propuestas de patrocinio con distinto fijo y variables. Revísalas desde Más → Patrocinadores.');
@@ -1086,7 +1089,7 @@ async function loadLocal(){
 
 function exportSave(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='basketball_gm_v16_save.json';a.click();URL.revokeObjectURL(a.href);
+  a.href=URL.createObjectURL(blob);a.download='basketball_gm_v20_save.json';a.click();URL.revokeObjectURL(a.href);
 }
 
 function importSave(file){
@@ -1147,7 +1150,7 @@ function advanceToNextEvent(){
     const target=sa.endDate;
     const due=state.calendar.filter(m=>m.status==='SCHEDULED'&&m.date<=target&&m.homeClubId!==state.userClubId&&m.awayClubId!==state.userClubId);
     for(const m of due)simulateOne(m,false);
-    processAcademyTo(target);processScouting(target);processMedicalTo(target);state.currentDate=target;runAiMarketStep();runAiFrontOfficeV17();maybeRecordWeeklySummary();if(state.autosave)saveLocal(false);render();toast('Nuevo informe de scouting disponible');return;
+    processAcademyTo(target);processScouting(target);processMedicalTo(target);state.currentDate=target;runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateWorldNewsV20();maybeRecordWeeklySummary();if(state.autosave)saveLocal(false);render();toast('Nuevo informe de scouting disponible');return;
   }
   simulateToNextUserMatch();
 }
@@ -1163,13 +1166,13 @@ function simulateToNextUserMatch(){
   processAcademyTo(nm.date);processScouting(nm.date);processMedicalTo(nm.date);
   state.currentDate=nm.date;
   addInbox('RESULT',`${club(nm.homeClubId).shortName} ${nm.homeScore}-${nm.awayScore} ${club(nm.awayClubId).shortName}`,`${comp(nm.competitionId).name} · ${typeof nm.round==='number'?'Jornada '+nm.round:nm.round}`);
-  maybeGenerateDecisionEvent();maybeGenerateLockerEvent();maybeGeneratePersonalityEvent();maybeGenerateYouthInterest();runAiMarketStep();runAiFrontOfficeV17();generateMarketPulse();maybeRecordWeeklySummary();
+  maybeGenerateDecisionEvent();maybeGenerateLockerEvent();maybeGeneratePersonalityEvent();maybeGenerateYouthInterest();maybeGenerateContractDecisionV20();runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateMarketPulse();generateWorldNewsV20();maybeRecordWeeklySummary();
   if(state.autosave)saveLocal(false);
   render();showResultModal(nm,res);
 }
 
 function simulateToDate(target){
-  const due=gamesBeforeOrAt(target);for(const m of due)simulateOne(m,false);processAcademyTo(target);processScouting(target);processMedicalTo(target);state.currentDate=target;runAiMarketStep();runAiFrontOfficeV17();maybeRecordWeeklySummary();if(state.autosave)saveLocal(false);render();
+  const due=gamesBeforeOrAt(target);for(const m of due)simulateOne(m,false);processAcademyTo(target);processScouting(target);processMedicalTo(target);state.currentDate=target;runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateWorldNewsV20();maybeRecordWeeklySummary();if(state.autosave)saveLocal(false);render();
 }
 
 function endSeason(){
@@ -1189,18 +1192,19 @@ function showEndSeasonModal(){
 }
 function maxPlayerId(){let mx=0;for(const c of state.world.clubs)for(const p of c.roster)mx=Math.max(mx,p.id);for(const p of state.world.freeAgents||[])mx=Math.max(mx,p.id);for(const p of state.academy?.players||[])mx=Math.max(mx,p.id);for(const l of state.academy?.loans||[])mx=Math.max(mx,l.player?.id||0);return mx}
 function startNextSeason(){
-  ensureAcademy();ensureV13State();ensureV15State();const financeSnapshot={season:state.economy.season,startCash:state.economy.seasonStartCash,endCash:userClub().cashBudget,financialHealth:userClub().financialHealth,totals:financeTotals()};rolloverClubEconomies();processNbaDraft();processNbaReturns();for(const l of state.academy.loans.filter(x=>x.status==='ACTIVE'))returnLoan(l.id,false);
+  ensureAcademy();ensureV13State();ensureV15State();ensureV19State();recordBalanceSnapshotV19('fin '+state.season);const financeSnapshot={season:state.economy.season,startCash:state.economy.seasonStartCash,endCash:userClub().cashBudget,financialHealth:userClub().financialHealth,totals:financeTotals()};rolloverClubEconomies();processNbaDraft();processNbaReturns();for(const l of state.academy.loans.filter(x=>x.status==='ACTIVE'))returnLoan(l.id,false);
   const rng=new BBGM.RNG(hashCode(`${state.season}-rollover`)),free=state.world.freeAgents||[];
   for(const c of state.world.clubs){
-    const keep=[];for(const p of c.roster){ensurePlayerContractFields(p,p.id);p.age=(p.age||25)+1;p._agedThisRollover=true;p.contractYears=Math.max(0,(p.contractYears||1)-1);const retire=p.age>=37&&(rng.next()<Math.min(.8,.10+(p.age-36)*.16));if(retire)continue;if(p.contractYears<=0){p.freeAgent=true;p.releaseClause=null;free.push(p)}else{p.state.morale=BBGM.clamp(62+rng.gaussian()*8,35,88);p.state.fatigue=0;p.state.fitness=98;p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||70)+7,40,95);keep.push(p)}}c.roster=keep;
+    const keep=[];for(const p of c.roster){ensurePlayerContractFields(p,p.id);p.age=(p.age||25)+1;p._agedThisRollover=true;applyAnnualPlayerCurveV19(p,c,rng);p.contractYears=Math.max(0,(p.contractYears||1)-1);const retire=p.age>=37&&(rng.next()<Math.min(.8,.10+(p.age-36)*.16));if(retire)continue;if(p.contractYears<=0){p.freeAgent=true;p.releaseClause=null;free.push(p)}else{p.state.morale=BBGM.clamp(62+rng.gaussian()*8,35,88);p.state.fatigue=0;p.state.fitness=98;p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||70)+7,40,95);keep.push(p)}}c.roster=keep;
   }
-  for(const p of free){p.age=(p.age||25)+(p._agedThisRollover?0:1);if(p.contractYears>0)p.contractYears=0;delete p._agedThisRollover}
+  for(const p of free){p.age=(p.age||25)+(p._agedThisRollover?0:1);if(!p._agedThisRollover)applyAnnualPlayerCurveV19(p,null,rng);if(p.contractYears>0)p.contractYears=0;delete p._agedThisRollover}
   state.world.freeAgents=free.filter(p=>!(p.age>=38&&rng.next()<.35));
   // La IA rellena plantillas muy cortas con agentes libres asequibles.
   for(const c of state.world.clubs.filter(x=>x.id!==state.userClubId)){while(c.roster.length<(c.leagueLevel==='NBA'?14:10)){const room=c.salaryBudget-BBGM.wageBill(c),opts=state.world.freeAgents.filter(p=>BBGM.salaryExpectation(p,c.reputation)<=room).sort((a,b)=>aiFitScore(c,b)-aiFitScore(c,a));if(!opts.length)break;const p=opts[0];p.salary=BBGM.salaryExpectation(p,c.reputation);p.contractYears=2;p.role=BBGM.desiredRole(p);p.promisedRole=p.role;p.freeAgent=false;c.roster.push(p);state.world.freeAgents=state.world.freeAgents.filter(x=>x.id!==p.id)}}
+  for(const c of state.world.clubs.filter(x=>x.id!==state.userClubId))ensureRosterBalanceV19(c);
   // Cantera: edad, salida a los 23 y nueva hornada de 4-8 jugadores.
   const retained=[];for(const p of state.academy.players){p.age++;if(p.age>22){p.academy=false;p.freeAgent=true;p.contractYears=0;state.world.freeAgents.push(p)}else retained.push(p)}state.academy.players=retained;state.academy.bStats={};
-  const nextStart=+state.season.slice(0,4)+1,nextName=`${nextStart}/${String(nextStart+1).slice(-2)}`,count=4+Math.floor(rng.next()*5),newYouth=BBGM.createYouthClass(state.userClubId,count,hashCode(nextName));let nid=maxPlayerId()+1;for(const p of newYouth){p.id=nid++;ensurePlayerV13(p,userClub());state.academy.players.push(p)}state.academy.intakeHistory.push({season:nextName,count,avgPotential:+(newYouth.reduce((n,p)=>n+(p.potentialReal||0),0)/Math.max(1,newYouth.length)).toFixed(1),bestPotential:Math.max(...newYouth.map(p=>p.potentialReal||0))});for(const c of state.world.clubs.filter(x=>x.id!==state.userClubId&&x.leagueLevel!=='NBA')){if(rng.next()<.38&&c.roster.length<15){const y=BBGM.createYouthClass(c.id,1,hashCode(`${nextName}-${c.id}-ai-youth`))[0];y.id=nid++;ensurePlayerV13(y,c);y.academy=false;y.salary=Math.max(80000,y.salary);y.contractYears=3;y.role='DEVELOPMENT';y.promisedRole='DEVELOPMENT';c.roster.push(y)}}
+  const nextStart=+state.season.slice(0,4)+1,nextName=`${nextStart}/${String(nextStart+1).slice(-2)}`,count=4+Math.floor(rng.next()*5),newYouth=BBGM.createYouthClass(state.userClubId,count,hashCode(nextName));let nid=maxPlayerId()+1;for(const p of newYouth){p.id=nid++;ensurePlayerV13(p,userClub());state.academy.players.push(p)}state.academy.intakeHistory.push({season:nextName,count,avgPotential:+(newYouth.reduce((n,p)=>n+(p.potentialReal||0),0)/Math.max(1,newYouth.length)).toFixed(1),bestPotential:Math.max(...newYouth.map(p=>p.potentialReal||0))});for(const c of state.world.clubs.filter(x=>x.id!==state.userClubId&&x.leagueLevel!=='NBA')){if(rng.next()<.52&&c.roster.length<16){const y=BBGM.createYouthClass(c.id,1,hashCode(`${nextName}-${c.id}-ai-youth`),c.homeNation)[0];y.id=nid++;ensurePlayerV13(y,c);y.academy=false;y.salary=Math.max(80000,y.salary);y.contractYears=3;y.role='DEVELOPMENT';y.promisedRole='DEVELOPMENT';c.roster.push(y)}}
   state.economy.history=state.economy.history||[];state.economy.history.push(financeSnapshot);
   state.season=nextName;state.currentDate=`${nextStart}-07-01`;const brandRep=state.sponsorship?.brandReputation??60;state.sponsorship={active:null,offers:[],evaluatedSeason:null,lastBonus:0,brandReputation:brandRep};state.economy.season=nextName;state.economy.seasonStartCash=userClub().cashBudget;state.economy.entries=[];state.economy.processedMatches={};state.economy.prizeProcessedSeason=null;state.calendar=BBGM.buildCalendar(state.world.competitions.filter(c=>c.standings),`${nextStart}-09-25`);state.standings={};for(const c of state.world.competitions.filter(c=>c.standings))state.standings[c.id]=Object.fromEntries(c.clubIds.map(id=>[id,{clubId:id,gp:0,w:0,l:0,pf:0,pa:0}]));state.history=[];state.seasonComplete=false;state.special={series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false};addFutureSupercopa(nextStart);state.offseason={active:true,weeksRemaining:4};state.preseason={active:false,weeksRemaining:0,focus:'BALANCED',friendlies:[],season:state.season};state.academy.lastBDate=state.currentDate;state.medical.lastProcessedDate=state.currentDate;state.academy.lastDevelopmentMonth=state.currentDate.slice(0,7);state.scouting.assignments=state.scouting.assignments.filter(a=>a.status!=='ACTIVE');state.world.clubs.forEach(c=>c.coachMinuteRequests={});state.coachManagement.relationship=BBGM.clamp((state.coachManagement?.relationship??72)+1,35,95);state.coachManagement.squadRequest=null;state.coachManagement.interventions={month:state.currentDate.slice(0,7),count:0};state.marketDynamics={rumors:[],agentOffers:[],lastPulseGame:0};state.lockerRoom.lastIncidentGame=0;state.lockerRoom.lastPersonalityGame=0;state.sponsorship.offers=createSponsorOffers(state.season);processNationalTeamSummer();
   addInbox('SPONSOR','Nuevas ofertas de patrocinio',`Ya puedes elegir patrocinador para ${state.season}.`);
@@ -1270,15 +1274,15 @@ function navButton(view,label,icon){return `<button data-view="${view}" class="$
 
 function render(){
   if(!state){renderStart();return}
-  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();
+  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   const c=userClub(),wb=wageBill(c),room=availableWage(c);
-  app.innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand">BASKETBALL GM<small>Playable prototype v0.17</small></div><nav class="nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calendario','▦')}${navButton('standings','Clasificación','≡')}${navButton('stats','Estadísticas','Σ')}${navButton('more','Más','•••')}</nav><div class="side-footer">Offline · guardado local<br>${state.season}</div></aside><main class="main"><header class="topbar"><div><div class="club-title">${c.name}</div><div class="club-meta">${state.season} · ${state.currentDate}</div></div><div class="top-actions"><span class="budget">Caja ${fmtMoney(c.cashBudget)} · Salarios ${fmtMoney(wb)} / ${fmtMoney(c.salaryBudget)}</span><button class="btn small" id="globalSearchBtn">⌕ Buscar</button><button class="btn small" id="saveBtn">Guardar</button></div></header><section class="content" id="view"></section></main><nav class="bottom-nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calend.','▦')}${navButton('stats','Estad.','Σ')}${navButton('more','Más','•••')}</nav></div>`;
+  app.innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand">BASKETBALL GM<small>Beta v0.21</small></div><nav class="nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calendario','▦')}${navButton('standings','Clasificación','≡')}${navButton('stats','Estadísticas','Σ')}${navButton('more','Más','•••')}</nav><div class="side-footer">Offline · guardado local<br>${state.season}</div></aside><main class="main"><header class="topbar"><div><div class="club-title">${c.name}</div><div class="club-meta">${state.season} · ${state.currentDate}</div></div><div class="top-actions"><span class="budget">Caja ${fmtMoney(c.cashBudget)} · Salarios ${fmtMoney(wb)} / ${fmtMoney(c.salaryBudget)}</span><button class="btn small icon-btn" id="themeBtn" title="Cambiar apariencia">◐</button><button class="btn small" id="globalSearchBtn">⌕ Buscar</button><button class="btn small" id="saveBtn">Guardar</button></div></header><section class="content" id="view"></section></main><nav class="bottom-nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calend.','▦')}${navButton('stats','Estad.','Σ')}${navButton('more','Más','•••')}</nav></div>`;
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;render()});
-  document.getElementById('saveBtn').onclick=()=>saveLocal(true);const gs=document.getElementById('globalSearchBtn');if(gs)gs.onclick=()=>openGlobalSearch();renderView();
+  document.getElementById('saveBtn').onclick=()=>saveLocal(true);const gs=document.getElementById('globalSearchBtn');if(gs)gs.onclick=()=>openGlobalSearch();const th=document.getElementById('themeBtn');if(th)th.onclick=()=>{state.ui.theme=state.ui.theme==='light'?'dark':'light';applyThemeV19();saveLocal(false);render()};applyThemeV19();renderView();
 }
 
 function renderStart(){
-  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">Offline prototype</div><h1>Basketball GM</h1><p>Versión jugable centrada en dirección deportiva: pretemporada, agenda, mercado, scouting, cantera, economía, historial y carrera offline.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note">Puedes continuar partidas anteriores. Puedes continuar una partida v0.8 y se añadirán los nuevos clubes NBA y módulos compatibles. Para probar Supercopa, Copa y postemporadas desde el inicio, crea una partida nueva v0.17.</div></div></div>`;
+  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">Offline prototype</div><h1>Basketball GM</h1><p>Versión jugable centrada en dirección deportiva, con plantillas ficticias calibradas al ecosistema 2026/27, mercado, scouting, cantera, economía e historial offline.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note">Puedes continuar partidas anteriores. Puedes continuar una partida v0.8 y se añadirán los nuevos clubes NBA y módulos compatibles. Para probar la calibración nueva de plantillas, contratos, salarios y arquetipos, crea una partida nueva v0.20.</div></div></div>`;
   document.getElementById('newGame').onclick=newGame;
   document.getElementById('continue').onclick=async()=>{if(!(await loadLocal()))alert('No hay una partida guardada en este navegador.')};
   document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
@@ -1305,6 +1309,7 @@ function renderView(){
   else if(currentView==='history')renderHistory(v);
   else if(currentView==='inbox')renderInboxCenter(v);
   else if(currentView==='preseason')renderPreseason(v);
+  else if(currentView==='diagnostics')renderDiagnosticsV19(v);
   else renderMore(v);
 }
 
@@ -1349,6 +1354,7 @@ function renderHome(v){
   <div class="grid two" style="margin-top:16px"><div class="card"><h3>ACB</h3>${standingsMini('ACB',8)}</div><div class="card"><h3>Patrocinador</h3>${state.sponsorship?.active?`<div class="sponsor-summary"><b>${state.sponsorship.active.name}</b><span>${state.sponsorship.active.type}</span><strong>${fmtMoney(state.sponsorship.active.fixed)} fijo</strong></div><button class="btn" id="sponsorHome">Ver variables</button>`:`<p class="muted">Tienes propuestas de patrocinio pendientes.</p><button class="btn good" id="sponsorHome">Elegir patrocinador</button>`}</div></div>
   <div class="card" style="margin-top:16px"><div class="section-inline"><div><div class="eyebrow">Quinteto previsto por el entrenador</div><h3>Quinteto titular</h3></div><span class="pill">Haz clic en un jugador</span></div>${courtHtml(uc)}</div>
   ${state.marketNews.length?`<div class="card" style="margin-top:16px"><h3>Noticias de mercado</h3>${state.marketNews.slice(0,5).map(n=>`<div class="news-line"><span class="muted">${n.date}</span><span>${n.text}</span></div>`).join('')}</div>`:''}`;
+  v.insertAdjacentHTML('beforeend',v20HomeNewsHtml());
   v.insertAdjacentHTML('beforeend',`<div style="margin-top:16px">${weeklySummaryHtml()}</div>`);v.insertAdjacentHTML('beforeend',dashboardExtraHtml());
   const lh=document.getElementById('openLockerHome');if(lh)lh.onclick=()=>{currentView='locker';render()};const ph=document.getElementById('openPlanningHome');if(ph)ph.onclick=()=>{currentView='planning';render()};
   const nextBtn=document.getElementById('nextMatchBtn');if(nextBtn)nextBtn.onclick=state.seasonComplete?showEndSeasonModal:state.offseason?.active?advanceOffseasonWeek:state.preseason?.active?advancePreseasonWeek:advanceToNextEvent;if(nm)document.getElementById('playBtn').onclick=simulateToNextUserMatch;
@@ -1496,7 +1502,7 @@ function renderAcademy(v){
   v.querySelectorAll('[data-academy-tab]').forEach(b=>b.onclick=()=>{academyTab=b.dataset.academyTab;renderAcademy(v)});const root=v.querySelector('#academyContent');
   if(academyTab==='bteam'){
     const list=state.academy.players.slice().sort((a,b)=>b.potentialReal-a.potentialReal||BBGM.overall(b)-BBGM.overall(a));
-    root.innerHTML=`<div class="card"><div class="table-wrap"><table><thead><tr><th>Jugador</th><th>Edad</th><th>Pos.</th><th>OVR</th><th>Potencial est.</th><th>PJ</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>VAL</th><th>Entrenamiento</th><th>Informe</th><th>1er equipo</th><th></th></tr></thead><tbody>${list.map(p=>{const a=bStatAverages(p);return `<tr><td><button class="link-btn" data-profile="${p.id}">${fullName(p)}</button><div class="tiny muted">${p.nationality}</div></td><td>${p.age}</td><td>${positionText(p)}</td><td><b>${Math.round(BBGM.overall(p))}</b></td><td>${knownPotential(p,userClub())}</td><td>${a.g}</td><td>${a.g?a.min.toFixed(1):'—'}</td><td>${a.g?a.pts.toFixed(1):'—'}</td><td>${a.g?a.reb.toFixed(1):'—'}</td><td>${a.g?a.ast.toFixed(1):'—'}</td><td>${a.g?a.val.toFixed(1):'—'}</td><td><select data-academy-focus="${p.id}">${Object.entries(focusLabel).map(([k,l])=>`<option value="${k}" ${p.trainingFocus===k?'selected':''}>${l}</option>`).join('')}</select></td><td><span class="pill ${youthReadiness(p).cls}">${youthReadiness(p).label}</span></td><td><label class="tiny-check"><input type="checkbox" data-first-team-train="${p.id}" ${p.trainWithFirstTeam?'checked':''}> Entrenar arriba</label></td><td><div class="action-stack"><button class="btn small good" data-promote="${p.id}">Subir</button><button class="btn small" data-loan-youth="${p.id}">Ceder</button></div></td></tr>`}).join('')}</tbody></table></div><div class="table-note">No se muestran resultados del equipo B: solo estadísticas individuales. La progresión se calcula mensualmente según edad, potencial, entrenamiento, minutos y calidad del staff.</div></div>`;
+    root.innerHTML=`<div class="card"><div class="table-wrap academy-table-wrap"><table class="academy-table"><thead><tr><th>Jugador</th><th>Edad</th><th>Pos.</th><th>OVR</th><th>Potencial est.</th><th>PJ</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>VAL</th><th>Entrenamiento</th><th>Informe</th><th>1er equipo</th><th class="academy-actions-col">Acciones</th></tr></thead><tbody>${list.map(p=>{const a=bStatAverages(p);return `<tr><td><button class="link-btn" data-profile="${p.id}">${fullName(p)}</button><div class="tiny muted">${p.nationality}</div><div class="academy-mobile-actions"><button class="btn tiny-btn good" data-promote="${p.id}">Subir</button><button class="btn tiny-btn" data-loan-youth="${p.id}">Ceder</button></div></td><td>${p.age}</td><td>${positionText(p)}</td><td><b>${Math.round(BBGM.overall(p))}</b></td><td>${knownPotential(p,userClub())}</td><td>${a.g}</td><td>${a.g?a.min.toFixed(1):'—'}</td><td>${a.g?a.pts.toFixed(1):'—'}</td><td>${a.g?a.reb.toFixed(1):'—'}</td><td>${a.g?a.ast.toFixed(1):'—'}</td><td>${a.g?a.val.toFixed(1):'—'}</td><td><select data-academy-focus="${p.id}">${Object.entries(focusLabel).map(([k,l])=>`<option value="${k}" ${p.trainingFocus===k?'selected':''}>${l}</option>`).join('')}</select></td><td><span class="pill ${youthReadiness(p).cls}">${youthReadiness(p).label}</span></td><td><label class="tiny-check"><input type="checkbox" data-first-team-train="${p.id}" ${p.trainWithFirstTeam?'checked':''}> Entrenar arriba</label></td><td class="academy-actions-col"><div class="action-stack"><button class="btn small good" data-promote="${p.id}">Subir</button><button class="btn small" data-loan-youth="${p.id}">Ceder</button></div></td></tr>`}).join('')}</tbody></table></div><div class="table-note">En pantallas estrechas puedes deslizar la tabla horizontalmente. Los botones Subir/Ceder permanecen accesibles junto al nombre del jugador. No se muestran resultados del equipo B: solo estadísticas individuales.</div></div>`;
     root.querySelectorAll('[data-academy-focus]').forEach(e=>e.onchange=()=>{state.academy.players.find(p=>p.id===+e.dataset.academyFocus).trainingFocus=e.value;saveLocal(false);toast('Entrenamiento actualizado')});root.querySelectorAll('[data-first-team-train]').forEach(e=>e.onchange=()=>setFirstTeamTraining(+e.dataset.firstTeamTrain,e.checked));root.querySelectorAll('[data-promote]').forEach(b=>b.onclick=()=>promoteYouth(+b.dataset.promote));root.querySelectorAll('[data-loan-youth]').forEach(b=>b.onclick=()=>{const p=state.academy.players.find(x=>x.id===+b.dataset.loanYouth);if(p)openLoanDialog(p,'B')});bindProfileButtons(root);
   }else if(academyTab==='loans'){
     const loans=state.academy.loans.filter(x=>x.status==='ACTIVE');root.innerHTML=`<div class="card">${loans.length?loans.map(l=>{const s=l.stats,g=Math.max(1,s.games);return `<div class="loan-row"><div><button class="link-btn" data-profile="${l.player.id}">${fullName(l.player)}</button><div class="tiny muted">${positionText(l.player)} · ${l.player.age} años · cedido en ${club(l.loanClubId).name}</div></div><div class="loan-stats"><span>PJ <b>${s.games}</b></span><span>MIN <b>${s.games?(s.minutes/g).toFixed(1):'—'}</b></span><span>PTS <b>${s.games?(s.points/g).toFixed(1):'—'}</b></span><span>REB <b>${s.games?(s.rebounds/g).toFixed(1):'—'}</b></span><span>AST <b>${s.games?(s.assists/g).toFixed(1):'—'}</b></span></div></div>`}).join(''):'<p class="muted">No tienes jugadores cedidos actualmente.</p>'}</div>`;bindProfileButtons(root);
@@ -1631,9 +1637,13 @@ function renderMore(v){
   <div class="card"><h3>NBA y Draft</h3><div class="stat-row"><span>Drafts procesados</span><b>${state.nba?.draftHistory?.length||0}</b></div><p class="muted">Derechos NBA, Draft y retornos al mercado europeo.</p><button class="btn" id="openNba">Abrir NBA / Draft</button></div>
   <div class="card"><h3>Selecciones</h3><div class="stat-row"><span>Convocados actuales</span><b>${state.nationalTeams?.callups?.length||0}</b></div><p class="muted">Los internacionales regresan con carga adicional.</p><button class="btn" id="openInternational">Ver internacionales</button></div>
   <div class="card"><h3>Historial y récords</h3><div class="stat-row"><span>Temporadas cerradas</span><b>${state.seasonArchive?.length||0}</b></div><div class="stat-row"><span>Logros</span><b>${Object.keys(state.achievements?.unlocked||{}).length}/${ACHIEVEMENT_DEFS.length}</b></div><p class="muted">Títulos, récords, líderes y trayectoria completa.</p><button class="btn good" id="openHistory">Abrir historial</button></div>
+  <div class="card diagnostic-entry"><h3>Diagnóstico de partida</h3><div class="stat-row"><span>Balance global</span><b>${diagnosticVerdictV19(collectDiagnosticsV19()).label}</b></div><div class="stat-row"><span>Snapshots guardados</span><b>${state.balanceHistory?.length||0}</b></div><p class="muted">Revisa edades, medias, élite, agentes libres, economía y equilibrio posicional del universo.</p><button class="btn good" id="openDiagnostics">Abrir diagnóstico</button></div>
   <div class="card"><h3>Universo de jugadores</h3><div class="stat-row"><span>Clubes cargados</span><b>${state.world.clubs.length}</b></div><div class="stat-row"><span>Jugadores en clubes</span><b>${state.world.clubs.reduce((n,c)=>n+c.roster.length,0)}</b></div><div class="stat-row"><span>Agentes libres</span><b>${state.world.freeAgents.length}</b></div><div class="stat-row"><span>Ligas / mercados</span><b>${(state.world.leagues||[]).length}</b></div></div>
   </div>`;
-  const inboxBtn=document.getElementById('openInbox');if(inboxBtn)inboxBtn.onclick=()=>{currentView='inbox';render()};const preBtn=document.getElementById('openPreseason');if(preBtn)preBtn.onclick=()=>{currentView='preseason';render()};document.getElementById('save2').onclick=()=>saveLocal(true);document.getElementById('export').onclick=exportSave;document.getElementById('toStart').onclick=()=>{state=null;render()};document.getElementById('openStandings').onclick=()=>{currentView='standings';render()};document.getElementById('talkCoach').onclick=()=>{currentView='coach';render()};document.getElementById('openSponsors').onclick=()=>{currentView='sponsors';render()};const planningBtn=document.getElementById('openPlanning');if(planningBtn)planningBtn.onclick=()=>{currentView='planning';render()};const ol=document.getElementById('openLocker');if(ol)ol.onclick=()=>{currentView='locker';render()};const om=document.getElementById('openMedical');if(om)om.onclick=()=>{currentView='medical';render()};const on=document.getElementById('openNba');if(on)on.onclick=()=>{currentView='nba';render()};const intlBtn=document.getElementById('openInternational');if(intlBtn)intlBtn.onclick=()=>{currentView='international';render()};const oh=document.getElementById('openHistory');if(oh)oh.onclick=()=>{currentView='history';render()};const of=document.getElementById('openFinance');if(of)of.onclick=()=>{currentView='finance';render()};
+  v.querySelector('.grid.two')?.insertAdjacentHTML('beforeend',`<div class="card beta-card"><div class="eyebrow">Beta cerrada</div><h3>Pruebas y feedback</h3><div class="stat-row"><span>Versión</span><b>v0.21 Beta</b></div><p class="muted">Si encuentras un error, exporta el informe técnico y, si depende de tu partida, también el save desde Guardado.</p><div class="action-stack"><button class="btn good" id="betaReport">Exportar informe beta</button><button class="btn" id="betaInstallHelp">Instalar en este dispositivo</button></div></div>`);
+  const betaReport=document.getElementById('betaReport');if(betaReport)betaReport.onclick=()=>{const payload={version:state.version,season:state.season,date:state.currentDate,device:{userAgent:navigator.userAgent,viewport:[window.innerWidth,window.innerHeight],standalone:window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true},diagnostic:collectDiagnosticsV19()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-beta-report-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href);toast('Informe beta exportado')};
+  const betaInstall=document.getElementById('betaInstallHelp');if(betaInstall)betaInstall.onclick=()=>{const b=document.getElementById('pwaInstallBtn');if(b&&!b.hidden)b.click();else toast('En móvil: menú Compartir/⋮ → Añadir a pantalla de inicio o Instalar app')};
+  const inboxBtn=document.getElementById('openInbox');if(inboxBtn)inboxBtn.onclick=()=>{currentView='inbox';render()};const preBtn=document.getElementById('openPreseason');if(preBtn)preBtn.onclick=()=>{currentView='preseason';render()};document.getElementById('save2').onclick=()=>saveLocal(true);document.getElementById('export').onclick=exportSave;document.getElementById('toStart').onclick=()=>{state=null;render()};document.getElementById('openStandings').onclick=()=>{currentView='standings';render()};document.getElementById('talkCoach').onclick=()=>{currentView='coach';render()};document.getElementById('openSponsors').onclick=()=>{currentView='sponsors';render()};const planningBtn=document.getElementById('openPlanning');if(planningBtn)planningBtn.onclick=()=>{currentView='planning';render()};const ol=document.getElementById('openLocker');if(ol)ol.onclick=()=>{currentView='locker';render()};const om=document.getElementById('openMedical');if(om)om.onclick=()=>{currentView='medical';render()};const on=document.getElementById('openNba');if(on)on.onclick=()=>{currentView='nba';render()};const intlBtn=document.getElementById('openInternational');if(intlBtn)intlBtn.onclick=()=>{currentView='international';render()};const oh=document.getElementById('openHistory');if(oh)oh.onclick=()=>{currentView='history';render()};const of=document.getElementById('openFinance');if(of)of.onclick=()=>{currentView='finance';render()};const od=document.getElementById('openDiagnostics');if(od)od.onclick=()=>{currentView='diagnostics';render()};
 }
 
 function bindProfileButtons(root=document){root.querySelectorAll('[data-profile]').forEach(b=>b.onclick=()=>{const loc=playerLocation(+b.dataset.profile);if(loc)showPlayerProfile(loc.player,loc.club)})}
@@ -1747,6 +1757,152 @@ function modal(html){
 
 function toast(msg){let old=document.querySelector('.toast');if(old)old.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
 
-g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords};
+
+
+// ===== v0.19: balance a largo plazo + rediseño / diagnóstico =====
+const V19_PHYSICAL=['speed','strength','vertical','stamina','durability'];
+const V19_SHOOTING=['midRange','threePoint','freeThrow','finishing'];
+const V19_SKILL=['ballHandling','passing','shotCreation','pickAndRoll','postPlay','offBall','perimeterDefense','interiorDefense','helpDefense','steal','block','defensiveRebound','offensiveRebound'];
+const V19_MENTAL=['basketballIq','decisionMaking','consistency','competitiveness','workRate'];
+
+// ===== v0.20 — Realismo, noticias y mercado final =====
+function ensureV20State(){
+  if(!state)return;
+  state.version='0.21-beta';
+  state.worldNews=Array.isArray(state.worldNews)?state.worldNews:[];
+  state.realismV20=state.realismV20||{pack:state.world?.realismPack?.version||'legacy',lastNewsGame:0,lastContractGame:0,lastAiReviewMonth:null};
+  state.realismV20.lastNewsGame=state.realismV20.lastNewsGame||0;
+  state.realismV20.lastContractGame=state.realismV20.lastContractGame||0;
+  state.marketNews=state.marketNews||[];
+  for(const c of state.world?.clubs||[]){for(const p of c.roster||[]){p.promisedRole=p.promisedRole||p.role;if(!p.archetypeLabel&&p.archetype)p.archetypeLabel=BBGM.archetypeLabelsV20?.[p.archetype]||p.archetype}}
+}
+function userGamesPlayedV20(){return (state.calendar||[]).filter(m=>m.status==='PLAYED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).length}
+function worldNewsPushV20(type,text,extra={}){ensureV20State();state.worldNews.unshift({id:`WN-${Date.now()}-${Math.random()}`,date:state.currentDate,type,text,...extra});state.worldNews=state.worldNews.slice(0,60)}
+function weakestPositionV20(c){const vals=['PG','SG','SF','PF','C'].map(pos=>{const a=c.roster.filter(p=>p.primaryPosition===pos||p.secondaryPosition===pos).map(p=>BBGM.overall(p,pos)).sort((x,y)=>y-x);return {pos,score:(a[0]||55)*.65+(a[1]||50)*.35,count:a.length}});return vals.sort((a,b)=>a.score-b.score||a.count-b.count)[0]}
+function generateWorldNewsV20(){
+  ensureV20State();const played=userGamesPlayedV20();if(!played||played===state.realismV20.lastNewsGame||played%3!==0)return;state.realismV20.lastNewsGame=played;
+  const rng=new BBGM.RNG(hashCode(`${state.season}-${played}-worldnews-v20`)),others=state.world.clubs.filter(c=>c.id!==state.userClubId);
+  if(!others.length)return;
+  const roll=rng.next();
+  if(roll<.28){
+    const exp=[];for(const c of others)for(const p of c.roster)if((p.contractYears||0)===1&&BBGM.overall(p)>=79)exp.push({c,p});
+    if(exp.length){const x=rng.pick(exp);worldNewsPushV20('CONTRACT',`${x.c.name} afronta una decisión con ${fullName(x.p)}: entra en el último año de contrato y varios clubes siguen su situación.`,{playerId:x.p.id,clubId:x.c.id})}
+  }else if(roll<.53){
+    const youth=[];for(const c of others)for(const p of c.roster)if((p.age||99)<=23&&BBGM.overall(p)>=78) youth.push({c,p});
+    if(youth.length){const x=rng.pick(youth);worldNewsPushV20('BREAKOUT',`${fullName(x.p)} (${x.c.shortName}) está ganando peso en la rotación. Su perfil de ${pArchetypeV20(x.p)} atrae atención de scouting.`,{playerId:x.p.id,clubId:x.c.id})}
+  }else if(roll<.77){
+    const c=rng.pick(others.filter(x=>x.leagueLevel!=='NBA'));if(c){const need=weakestPositionV20(c);worldNewsPushV20('SQUAD',`${c.name} considera prioritaria la posición de ${positionLabel[need.pos]}. Su dirección deportiva ya explora el mercado.`,{clubId:c.id})}
+  }else{
+    const c=rng.pick(others),top=c.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0];if(c&&top)worldNewsPushV20('TEAM',`${c.name} construye su proyecto alrededor de ${fullName(top)}, actualmente su referencia deportiva con ${Math.round(BBGM.overall(top))} OVR.`,{playerId:top.id,clubId:c.id})
+  }
+}
+function pArchetypeV20(p){return p.archetypeLabel||BBGM.archetypeLabelsV20?.[p.archetype]||({PG:'Base',SG:'Escolta',SF:'Alero',PF:'Ala-pívot',C:'Pívot'}[p.primaryPosition]||'Jugador')}
+function maybeGenerateContractDecisionV20(){
+  ensureV20State();const played=userGamesPlayedV20();if(!played||played===state.realismV20.lastContractGame||played%10!==0)return;state.realismV20.lastContractGame=played;
+  const exp=userClub().roster.filter(p=>(p.contractYears||0)===1).sort((a,b)=>BBGM.overall(b)-BBGM.overall(a));if(!exp.length)return;const p=exp[0];
+  addInbox('DECISION',`El agente de ${fullName(p)} quiere aclarar su futuro`,`El contrato termina al final de temporada. ${p.agent} pregunta si el club piensa abrir una renovación antes de que aumente el interés exterior.`,{playerId:p.id,choices:[{label:'Abrir negociación',effect:'V20_RENEW_NOW'},{label:'Esperar',effect:'V20_RENEW_WAIT'},{label:'Escuchar mercado',effect:'LIST_PLAYER'}]});
+}
+function v20AiRenewalsAndPlanning(){
+  ensureV20State();const month=state.currentDate?.slice(0,7);if(!month||state.realismV20.lastAiReviewMonth===month)return;state.realismV20.lastAiReviewMonth=month;
+  const rng=new BBGM.RNG(hashCode(`${month}-ai-v20`));
+  for(const c of state.world.clubs.filter(x=>x.id!==state.userClubId)){
+    const need=weakestPositionV20(c);c.aiPriorityPosition=need.pos;
+    const exp=c.roster.filter(p=>(p.contractYears||0)===1).sort((a,b)=>aiFitScore(c,b)-aiFitScore(c,a));
+    for(const p of exp.slice(0,2)){
+      const keep=aiFitScore(c,p)>50&&(BBGM.overall(p)>=72||p.age<=23);if(!keep||rng.next()>.58)continue;
+      const expected=BBGM.salaryExpectation(p,c.reputation);const room=(c.salaryBudget||0)-BBGM.wageBill(c)+p.salary;
+      if(expected<=room*1.02){p.contractYears=p.age>=32?1:2+(rng.next()<.22?1:0);p.salary=Math.round(Math.max(p.salary,expected*.92)/50000)*50000;p.promisedRole=p.role;if(rng.next()<.16)worldNewsPushV20('RENEW',`${c.name} asegura la continuidad de ${fullName(p)} por ${p.contractYears} temporada(s).`,{playerId:p.id,clubId:c.id})}
+    }
+  }
+}
+function v20HomeNewsHtml(){ensureV20State();const n=state.worldNews.slice(0,5);return `<div class="card" style="margin-top:16px"><div class="section-inline"><div><div class="eyebrow">Mundo del baloncesto</div><h3>Noticias</h3></div><span class="pill">v0.21 Beta · datos ficticios</span></div>${n.length?n.map(x=>`<div class="news-line"><span class="muted">${x.date}</span><span>${x.text}</span></div>`).join(''):'<p class="muted">Las noticias del mundo aparecerán al avanzar la temporada.</p>'}</div>`}
+
+function ensureV19State(){
+  if(!state)return;
+  state.version='0.21-beta';
+  state.ui=state.ui||{theme:'dark',compactMobile:true};
+  if(!['dark','light'].includes(state.ui.theme))state.ui.theme='dark';
+  state.balanceHistory=Array.isArray(state.balanceHistory)?state.balanceHistory:[];
+}
+function applyThemeV19(){
+  if(typeof document==='undefined')return;
+  const theme=state?.ui?.theme||'dark';
+  document.documentElement.dataset.theme=theme;
+  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',theme==='light'?'#f4f7fb':'#0c1118');
+}
+function curveDeltaV19(p,club,rng){
+  const age=p.age||27,o=BBGM.overall(p),pot=Math.max(o,p.potentialReal??o),gap=Math.max(0,pot-o),isUser=club?.id===state?.userClubId;
+  if(age<=19&&!isUser)return BBGM.clamp(.75+gap*.12+rng.next()*.65,.55,4.20);
+  if(age<=22&&!isUser)return BBGM.clamp(.42+gap*.09+rng.next()*.48,.30,3.20);
+  if(age<=25&&!isUser)return gap>1?BBGM.clamp(.10+gap*.04+rng.next()*.25,0,1.40):0;
+  if(age<=29)return rng.gaussian()*.045;
+  if(age<=31)return -.04-rng.next()*.16;
+  if(age<=33)return -.22-rng.next()*.42;
+  if(age<=35)return -.55-rng.next()*.62;
+  return -.95-rng.next()*1.05;
+}
+function applyAnnualPlayerCurveV19(p,club,rng=new BBGM.RNG((p.id||1)*9187+(p.age||25))){
+  if(!p?.attributes)return 0;
+  const before=BBGM.overall(p),delta=curveDeltaV19(p,club,rng),age=p.age||27;
+  if(delta>0){
+    const cap=p.potentialReal??96;if(before>=cap-.15)return 0;const d=Math.min(delta,Math.max(0,cap-before));
+    for(const k of Object.keys(p.attributes)){const mult=V19_MENTAL.includes(k)?1.05:V19_PHYSICAL.includes(k)?.9:1;p.attributes[k]=BBGM.clamp(p.attributes[k]+d*mult*(.86+rng.next()*.28),1,99)}
+  }else if(delta<0){
+    const d=-delta;
+    for(const k of V19_PHYSICAL)if(p.attributes[k]!=null)p.attributes[k]=BBGM.clamp(p.attributes[k]-d*(1.45+(age-30)*.045)*(.85+rng.next()*.30),1,99);
+    for(const k of V19_SKILL)if(p.attributes[k]!=null)p.attributes[k]=BBGM.clamp(p.attributes[k]-d*.62*(.8+rng.next()*.35),1,99);
+    for(const k of V19_SHOOTING)if(p.attributes[k]!=null)p.attributes[k]=BBGM.clamp(p.attributes[k]-d*.22*(.8+rng.next()*.35),1,99);
+    for(const k of V19_MENTAL)if(p.attributes[k]!=null)p.attributes[k]=BBGM.clamp(p.attributes[k]-d*(age>=36?.16:.05),1,99);
+  }
+  const after=BBGM.overall(p);p.lastAnnualDelta=after-before;return p.lastAnnualDelta;
+}
+function v19PositionCoverage(c,pos){return c.roster.filter(p=>p.primaryPosition===pos||p.secondaryPosition===pos).length}
+function ensureRosterBalanceV19(c){
+  if(!state?.world?.freeAgents||!c)return 0;let signed=0;const maxRoster=c.leagueLevel==='NBA'?18:16,minCoverage=c.leagueLevel==='NBA'?2:1;
+  for(const pos of ['PG','SG','SF','PF','C']){
+    while(v19PositionCoverage(c,pos)<minCoverage&&c.roster.length<maxRoster){
+      const room=(c.salaryBudget||0)-BBGM.wageBill(c);const opts=state.world.freeAgents.filter(p=>(p.primaryPosition===pos||p.secondaryPosition===pos)&&BBGM.salaryExpectation(p,c.reputation)<=Math.max(100000,room)).sort((a,b)=>aiFitScore(c,b)-aiFitScore(c,a));
+      if(!opts.length)break;const p=opts[0];p.salary=BBGM.salaryExpectation(p,c.reputation);p.contractYears=2;p.role=BBGM.desiredRole(p);p.promisedRole=p.role;p.freeAgent=false;c.roster.push(p);state.world.freeAgents=state.world.freeAgents.filter(x=>x.id!==p.id);signed++;
+    }
+  }
+  return signed;
+}
+function uniqueUniversePlayersV19(){
+  const map=new Map();for(const c of state.world.clubs)for(const p of c.roster)map.set(p.id,p);for(const p of state.world.freeAgents||[])map.set(p.id,p);for(const p of state.academy?.players||[])map.set(p.id,p);for(const l of state.academy?.loans||[])if(l.player)map.set(l.player.id,l.player);return [...map.values()]
+}
+function leagueAuditV19(name){
+  const clubs=state.world.clubs.filter(c=>c.leagueName===name||c.leagueLevel===name);const players=clubs.flatMap(c=>c.roster);if(!clubs.length)return null;const avg=a=>a.length?a.reduce((n,x)=>n+x,0)/a.length:0;
+  return {name,clubs:clubs.length,players:players.length,avgOvr:avg(players.map(p=>BBGM.overall(p)).filter(Number.isFinite)),avgAge:avg(players.map(p=>p.age||0)),avgSalary:avg(players.map(p=>p.salary||0)),avgRoster:players.length/clubs.length};
+}
+function collectDiagnosticsV19(){
+  ensureV19State();const all=uniqueUniversePlayersV19(),clubPlayers=state.world.clubs.flatMap(c=>c.roster),avg=a=>a.length?a.reduce((n,x)=>n+x,0)/a.length:0,ovrs=all.map(p=>BBGM.overall(p)).filter(Number.isFinite),ages=all.map(p=>p.age||0).filter(Number.isFinite),clubs=state.world.clubs;
+  const posWarnings=[];for(const c of clubs){const miss=['PG','SG','SF','PF','C'].filter(pos=>v19PositionCoverage(c,pos)===0);if(miss.length||c.roster.length<(c.leagueLevel==='NBA'?12:9))posWarnings.push({clubId:c.id,name:c.name,missing:miss,roster:c.roster.length})}
+  const leagues=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','easyCredit BBL','Basketbol Süper Ligi','Greek Basket League','ABA League','Primera FEB'].map(leagueAuditV19).filter(Boolean);
+  return {season:state.season,date:state.currentDate,clubs:clubs.length,players:all.length,clubPlayers:clubPlayers.length,freeAgents:(state.world.freeAgents||[]).length,academy:(state.academy?.players||[]).length,avgOvr:avg(ovrs),avgAge:avg(ages),elite85:ovrs.filter(x=>x>=85).length,super90:ovrs.filter(x=>x>=90).length,youth21:all.filter(p=>(p.age||99)<=21).length,veterans35:all.filter(p=>(p.age||0)>=35).length,financialRisk:clubs.filter(c=>(c.financialHealth??65)<40).length,posWarnings,leagues,ovrBands:[['<65',ovrs.filter(x=>x<65).length],['65–69',ovrs.filter(x=>x>=65&&x<70).length],['70–73',ovrs.filter(x=>x>=70&&x<74).length],['74–77',ovrs.filter(x=>x>=74&&x<78).length],['78–81',ovrs.filter(x=>x>=78&&x<82).length],['82–85',ovrs.filter(x=>x>=82&&x<86).length],['86–89',ovrs.filter(x=>x>=86&&x<90).length],['90+',ovrs.filter(x=>x>=90).length]]};
+}
+function diagnosticVerdictV19(d){
+  let score=100,issues=[];if(d.avgOvr>78){score-=18;issues.push('media global alta')}if(d.avgOvr<66){score-=15;issues.push('media global baja')}if(d.super90>d.players*.035){score-=15;issues.push('demasiados jugadores 90+')}if(d.freeAgents>d.players*.20){score-=14;issues.push('exceso de agentes libres')}if(d.posWarnings.length>d.clubs*.12){score-=16;issues.push('plantillas descompensadas')}if(d.financialRisk>d.clubs*.18){score-=12;issues.push('muchos clubes con riesgo financiero')}if(d.avgAge>29.5||d.avgAge<24){score-=10;issues.push('edad media fuera de rango')};return {score:Math.max(0,score),label:score>=88?'Estable':score>=72?'Correcto':score>=55?'Vigilar':'Desequilibrado',issues};
+}
+function recordBalanceSnapshotV19(label='manual'){
+  if(!state)return null;ensureV19State();const d=collectDiagnosticsV19(),snap={label,season:d.season,date:d.date,players:d.players,freeAgents:d.freeAgents,avgOvr:+d.avgOvr.toFixed(2),avgAge:+d.avgAge.toFixed(2),elite85:d.elite85,super90:d.super90,financialRisk:d.financialRisk,posWarnings:d.posWarnings.length};state.balanceHistory.push(snap);if(state.balanceHistory.length>50)state.balanceHistory=state.balanceHistory.slice(-50);return snap;
+}
+function projectedBalanceV19(years=20){
+  const base=uniqueUniversePlayersV19().map(p=>({age:p.age||27,ovr:BBGM.overall(p),pot:p.potentialReal??BBGM.overall(p)}));let pool=base.map(x=>({...x})),seed=hashCode(`${state.season}-projection-${years}`),rng=new BBGM.RNG(seed),nextId=1;const snapshots=[];
+  const snap=y=>{const avg=a=>a.reduce((n,x)=>n+x,0)/Math.max(1,a.length);snapshots.push({year:y,count:pool.length,avgOvr:avg(pool.map(x=>x.ovr)),avgAge:avg(pool.map(x=>x.age)),elite:pool.filter(x=>x.ovr>=85).length,super90:pool.filter(x=>x.ovr>=90).length,maxOvr:Math.max(...pool.map(x=>x.ovr))})};snap(0);
+  for(let y=1;y<=years;y++){let retired=0;pool=pool.filter(x=>{x.age++;let d=0,gap=Math.max(0,x.pot-x.ovr);if(x.age<=19)d=Math.min(4.2,.75+gap*.12+rng.next()*.60);else if(x.age<=22)d=Math.min(3.2,.42+gap*.09+rng.next()*.45);else if(x.age<=25)d=Math.min(1.4,.10+gap*.04+rng.next()*.24);else if(x.age>=36)d=-(.9+rng.next()*1.0);else if(x.age>=34)d=-(.5+rng.next()*.6);else if(x.age>=32)d=-(.18+rng.next()*.4);x.ovr=BBGM.clamp(x.ovr+d,48,96);const reti=x.age>=37&&rng.next()<Math.min(.88,.10+(x.age-36)*.17);if(reti)retired++;return !reti});
+    for(let i=0;i<retired;i++){let o,pot;const talent=rng.next();if(talent<.08){o=71+rng.next()*7;pot=93+rng.next()*4}else if(talent<.32){o=65+rng.next()*9;pot=86+rng.next()*9}else{o=56+rng.next()*13;pot=BBGM.clamp(o+10+rng.next()*19,72,91)}pool.push({id:nextId++,age:17+Math.floor(rng.next()*3),ovr:o,pot})}if(y===10||y===20||y===years)snap(y)}return snapshots;
+}
+function renderDiagnosticsV19(v){
+  const d=collectDiagnosticsV19(),ver=diagnosticVerdictV19(d),pct=n=>d.players?Math.round(n/d.players*1000)/10:0;
+  v.innerHTML=`<div class="section-title"><div><div class="eyebrow">Herramientas de prueba</div><h1>Diagnóstico de partida</h1><p>Auditoría del universo para detectar inflación de medias, envejecimiento, exceso de libres, economía y plantillas rotas.</p></div><button class="btn" id="diagBack">← Más</button></div>
+  <div class="diagnostic-hero ${ver.score<55?'diag-bad':ver.score<72?'diag-warn':'diag-good'}"><div><span>Estado global</span><strong>${ver.label}</strong><small>${ver.issues.length?ver.issues.join(' · '):'Sin alertas estructurales importantes'}</small></div><div class="diag-score">${ver.score}<small>/100</small></div></div>
+  <div class="grid four diagnostics-kpis"><div class="card"><div class="eyebrow">Jugadores</div><div class="big-metric">${d.players}</div><small class="muted">${d.freeAgents} libres · ${d.academy} cantera</small></div><div class="card"><div class="eyebrow">OVR medio</div><div class="big-metric">${d.avgOvr.toFixed(1)}</div><small class="muted">85+: ${d.elite85} (${pct(d.elite85)}%) · 90+: ${d.super90}</small></div><div class="card"><div class="eyebrow">Edad media</div><div class="big-metric">${d.avgAge.toFixed(1)}</div><small class="muted">≤21: ${d.youth21} · ≥35: ${d.veterans35}</small></div><div class="card"><div class="eyebrow">Alertas clubes</div><div class="big-metric">${d.posWarnings.length}</div><small class="muted">${d.financialRisk} con riesgo financiero</small></div></div>
+  <div class="grid two" style="margin-top:16px"><div class="card"><div class="section-inline"><h3>Distribución de nivel</h3><span class="pill">Escala 1–100</span></div><div class="diag-bars">${d.ovrBands.map(([label,n])=>`<div class="diag-bar"><span>${label}</span><div><i style="width:${Math.max(2,pct(n))}%"></i></div><b>${n}</b></div>`).join('')}</div></div><div class="card"><div class="section-inline"><h3>Herramientas</h3><span class="pill">No modifican el save</span></div><p class="muted">La proyección utiliza la nueva curva de progresión/declive para detectar si el universo tiende a inflarse o vaciarse.</p><div class="action-stack"><button class="btn good" id="diagProject20">Proyección matemática 20 años</button><button class="btn" id="diagSnapshot">Guardar snapshot</button><button class="btn" id="diagExport">Exportar diagnóstico JSON</button></div></div></div>
+  <div class="card" style="margin-top:16px"><div class="section-inline"><h3>Mercados principales</h3><span class="pill">${d.leagues.length} ligas</span></div><div class="table-wrap diagnostic-table"><table><thead><tr><th>Liga</th><th>Clubes</th><th>Jugadores</th><th>Plantilla</th><th>Edad</th><th>OVR</th><th>Salario medio</th></tr></thead><tbody>${d.leagues.map(x=>`<tr><td>${x.name}</td><td>${x.clubs}</td><td>${x.players}</td><td>${x.avgRoster.toFixed(1)}</td><td>${x.avgAge.toFixed(1)}</td><td><b>${x.avgOvr.toFixed(1)}</b></td><td>${fmtMoney(x.avgSalary)}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="grid two" style="margin-top:16px"><div class="card"><h3>Equilibrio posicional</h3>${d.posWarnings.length?d.posWarnings.slice(0,12).map(x=>`<div class="stat-row"><span>${x.name}</span><b class="warn">${x.missing.length?'Falta '+x.missing.map(p=>positionLabel[p]).join(', '):'Plantilla corta'} · ${x.roster}</b></div>`).join(''):'<p class="good">Todas las plantillas tienen cobertura básica en las cinco posiciones.</p>'}</div><div class="card"><h3>Historial de auditoría</h3>${(state.balanceHistory||[]).length?state.balanceHistory.slice().reverse().slice(0,10).map(x=>`<div class="stat-row"><span>${x.season} · ${x.label}</span><b>${x.avgOvr} OVR · ${x.avgAge} años</b></div>`).join(''):'<p class="muted">Todavía no hay snapshots guardados.</p>'}</div></div>`;
+  v.querySelector('#diagBack').onclick=()=>{currentView='more';render()};v.querySelector('#diagSnapshot').onclick=()=>{recordBalanceSnapshotV19('manual');saveLocal(false);renderDiagnosticsV19(v);toast('Snapshot guardado')};v.querySelector('#diagExport').onclick=()=>{const blob=new Blob([JSON.stringify({diagnostic:d,verdict:ver,history:state.balanceHistory||[]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-diagnostico-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href)};v.querySelector('#diagProject20').onclick=()=>showProjectionV19();
+}
+function showProjectionV19(){const rows=projectedBalanceV19(20),back=modal(`<div class="modal-head"><div><div class="eyebrow">Proyección sin modificar partida</div><h2>Equilibrio a 20 años</h2></div><button class="btn" data-close>Cerrar</button></div><div class="projection-grid">${rows.map(x=>`<div class="projection-card"><small>Año +${x.year}</small><b>${x.avgOvr.toFixed(1)} OVR</b><span>${x.avgAge.toFixed(1)} años · ${x.elite} jugadores 85+ · ${x.super90} 90+</span></div>`).join('')}</div><p class="muted">Es una proyección de estrés basada en la curva anual de balance; no simula resultados de partidos ni altera el guardado.</p>`);back.querySelector('[data-close]').onclick=()=>back.remove()}
+g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame};
 if(app)render();
 })(typeof globalThis!=='undefined'?globalThis:this);

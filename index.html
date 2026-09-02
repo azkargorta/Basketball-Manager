@@ -4,13 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#10141c" />
-  <title>Basketball GM - Playable v0.17</title>
+  <title>Basketball GM - Beta v0.21</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Basketball GM" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div id="app"></div>
+  <button id="pwaInstallBtn" class="pwa-install-btn" hidden>Instalar app</button>
+  <div id="pwaInstallHint" class="pwa-install-hint" hidden></div>
   <script src="js/engine.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
 </body>
 </html>

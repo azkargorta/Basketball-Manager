@@ -1,19 +1,37 @@
-BASKETBALL GM v0.17 - TEST REPORT
-=================================
+BASKETBALL GM v0.20 — INFORME DE PRUEBAS
 
-Pruebas ejecutadas:
-- Sintaxis JavaScript de app.js: OK.
-- Smoke test del motor: OK.
-- 150 clubes cargados: OK.
-- 1.890 jugadores iniciales en clubes: OK.
-- Rotacion reglamentaria: 200 minutos: OK.
-- Gestion medica en rotacion: OK.
-- 500 partidos de control: 0 errores de minutos.
-- Marcador medio de control: 79.3 - 82.3.
-- Pretemporada: 3 amistosos generados: OK.
-- Rivales variados de pretemporada: OK.
-- Busqueda global de jugador: OK.
-- Calculo de encaje jugador/equipo: rango valido: OK.
-- Version de save v0.17.0: OK.
+Fecha: 2026-09-02
 
-Nota: el entorno de compilacion no permite una prueba automatizada completa de clicks de Chromium de forma estable. Se ha validado sintaxis, motor y logica desacoplada con Node, ademas de revisar las rutas de navegacion añadidas.
+OBJETIVO
+Realismo inicial 2026/27 con identidades ficticias y datos deportivos propios.
+
+PRUEBAS PRINCIPALES
+- 150 clubes cargados.
+- 1.950 jugadores en plantillas iniciales.
+- 500 partidos de control.
+- 0 errores de reparto de minutos.
+- 200 minutos reglamentarios por equipo (+25 por prórroga).
+- Marcador medio del test: 81,2 - 83,9.
+- Mercados, economía, historial, pretemporada, agentes y estadísticas: regresión superada.
+
+CALIBRACIÓN DE PLANTILLAS CLAVE
+- Baskonia: 13 jugadores. Base 2 / Escolta 2 / Alero 6 / Ala-pívot 2 / Pívot 1.
+- Real Madrid: 17 jugadores. Base 3 / Escolta 2 / Alero 4 / Ala-pívot 5 / Pívot 3.
+- Barcelona: 14 jugadores. Base 3 / Escolta 2 / Alero 4 / Ala-pívot 2 / Pívot 3.
+- Valencia: 16 jugadores. Base 3 / Escolta 5 / Alero 2 / Ala-pívot 4 / Pívot 2.
+
+ECONOMÍA INICIAL DE CONTROL
+- Masa salarial Baskonia aprox.: 13,5 M€.
+- Masa salarial Real Madrid aprox.: 30,7 M€.
+
+V0.20
+- Nombres y apellidos ficticios.
+- Nacionalidades coherentes con el país/mercado del club.
+- Arquetipos deportivos propios.
+- Salarios, roles, cláusulas y contratos calculados por el juego.
+- IA con prioridad posicional y renovaciones anticipadas.
+- Noticias de mercado y decisiones contractuales.
+- Mayor generación anual de talento IA para sostener carreras largas.
+
+PROYECCIÓN DE ESTRÉS
+La herramienta de diagnóstico no modifica el save. Tras recalibrar la reposición de talento, la proyección a 20 años mantiene una masa relevante de jugadores 85+ sin inflar el OVR medio.

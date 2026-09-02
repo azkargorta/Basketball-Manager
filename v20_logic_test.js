@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm');
+globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[],documentElement:{dataset:{}}};
+globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/engine.js','utf8'),{filename:'engine.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/data.js','utf8'),{filename:'data.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/app.js','utf8'),{filename:'app.js'});
+const B=globalThis.BBGM,A=globalThis.BBGM_APP_TEST,w=B.createWorld();
+const bask=w.clubs.find(c=>c.id===1),mad=w.clubs.find(c=>c.id===2),bar=w.clubs.find(c=>c.id===3),val=w.clubs.find(c=>c.id===4);
+if(bask.roster.length!==13)throw new Error('Baskonia debe arrancar con 13 jugadores: '+bask.roster.length);
+if(mad.roster.length!==17)throw new Error('Madrid debe arrancar con 17 jugadores: '+mad.roster.length);
+if(bar.roster.length!==14)throw new Error('Barça debe arrancar con 14 jugadores: '+bar.roster.length);
+if(val.roster.length!==16)throw new Error('Valencia debe arrancar con 16 jugadores: '+val.roster.length);
+for(const c of [bask,mad,bar,val])for(const p of c.roster){if(!p.archetypeLabel)throw new Error('Falta arquetipo en '+p.id);if(!p.promisedRole)throw new Error('Falta rol prometido');if(!(p.salary>0))throw new Error('Salario inválido');if(!(p.contractYears>=1&&p.contractYears<=4))throw new Error('Contrato inválido')}
+const positions=c=>Object.fromEntries(['PG','SG','SF','PF','C'].map(pos=>[pos,c.roster.filter(p=>p.primaryPosition===pos).length]));
+const st={version:'0.20',season:'2026/27',currentDate:'2026-10-20',userClubId:1,nextEventId:100,world:w,calendar:[1,2,3].map((x,i)=>({id:x,status:'PLAYED',homeClubId:1,awayClubId:2,date:`2026-10-${10+i}`})),inbox:[],marketNews:[],manager:{reputation:52},realismV20:{lastNewsGame:0,lastContractGame:0,lastAiReviewMonth:null},scouting:{staff:w.scoutStaff||[],assignments:[],knowledge:{}},academy:{players:[],loans:[],bStats:{}},lockerRoom:{},coachManagement:{relationship:72},board:{confidence:72,objectives:[]},medical:{doctor:{},injuryHistory:[]}};
+A.setState(st);A.ensureV20State();A.generateWorldNewsV20();
+if(!A.getState().worldNews.length)throw new Error('No se genera noticia mundial');
+A.v20AiRenewalsAndPlanning();if(!w.clubs.find(c=>c.id===5).aiPriorityPosition)throw new Error('IA no guarda prioridad posicional');
+const billB=B.wageBill(bask),billM=B.wageBill(mad);if(!(billM>billB))throw new Error('La jerarquía salarial no distingue clubes');
+console.log(JSON.stringify({ok:true,version:A.getState().version,clubs:w.clubs.length,players:w.clubs.reduce((n,c)=>n+c.roster.length,0),rosters:{Baskonia:bask.roster.length,Madrid:mad.roster.length,Barcelona:bar.roster.length,Valencia:val.roster.length},positions:{Baskonia:positions(bask),Madrid:positions(mad),Barcelona:positions(bar),Valencia:positions(val)},wageBillsM:{Baskonia:+(billB/1e6).toFixed(1),Madrid:+(billM/1e6).toFixed(1)},worldNews:A.getState().worldNews[0].text},null,2));

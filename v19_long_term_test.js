@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm');
+globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
+globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/engine.js','utf8'),{filename:'engine.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/data.js','utf8'),{filename:'data.js'});
+vm.runInThisContext(fs.readFileSync(__dirname+'/js/app.js','utf8'),{filename:'app.js'});
+const B=globalThis.BBGM,A=globalThis.BBGM_APP_TEST,w=B.createWorld();
+const st={version:'0.19',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,world:w,calendar:[],history:[],standings:{},inbox:[],marketNews:[],manager:{reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},planning:{priorityPosition:null},scouting:{staff:w.scoutStaff||[],assignments:[],knowledge:{}},academy:{players:B.createYouthClass(1,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09'},lockerRoom:{captainId:null,relationships:{},mentorPairs:[]},board:{confidence:72,objectives:[]},coachManagement:{relationship:72},preseason:{active:false,weeksRemaining:0,focus:'BALANCED',friendlies:[]},weeklySummaries:[],weeklyMeta:{lastDate:'2026-09-01'},notificationPrefs:{filter:'ALL'},scheduleUi:{mode:'month',month:'2026-09'},medical:{doctor:{diagnosis:80,recovery:80,prevention:80},injuryHistory:[]},marketNews:[],manager:{reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},sponsorship:{active:null,offers:[],brandReputation:60},economy:{season:'2026/27',seasonStartCash:w.clubs[0].cashBudget,entries:[],history:[],processedMatches:{}},nba:{draftHistory:[],rights:{},returns:[]},nationalTeams:{callups:[],history:[]}};
+A.setState(st);A.ensureV14State();A.ensureV15State();A.ensureV16State();A.ensureV17State();A.ensureV19State();
+const d=A.collectDiagnosticsV19(),ver=A.diagnosticVerdictV19(d),proj=A.projectedBalanceV19(30);
+const young=JSON.parse(JSON.stringify(w.clubs[20].roster.find(p=>p.age<=23)||w.clubs[20].roster[0]));young.age=19;young.potentialReal=Math.max(B.overall(young)+12,82);const yo=B.overall(young);A.applyAnnualPlayerCurveV19(young,w.clubs[20],new B.RNG(10));const yd=B.overall(young)-yo;
+const vet=JSON.parse(JSON.stringify(w.clubs[0].roster[0]));vet.age=36;const vo=B.overall(vet);A.applyAnnualPlayerCurveV19(vet,w.clubs[0],new B.RNG(20));const vd=B.overall(vet)-vo;
+if(!(yd>0))throw new Error('Un joven IA no progresa');
+if(!(vd<0))throw new Error('Un veterano no declina');
+if(!proj.find(x=>x.year===30))throw new Error('Falta proyección a 30 años');
+const p30=proj.find(x=>x.year===30);if(p30.avgOvr>80||p30.avgOvr<62)throw new Error('La proyección de OVR se sale de rango: '+p30.avgOvr);
+if(p30.avgAge>31||p30.avgAge<23)throw new Error('La edad media proyectada se sale de rango: '+p30.avgAge);
+console.log(JSON.stringify({ok:true,initial:{players:d.players,clubs:d.clubs,avgOvr:+d.avgOvr.toFixed(1),avgAge:+d.avgAge.toFixed(1),elite85:d.elite85,freeAgents:d.freeAgents,verdict:ver.label,score:ver.score},curve:{youngDelta:+yd.toFixed(2),veteranDelta:+vd.toFixed(2)},projection:proj.map(x=>({year:x.year,count:x.count,avgOvr:+x.avgOvr.toFixed(1),avgAge:+x.avgAge.toFixed(1),elite:x.elite,super90:x.super90}))},null,2));

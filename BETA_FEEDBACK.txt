@@ -1,0 +1,27 @@
+PLANTILLA DE FEEDBACK — BASKETBALL GM BETA
+==========================================
+
+Versión: v0.21 Beta
+Dispositivo: (Android / iPhone / Windows / Mac / otro)
+Navegador: (Chrome / Safari / Edge / Firefox / otro)
+
+1. ¿Qué estabas haciendo?
+
+2. ¿Qué esperabas que ocurriera?
+
+3. ¿Qué ocurrió realmente?
+
+4. ¿Puedes repetir el problema? Sí / No
+
+5. Pasos exactos para reproducirlo:
+   1.
+   2.
+   3.
+
+6. Captura de pantalla (si aplica):
+
+7. Partida exportada (si el bug depende del save):
+
+8. Comentario sobre diversión/balance/interfaz:
+
+9. Nota general de la sesión (1-10):

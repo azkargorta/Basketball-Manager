@@ -1,4 +1,4 @@
-const CACHE_NAME = 'basketball-gm-beta-v021-logo3';
+const CACHE_NAME = 'basketball-gm-beta-v021-logo4';
 const CORE = [
   './',
   './index.html',
@@ -9,9 +9,8 @@ const CORE = [
   './js/app.js',
   './js/pwa.js',
   './manifest.webmanifest',
-  './icons/icon-180.png',
-  './icons/icon-192.png',
-  './icons/icon-bgm-512.svg'
+  './icons/bgm-approved-v3-192.png',
+  './icons/bgm-approved-v3-512.png'
 ];
 
 self.addEventListener('install', event => {

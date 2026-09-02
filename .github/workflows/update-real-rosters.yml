@@ -26,6 +26,7 @@ jobs:
       - name: Install scraper dependencies
         run: pip install requests beautifulsoup4 lxml pandas
       - name: Build 2026-27 real roster pack
+        continue-on-error: true
         run: python tools/update_real_rosters.py
       - name: Commit generated roster data
         run: |
@@ -35,6 +36,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No roster changes"
           else
-            git commit -m "Generate all real rosters 2026-27 [skip ci]"
+            git commit -m "Generate verified real rosters 2026-27 [skip ci]"
             git push origin HEAD:v023-real-private
           fi

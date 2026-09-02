@@ -1,0 +1,44 @@
+/* v0.25 — Roster & Action Center */
+
+/* HOME: pending work must be the first thing the eye finds. */
+#v22Dashboard .v22-pending{border:1px solid color-mix(in srgb,var(--accent) 42%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 94%,var(--accent) 6%),var(--panel));padding:16px;border-radius:18px;box-shadow:0 12px 28px rgba(0,0,0,.16)}
+#v22Dashboard .v22-pending .v22-head{padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+#v22Dashboard .v22-pending .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:900}
+#v22Dashboard .v22-pending h2{font-size:22px;margin:3px 0 0}
+.v25-task-intro{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:13px;background:var(--panel2);border:1px solid var(--line)}
+.v25-task-intro strong{display:block;font-size:14px}.v25-task-intro small{display:block;color:var(--muted);margin-top:2px}.v25-task-count{display:grid;place-items:center;min-width:44px;height:44px;border-radius:13px;background:var(--accent);color:#fff;font-size:20px;font-weight:950}
+#v22Dashboard .v22-pending-list{gap:10px}
+#v22Dashboard .v22-alert{position:relative;grid-template-columns:38px minmax(0,1fr) 22px;padding:13px 13px 13px 14px;border-radius:14px;background:var(--panel2);transition:transform .12s ease,border-color .12s ease}
+#v22Dashboard .v22-alert:active{transform:scale(.992)}
+#v22Dashboard .v22-alert.high{border:1px solid color-mix(in srgb,var(--bad) 50%,var(--line));border-left:5px solid var(--bad);background:color-mix(in srgb,var(--panel2) 92%,var(--bad) 8%)}
+#v22Dashboard .v22-alert.warn{border:1px solid color-mix(in srgb,var(--warn) 42%,var(--line));border-left:5px solid var(--warn);background:color-mix(in srgb,var(--panel2) 94%,var(--warn) 6%)}
+#v22Dashboard .v22-alert.info{border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-left:5px solid var(--accent)}
+.v25-priority{display:inline-flex!important;width:max-content;margin:0 0 5px!important;padding:2px 6px;border-radius:999px;font-size:9px!important;line-height:1.4;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:var(--text)!important;background:var(--panel)!important}
+.v22-alert.high .v25-priority{color:var(--bad)!important}.v22-alert.warn .v25-priority{color:var(--warn)!important}.v22-alert.info .v25-priority{color:var(--accent)!important}
+#v22Dashboard .v22-alert b{font-size:14px;line-height:1.25}#v22Dashboard .v22-alert small{font-size:12px;line-height:1.35}
+
+/* ROSTER: each player is a clearly separated object, not a continuous list. */
+#v22RosterCards{gap:18px!important;margin-top:8px}
+#v22RosterCards .v22-player-card{position:relative;isolation:isolate;overflow:hidden;border:1px solid color-mix(in srgb,var(--line) 78%,#fff 22%);border-radius:18px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,.17);background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 96%,#fff 4%),var(--panel));}
+#v22RosterCards .v22-player-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent);z-index:-1}
+#v22RosterCards .v22-player-card[data-v25-pos="PG"]::before{background:#55a7ff}#v22RosterCards .v22-player-card[data-v25-pos="SG"]::before{background:#8b78ff}#v22RosterCards .v22-player-card[data-v25-pos="SF"]::before{background:#40c99a}#v22RosterCards .v22-player-card[data-v25-pos="PF"]::before{background:#e7a33e}#v22RosterCards .v22-player-card[data-v25-pos="C"]::before{background:#e56b6f}
+#v22RosterCards .v22-ovr{height:64px;min-width:64px;border:1px solid var(--line);background:var(--panel2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+#v22RosterCards .v22-name{font-size:16px!important;line-height:1.25}.v25-player-number{display:inline-flex;align-items:center;justify-content:center;margin-left:7px;min-width:24px;height:20px;padding:0 6px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-size:10px;font-weight:900}
+#v22RosterCards .v22-meta{margin-top:6px;font-size:12px}.v25-position-tag{display:inline-flex;align-items:center;margin-right:6px;padding:3px 7px;border-radius:7px;border:1px solid var(--line);font-size:10px;font-weight:900;color:var(--text);background:var(--panel2)}
+#v22RosterCards .v22-chips{margin-top:10px;gap:7px}#v22RosterCards .v22-chips span{padding:5px 8px;border:1px solid var(--line);font-size:10px}
+#v22RosterCards .v22-player-actions{border-left:1px solid var(--line);padding-left:14px}
+.v25-roster-separator{display:flex;align-items:center;gap:10px;margin:8px 0 -7px;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.v25-roster-separator::after{content:"";height:1px;flex:1;background:var(--line)}
+
+@media(max-width:900px){
+  #v22RosterCards{gap:16px!important}
+  #v22RosterCards .v22-player-card{padding:14px 12px 13px 16px;box-shadow:0 7px 18px rgba(0,0,0,.2)}
+  #v22RosterCards .v22-player-actions{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:12px;margin-top:2px}
+  #v22Dashboard .v22-pending{padding:13px}
+}
+@media(max-width:520px){
+  #v22Dashboard .v22-pending h2{font-size:20px}
+  .v25-task-intro{padding:9px 10px}.v25-task-count{min-width:40px;height:40px;font-size:18px}
+  #v22RosterCards .v22-player-card{grid-template-columns:58px minmax(0,1fr)!important}
+  #v22RosterCards .v22-ovr{height:58px;min-width:58px}
+  #v22RosterCards .v22-name{font-size:15px!important}
+}

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'basketball-gm-beta-v021';
+const CACHE_NAME = 'basketball-gm-beta-v021-mobile2';
 const CORE = [
   './',
   './index.html',
   './css/styles.css',
+  './css/mobile-safe-area.css',
   './js/engine.js',
   './js/data.js',
   './js/app.js',

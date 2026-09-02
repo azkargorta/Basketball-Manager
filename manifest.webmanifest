@@ -3,7 +3,7 @@
   "short_name": "Basketball GM",
   "description": "Manager de baloncesto offline centrado en dirección deportiva.",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0e141e",
@@ -12,7 +12,7 @@
   "lang": "es",
   "prefer_related_applications": false,
   "icons": [
-    {"src": "./icons/bgm-approved-v3-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "./icons/bgm-approved-v3-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
   ]
 }

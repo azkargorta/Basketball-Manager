@@ -1,0 +1,39 @@
+name: Update real rosters 2026-27
+
+on:
+  push:
+    branches: [v023-real-private]
+    paths:
+      - 'tools/update_real_rosters.py'
+      - '.github/workflows/update-real-rosters.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-rosters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v023-real-private
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install scraper dependencies
+        run: pip install requests beautifulsoup4 lxml pandas
+      - name: Build 2026-27 real roster pack
+        run: python tools/update_real_rosters.py
+      - name: Commit generated roster data
+        run: |
+          git config user.name "Basketball GM roster bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add js/real-rosters-2026-27.generated.js REAL_ROSTERS_REPORT.json
+          if git diff --cached --quiet; then
+            echo "No roster changes"
+          else
+            git commit -m "Generate all real rosters 2026-27 [skip ci]"
+            git push origin HEAD:v023-real-private
+          fi

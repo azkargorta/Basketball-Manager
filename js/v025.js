@@ -19,10 +19,7 @@ function posLabel(p){return {PG:'Base',SG:'Escolta',SF:'Alero',PF:'Ala-pívot',C
 function augmentRoster(s){
   const wrap=$('#v22RosterCards');const c=club(s);if(!wrap||!c)return;
   const byId=new Map((c.roster||[]).map(p=>[String(p.id),p]));
-  const cards=$$('.v22-player-card',wrap);cards.forEach((card,i)=>{const p=byId.get(String(card.dataset.pid));if(!p)return;card.dataset.v25Pos=p.primaryPosition||'';if(card.dataset.v25==='1')return;card.dataset.v25='1';const name=$('.v22-name',card);if(name){const num=document.createElement('span');num.className='v25-player-number';num.textContent=String(i+1).padStart(2,'0');name.after(num)}const meta=$('.v22-meta',card);if(meta){const tag=document.createElement('span');tag.className='v25-position-tag';tag.textContent=posLabel(p.primaryPosition);meta.prepend(tag)}});
-  if(wrap.dataset.v25Groups==='1')return;wrap.dataset.v25Groups='1';
-  // Lightweight visual separators only when the OVR-sorted list changes position group.
-  let prev='';cards.forEach(card=>{const p=byId.get(String(card.dataset.pid));if(!p)return;const cur=p.primaryPosition||'';if(cur!==prev){const sep=document.createElement('div');sep.className='v25-roster-separator';sep.textContent=posLabel(cur);wrap.insertBefore(sep,card);prev=cur;}});
+  $$('.v22-player-card',wrap).forEach(card=>{const p=byId.get(String(card.dataset.pid));if(!p)return;card.dataset.v25Pos=p.primaryPosition||'';if(card.dataset.v25==='1')return;card.dataset.v25='1';const meta=$('.v22-meta',card);if(meta){const tag=document.createElement('span');tag.className='v25-position-tag';tag.textContent=posLabel(p.primaryPosition);meta.prepend(tag)}});
 }
 async function maybeApplyRealPack(s){
   if(!s||s.realRosterPackV25==='2026-09-02'||!window.BBGM?.applyRealRosterPackV25)return false;

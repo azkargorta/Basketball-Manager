@@ -10,12 +10,17 @@ on:
       - tools/build_real_rosters_sofascore.py
       - .github/workflows/build-real-rosters-v025.yml
 
+concurrency:
+  group: v025-real-rosters
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
 jobs:
   build-rosters:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4

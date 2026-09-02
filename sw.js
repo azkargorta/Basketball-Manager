@@ -1,12 +1,14 @@
-const CACHE_NAME = 'basketball-gm-beta-v021-pwa-fix-2';
+const CACHE_NAME = 'basketball-gm-beta-v022';
 const CORE = [
   './',
   './index.html',
   './css/styles.css',
   './css/mobile-safe-area.css',
+  './css/v022.css',
   './js/engine.js',
   './js/data.js',
   './js/app.js',
+  './js/v022.js',
   './js/pwa.js',
   './manifest.webmanifest',
   './icons/app-icon-192.png',

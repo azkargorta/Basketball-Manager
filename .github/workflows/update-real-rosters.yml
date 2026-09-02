@@ -1,5 +1,6 @@
 name: Update real rosters 2026-27
 
+# Rebuilds the private roster data pack from current public roster pages.
 on:
   push:
     branches: [v023-real-private]

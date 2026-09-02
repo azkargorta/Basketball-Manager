@@ -1,4 +1,4 @@
-const CACHE_NAME = 'basketball-gm-beta-v024';
+const CACHE_NAME = 'basketball-gm-beta-v025';
 const CORE = [
   './',
   './index.html',
@@ -6,11 +6,14 @@ const CORE = [
   './css/mobile-safe-area.css',
   './css/v022.css',
   './css/v024.css',
+  './css/v025.css',
   './js/engine.js',
   './js/data.js',
+  './js/real_rosters_2026_27.js',
   './js/app.js',
   './js/v022.js',
   './js/v024.js',
+  './js/v025.js',
   './js/pwa.js',
   './manifest.webmanifest',
   './icons/app-icon-192.png',

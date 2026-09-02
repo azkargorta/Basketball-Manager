@@ -1,0 +1,67 @@
+/* Mobile/table usability pass — clearer player boundaries and visible horizontal scroll affordance. */
+
+/* Stronger separation between players everywhere player cards are used. */
+.player-card{
+  position:relative;
+  padding:14px 10px;
+  margin:0 -4px;
+  border-bottom:2px solid var(--line);
+  border-radius:10px;
+}
+.player-card:nth-child(even){background:rgba(255,255,255,.018)}
+.player-card + .player-card{margin-top:4px}
+
+/* Tables: make each player row easier to distinguish. */
+.table-wrap{position:relative;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable}
+.table-wrap tbody tr{border-bottom:2px solid var(--line)}
+.table-wrap tbody tr:nth-child(even){background:rgba(255,255,255,.025)}
+.table-wrap tbody tr:hover{background:rgba(111,168,255,.07)}
+.table-wrap td{border-bottom:0}
+
+@media(max-width:900px){
+  /* Explicit cue: many management tables have actions/columns off-screen. */
+  .table-wrap::before{
+    content:'↔ Desliza para ver más';
+    display:block;
+    position:sticky;
+    left:0;
+    width:max-content;
+    margin:0 0 7px 6px;
+    padding:5px 9px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:#111722;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.01em;
+    z-index:5;
+  }
+
+  /* Keep the player's identity visible while swiping to minutes/rest/actions. */
+  .table-wrap th:first-child,
+  .table-wrap td:first-child{
+    position:sticky;
+    left:0;
+    z-index:3;
+    min-width:145px;
+    max-width:185px;
+    background:var(--panel);
+    box-shadow:7px 0 12px rgba(0,0,0,.22);
+  }
+  .table-wrap th:first-child{z-index:6;background:#1d2532}
+  .table-wrap tbody tr:nth-child(even) td:first-child{background:#1a212c}
+
+  /* Extra breathing room so consecutive players don't visually merge. */
+  .table-wrap th,.table-wrap td{padding-top:12px;padding-bottom:12px}
+  .player-name{font-weight:850}
+
+  .player-card{
+    padding:15px 10px;
+    border:1px solid var(--line);
+    border-left:3px solid #42536b;
+    margin:7px 0;
+    background:rgba(255,255,255,.012);
+  }
+  .player-card:nth-child(even){background:rgba(255,255,255,.035)}
+}

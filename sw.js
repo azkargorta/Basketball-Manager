@@ -1,4 +1,4 @@
-const CACHE_NAME = 'basketball-gm-beta-v021-icon-approved-1';
+const CACHE_NAME = 'basketball-gm-beta-v021-pwa-fix-2';
 const CORE = [
   './',
   './index.html',
@@ -9,7 +9,8 @@ const CORE = [
   './js/app.js',
   './js/pwa.js',
   './manifest.webmanifest',
-  './icons/app-icon.png'
+  './icons/app-icon-192.png',
+  './icons/app-icon-512.png'
 ];
 
 self.addEventListener('install', event => {

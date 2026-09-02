@@ -1,0 +1,175 @@
+# Real roster snapshot — v0.25
+
+Snapshot: **2026-09-02**
+Clubs with at least one matched current player: **0/150**
+Matched player rows: **0**
+
+The pack changes identity facts only. Ratings, potential, salaries, contracts, morale and personalities are Basketball Manager simulation values.
+
+## Coverage by club
+
+- 001 · Baskonia: **0** · —
+- 002 · Real Madrid: **0** · —
+- 003 · Barca: **0** · —
+- 004 · Valencia Basket: **0** · —
+- 005 · Unicaja: **0** · —
+- 006 · Joventut Badalona: **0** · —
+- 007 · Dreamland Gran Canaria: **0** · —
+- 008 · UCAM Murcia CB: **0** · —
+- 009 · Olympiacos: **0** · —
+- 010 · Panathinaikos: **0** · —
+- 011 · Fenerbahce: **0** · —
+- 012 · AS Monaco Basket: **0** · —
+- 013 · Casademont Zaragoza: **0** · —
+- 014 · CB Girona: **0** · —
+- 015 · Forca Lleida CE: **0** · —
+- 016 · BAXI Manresa: **0** · —
+- 017 · Lenovo Tenerife: **0** · —
+- 018 · CB Coruna: **0** · —
+- 019 · Monbus Obradoiro: **0** · —
+- 020 · MoraBanc Andorra: **0** · —
+- 021 · Siblo San Pablo Burgos: **0** · —
+- 022 · Rio Breogan: **0** · —
+- 023 · Bilbao Basket: **0** · —
+- 024 · Dubai: **0** · —
+- 025 · Anadolu Efes: **0** · —
+- 026 · Hapoel Shlomo Tel Aviv: **0** · —
+- 027 · KK Partizan: **0** · —
+- 028 · AX Armani Exchange Milan: **0** · —
+- 029 · ASVEL Basket: **0** · —
+- 030 · Maccabi FOX Tel Aviv: **0** · —
+- 031 · KK Crvena Zvezda: **0** · —
+- 032 · Besiktas Icrypex: **0** · —
+- 033 · Zalgiris: **0** · —
+- 034 · Paris Basketball: **0** · —
+- 035 · Bayern Munich: **0** · —
+- 036 · Virtus Bologna: **0** · —
+- 037 · Movistar Estudiantes: **0** · —
+- 038 · Baloncesto Fuenlabrada: **0** · —
+- 039 · Palencia Baloncesto: **0** · —
+- 040 · HLA Alicante: **0** · —
+- 041 · Real Valladolid Baloncesto: **0** · —
+- 042 · Gipuzkoa Basket: **0** · —
+- 043 · Club Ourense Baloncesto: **0** · —
+- 044 · Grupo Ureta Tizona Burgos: **0** · —
+- 045 · JL Bourg-en-Bresse: **0** · —
+- 046 · Nanterre 92: **0** · —
+- 047 · Le Mans Sarthe Basket: **0** · —
+- 048 · Cholet Basket: **0** · —
+- 049 · Strasbourg IG: **0** · —
+- 050 · CSP Limoges: **0** · —
+- 051 · JDA Dijon Basket: **0** · —
+- 052 · Le Portel: **0** · —
+- 053 · Germani Brescia: **0** · —
+- 054 · Umana Venezia: **0** · —
+- 055 · Dolomiti Energia Trento: **0** · —
+- 056 · Bertram Tortona: **0** · —
+- 057 · Grissin Bon Reggio Emilia: **0** · —
+- 058 · Pallacanestro Trieste 2004: **0** · —
+- 059 · Banco di Sardegna Sassari: **0** · —
+- 060 · OpenJobMetis Varese: **0** · —
+- 061 · ALBA Berlin: **0** · —
+- 062 · ratiopharm Ulm: **0** · —
+- 063 · Wurzburg Baskets: **0** · —
+- 064 · MHP RIESEN Ludwigsburg: **0** · —
+- 065 · Telekom Baskets Bonn: **0** · —
+- 066 · BV Chemnitz 99: **0** · —
+- 067 · EWE Baskets Oldenburg: **0** · —
+- 068 · Towers Hamburg: **0** · —
+- 069 · Basketball Lowen Braunschweig: **0** · —
+- 070 · Rostock Seawolves: **0** · —
+- 071 · Galatasaray: **0** · —
+- 072 · Turk Telekom: **0** · —
+- 073 · Bahcesehir Koleji: **0** · —
+- 074 · Tofas SC: **0** · —
+- 075 · Bursaspor: **0** · —
+- 076 · Mersin SK: **0** · —
+- 077 · Socar Petkimspor: **0** · —
+- 078 · Darussafaka: **0** · —
+- 079 · AEK Athens: **0** · —
+- 080 · Aris Midea Thessaloniki: **0** · —
+- 081 · PAOK BC: **0** · —
+- 082 · ASP Promitheas Patras: **0** · —
+- 083 · Peristeri Betsson: **0** · —
+- 084 · Panionios: **0** · —
+- 085 · Buducnost Voli Podgorica: **0** · —
+- 086 · Cedevita Olimpija: **0** · —
+- 087 · KK Cibona: **0** · —
+- 088 · FMP Beograd: **0** · —
+- 089 · BC Igokea: **0** · —
+- 090 · Krka: **0** · —
+- 091 · KK Bosna: **0** · —
+- 092 · Mega Basket: **0** · —
+- 093 · Studentski Centar Podgorica: **0** · —
+- 094 · Spartak Subotica: **0** · —
+- 095 · U-Banca Transilvania Cluj Napoca: **0** · —
+- 096 · Zadar: **0** · —
+- 097 · Rytas Vilnius: **0** · —
+- 098 · 7Bet-Lietkabelis Panevezys: **0** · —
+- 099 · Neptunas: **0** · —
+- 100 · Juventus Utena: **0** · —
+- 101 · Siauliai: **0** · —
+- 102 · Hapoel Jerusalem: **0** · —
+- 103 · Bnei Herzliya: **0** · —
+- 104 · Hapoel Unet Holon: **0** · —
+- 105 · Hapoel Beer Sheva: **0** · —
+- 106 · Borac Cacak: **0** · —
+- 107 · BC Siroki: **0** · —
+- 108 · Slovan Bratislava: **0** · —
+- 109 · Ilirija: **0** · —
+- 110 · BC Hallmann Vienna: **0** · —
+- 111 · Instituto Atletico Central Cordoba: **0** · —
+- 112 · Boca Juniors: **0** · —
+- 113 · Quimsa: **0** · —
+- 114 · Ciclista Olimpico: **0** · —
+- 115 · San Lorenzo de Almagro: **0** · —
+- 116 · Obras Basket: **0** · —
+- 117 · Regatas Corrientes: **0** · —
+- 118 · Penarol: **0** · —
+- 119 · Ferro Carril Oeste: **0** · —
+- 120 · Gimnasia y Esgrima de Comodoro Rivadavia: **0** · —
+- 121 · Atlanta Hawks: **0** · —
+- 122 · Boston Celtics: **0** · —
+- 123 · Brooklyn Nets: **0** · —
+- 124 · Charlotte Hornets: **0** · —
+- 125 · Chicago Bulls: **0** · —
+- 126 · Cleveland Cavaliers: **0** · —
+- 127 · Dallas Mavericks: **0** · —
+- 128 · Denver Nuggets: **0** · —
+- 129 · Detroit Pistons: **0** · —
+- 130 · Golden State Warriors: **0** · —
+- 131 · Houston Rockets: **0** · —
+- 132 · Indiana Pacers: **0** · —
+- 133 · Los Angeles Clippers: **0** · —
+- 134 · Los Angeles Lakers: **0** · —
+- 135 · Memphis Grizzlies: **0** · —
+- 136 · Miami Heat: **0** · —
+- 137 · Milwaukee Bucks: **0** · —
+- 138 · Minnesota Timberwolves: **0** · —
+- 139 · New Orleans Pelicans: **0** · —
+- 140 · New York Knicks: **0** · —
+- 141 · Oklahoma City Thunder: **0** · —
+- 142 · Orlando Magic: **0** · —
+- 143 · Philadelphia 76ers: **0** · —
+- 144 · Phoenix Suns: **0** · —
+- 145 · Portland Trail Blazers: **0** · —
+- 146 · Sacramento Kings: **0** · —
+- 147 · San Antonio Spurs: **0** · —
+- 148 · Toronto Raptors: **0** · —
+- 149 · Utah Jazz: **0** · —
+- 150 · Washington Wizards: **0** · —
+
+## Source errors
+
+- Spanish ACB: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/4/Spanish-ACB/players
+- Spanish Primera FEB: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/55/Spanish-Primera-FEB/players
+- French LNB: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/12/French-Jeep-Elite/players
+- Italian LBA: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/6/Italian-Lega-Basket-Serie-A/players
+- German BBL: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/15/German-BBL/players
+- Turkish BSL: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/7/Turkish-BSL/players
+- Greek A1: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/8/Greek-HEBA-A1/players
+- ABA League: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/18/Adriatic-League-Liga-ABA/players
+- Lithuanian LKL: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/10/Lithuanian-LKL/players
+- Israeli BSL: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/11/Israeli-BSL/players
+- Argentinian Liga A: 403 Client Error: Forbidden for url: https://basketball.realgm.com/international/league/58/Argentinian-Liga-A/players
+- NBA: 403 Client Error: Forbidden for url: https://basketball.realgm.com/nba/players

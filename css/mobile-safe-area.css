@@ -1,0 +1,83 @@
+/* Basketball GM v0.21 Beta — mobile usability patch */
+
+@media (max-width: 900px) {
+  /* Keep the top bar below iPhone Dynamic Island / notch. */
+  .topbar {
+    box-sizing: border-box;
+    height: calc(64px + env(safe-area-inset-top));
+    min-height: calc(64px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .club-title {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .club-meta {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  /* Give page content enough room above the larger bottom navigation. */
+  .content {
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  /* Larger, easier-to-read mobile navigation. */
+  .bottom-nav {
+    min-height: calc(76px + env(safe-area-inset-bottom));
+    padding-top: 6px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-left: max(5px, env(safe-area-inset-left));
+    padding-right: max(5px, env(safe-area-inset-right));
+    gap: 2px;
+  }
+
+  .bottom-nav button {
+    min-width: 0;
+    min-height: 58px;
+    padding: 9px 3px 8px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    line-height: 1.12;
+    font-weight: 750;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .bottom-nav button.active {
+    background: var(--panel2);
+  }
+
+  /* Full-screen and start views also respect device safe areas. */
+  .start-screen {
+    min-height: 100dvh;
+    padding-top: max(24px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .modal-backdrop {
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 390px) {
+  .bottom-nav button {
+    font-size: 12px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+}

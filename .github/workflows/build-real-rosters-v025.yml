@@ -8,6 +8,7 @@ on:
     paths:
       - tools/build_real_rosters.py
       - tools/build_real_rosters_reader.py
+      - tools/debug_reader_sample.py
       - .github/workflows/build-real-rosters-v025.yml
 
 concurrency:
@@ -35,6 +36,9 @@ jobs:
 
       - name: Install builder dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4
+
+      - name: Inspect reader response
+        run: python tools/debug_reader_sample.py
 
       - name: Build current roster snapshot
         run: python tools/build_real_rosters_reader.py

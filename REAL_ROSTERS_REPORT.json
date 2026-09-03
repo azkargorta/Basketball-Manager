@@ -1,0 +1,964 @@
+{
+  "snapshot": "2026-09-03",
+  "source": "TheSportsDB API + manual RealGM validation",
+  "clubs_total": 150,
+  "clubs": {
+    "1": {
+      "name": "Baskonia",
+      "league": "Liga ACB",
+      "source_team": "Baskonia",
+      "team_id": "135088",
+      "players": 10
+    },
+    "4": {
+      "name": "Valencia Basket",
+      "league": "Liga ACB",
+      "source_team": "Valencia Basket",
+      "team_id": "135097",
+      "players": 10
+    },
+    "5": {
+      "name": "Unicaja",
+      "league": "Liga ACB",
+      "source_team": "Baloncesto Málaga",
+      "team_id": "135096",
+      "players": 10
+    },
+    "6": {
+      "name": "Asisa Joventut",
+      "league": "Liga ACB",
+      "source_team": "Joventut Badalona",
+      "team_id": "135083",
+      "players": 10
+    },
+    "7": {
+      "name": "Dreamland Gran Canaria",
+      "league": "Liga ACB",
+      "source_team": "CB Gran Canaria",
+      "team_id": "135085",
+      "players": 10
+    },
+    "12": {
+      "name": "AS Monaco",
+      "league": "LNB Élite",
+      "source_team": "AS Monaco Basket",
+      "team_id": "136263",
+      "players": 8
+    },
+    "20": {
+      "name": "MoraBanc Andorra",
+      "league": "Liga ACB",
+      "source_team": "BC Andorra",
+      "team_id": "135090",
+      "players": 10
+    },
+    "21": {
+      "name": "San Pablo Burgos",
+      "league": "Liga ACB",
+      "source_team": "CB San Pablo Burgos",
+      "team_id": "136244",
+      "players": 8
+    },
+    "24": {
+      "name": "Dubai Basketball",
+      "league": "ABA League",
+      "source_team": "Dubai Basketball",
+      "team_id": "148701",
+      "players": 10
+    },
+    "25": {
+      "name": "Anadolu Efes",
+      "league": "Basketbol Süper Ligi",
+      "source_team": "Anadolu Efes SK",
+      "team_id": "136066",
+      "players": 10
+    },
+    "26": {
+      "name": "Hapoel Tel Aviv",
+      "league": "Israeli Premier League",
+      "source_team": "Hapoel Tel Aviv BC",
+      "team_id": "136059",
+      "players": 10
+    },
+    "28": {
+      "name": "Olimpia Milano",
+      "league": "LBA Serie A",
+      "source_team": "Olimpia Milano",
+      "team_id": "135383",
+      "players": 10
+    },
+    "34": {
+      "name": "Paris Basketball",
+      "league": "LNB Élite",
+      "source_team": "Paris Basketball",
+      "team_id": "141489",
+      "players": 10
+    },
+    "55": {
+      "name": "Dolomiti Energia Trento",
+      "league": "LBA Serie A",
+      "source_team": "Trento",
+      "team_id": "135382",
+      "players": 9
+    },
+    "56": {
+      "name": "Derthona Basket",
+      "league": "LBA Serie A",
+      "source_team": "Derthona Basket",
+      "team_id": "143963",
+      "players": 10
+    },
+    "61": {
+      "name": "ALBA Berlin",
+      "league": "easyCredit BBL",
+      "source_team": "ALBA Berlin",
+      "team_id": "135416",
+      "players": 10
+    },
+    "69": {
+      "name": "Basketball Löwen Braunschweig",
+      "league": "easyCredit BBL",
+      "source_team": "Braunschweig",
+      "team_id": "135418",
+      "players": 9
+    },
+    "72": {
+      "name": "Türk Telekom",
+      "league": "Basketbol Süper Ligi",
+      "source_team": "Türk Telekom BK",
+      "team_id": "136326",
+      "players": 8
+    },
+    "73": {
+      "name": "Bahçeşehir Koleji",
+      "league": "Basketbol Süper Ligi",
+      "source_team": "Bahçeşehir Koleji SK",
+      "team_id": "136325",
+      "players": 10
+    },
+    "77": {
+      "name": "Petkim Spor",
+      "league": "Basketbol Süper Ligi",
+      "source_team": "Petkim Spor",
+      "team_id": "143949",
+      "players": 10
+    },
+    "106": {
+      "name": "Borac Čačak",
+      "league": "ABA League",
+      "source_team": "KK Borac Čačak",
+      "team_id": "143790",
+      "players": 10
+    },
+    "110": {
+      "name": "BC Vienna",
+      "league": "ABA League",
+      "source_team": "BC Vienna",
+      "team_id": "143930",
+      "players": 10
+    },
+    "121": {
+      "name": "Atlanta Hawks",
+      "league": "NBA",
+      "source_team": "Atlanta Hawks",
+      "team_id": "134880",
+      "players": 10
+    },
+    "122": {
+      "name": "Boston Celtics",
+      "league": "NBA",
+      "source_team": "Boston Celtics",
+      "team_id": "134860",
+      "players": 10
+    },
+    "123": {
+      "name": "Brooklyn Nets",
+      "league": "NBA",
+      "source_team": "Brooklyn Nets",
+      "team_id": "134861",
+      "players": 10
+    },
+    "124": {
+      "name": "Charlotte Hornets",
+      "league": "NBA",
+      "source_team": "Charlotte Hornets",
+      "team_id": "134881",
+      "players": 10
+    },
+    "125": {
+      "name": "Chicago Bulls",
+      "league": "NBA",
+      "source_team": "Chicago Bulls",
+      "team_id": "134870",
+      "players": 10
+    },
+    "126": {
+      "name": "Cleveland Cavaliers",
+      "league": "NBA",
+      "source_team": "Cleveland Cavaliers",
+      "team_id": "134871",
+      "players": 10
+    },
+    "127": {
+      "name": "Dallas Mavericks",
+      "league": "NBA",
+      "source_team": "Dallas Mavericks",
+      "team_id": "134875",
+      "players": 10
+    },
+    "128": {
+      "name": "Denver Nuggets",
+      "league": "NBA",
+      "source_team": "Denver Nuggets",
+      "team_id": "134885",
+      "players": 10
+    },
+    "129": {
+      "name": "Detroit Pistons",
+      "league": "NBA",
+      "source_team": "Detroit Pistons",
+      "team_id": "134872",
+      "players": 10
+    },
+    "130": {
+      "name": "Golden State Warriors",
+      "league": "NBA",
+      "source_team": "Golden State Warriors",
+      "team_id": "134865",
+      "players": 10
+    },
+    "131": {
+      "name": "Houston Rockets",
+      "league": "NBA",
+      "source_team": "Houston Rockets",
+      "team_id": "134876",
+      "players": 10
+    },
+    "132": {
+      "name": "Indiana Pacers",
+      "league": "NBA",
+      "source_team": "Indiana Pacers",
+      "team_id": "134873",
+      "players": 10
+    },
+    "133": {
+      "name": "LA Clippers",
+      "league": "NBA",
+      "source_team": "Los Angeles Clippers",
+      "team_id": "134866",
+      "players": 10
+    },
+    "134": {
+      "name": "Los Angeles Lakers",
+      "league": "NBA",
+      "source_team": "Los Angeles Lakers",
+      "team_id": "134867",
+      "players": 10
+    },
+    "135": {
+      "name": "Memphis Grizzlies",
+      "league": "NBA",
+      "source_team": "Memphis Grizzlies",
+      "team_id": "134877",
+      "players": 10
+    },
+    "136": {
+      "name": "Miami Heat",
+      "league": "NBA",
+      "source_team": "Miami Heat",
+      "team_id": "134882",
+      "players": 10
+    },
+    "137": {
+      "name": "Milwaukee Bucks",
+      "league": "NBA",
+      "source_team": "Milwaukee Bucks",
+      "team_id": "134874",
+      "players": 10
+    },
+    "138": {
+      "name": "Minnesota Timberwolves",
+      "league": "NBA",
+      "source_team": "Minnesota Timberwolves",
+      "team_id": "134886",
+      "players": 10
+    },
+    "139": {
+      "name": "New Orleans Pelicans",
+      "league": "NBA",
+      "source_team": "New Orleans Pelicans",
+      "team_id": "134878",
+      "players": 10
+    },
+    "140": {
+      "name": "New York Knicks",
+      "league": "NBA",
+      "source_team": "New York Knicks",
+      "team_id": "134862",
+      "players": 10
+    },
+    "141": {
+      "name": "Oklahoma City Thunder",
+      "league": "NBA",
+      "source_team": "Oklahoma City Thunder",
+      "team_id": "134887",
+      "players": 10
+    },
+    "142": {
+      "name": "Orlando Magic",
+      "league": "NBA",
+      "source_team": "Orlando Magic",
+      "team_id": "134883",
+      "players": 10
+    },
+    "143": {
+      "name": "Philadelphia 76ers",
+      "league": "NBA",
+      "source_team": "Philadelphia 76ers",
+      "team_id": "134863",
+      "players": 10
+    },
+    "144": {
+      "name": "Phoenix Suns",
+      "league": "NBA",
+      "source_team": "Phoenix Suns",
+      "team_id": "134868",
+      "players": 10
+    },
+    "145": {
+      "name": "Portland Trail Blazers",
+      "league": "NBA",
+      "source_team": "Portland Trail Blazers",
+      "team_id": "134888",
+      "players": 10
+    },
+    "146": {
+      "name": "Sacramento Kings",
+      "league": "NBA",
+      "source_team": "Sacramento Kings",
+      "team_id": "134869",
+      "players": 10
+    },
+    "147": {
+      "name": "San Antonio Spurs",
+      "league": "NBA",
+      "source_team": "San Antonio Spurs",
+      "team_id": "134879",
+      "players": 10
+    },
+    "148": {
+      "name": "Toronto Raptors",
+      "league": "NBA",
+      "source_team": "Toronto Raptors",
+      "team_id": "134864",
+      "players": 10
+    },
+    "149": {
+      "name": "Utah Jazz",
+      "league": "NBA",
+      "source_team": "Utah Jazz",
+      "team_id": "134889",
+      "players": 10
+    },
+    "150": {
+      "name": "Washington Wizards",
+      "league": "NBA",
+      "source_team": "Washington Wizards",
+      "team_id": "134884",
+      "players": 10
+    }
+  },
+  "missing": [
+    {
+      "id": 2,
+      "name": "Real Madrid",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 3,
+      "name": "Barcelona",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 8,
+      "name": "UCAM Murcia",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 9,
+      "name": "Olympiacos",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 10,
+      "name": "Panathinaikos",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 11,
+      "name": "Fenerbahçe",
+      "league": "Basketbol Süper Ligi",
+      "error": "team not found"
+    },
+    {
+      "id": 13,
+      "name": "Casademont Zaragoza",
+      "league": "Liga ACB",
+      "error": "only 5 players"
+    },
+    {
+      "id": 14,
+      "name": "FIATC Girona",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 15,
+      "name": "iLERNA Lleida",
+      "league": "Liga ACB",
+      "error": "only 5 players"
+    },
+    {
+      "id": 16,
+      "name": "Kids&Us Manresa",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 17,
+      "name": "La Laguna Tenerife",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 18,
+      "name": "Leyma Coruña",
+      "league": "Liga ACB",
+      "error": "only 1 players"
+    },
+    {
+      "id": 19,
+      "name": "Monbus Obradoiro",
+      "league": "Liga ACB",
+      "error": "only 3 players"
+    },
+    {
+      "id": 22,
+      "name": "Río Breogán",
+      "league": "Liga ACB",
+      "error": "team not found"
+    },
+    {
+      "id": 23,
+      "name": "Surne Bilbao",
+      "league": "Liga ACB",
+      "error": "only 3 players"
+    },
+    {
+      "id": 27,
+      "name": "Partizán Belgrado",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 29,
+      "name": "ASVEL Villeurbanne",
+      "league": "LNB Élite",
+      "error": "only 7 players"
+    },
+    {
+      "id": 30,
+      "name": "Maccabi Tel Aviv",
+      "league": "Israeli Premier League",
+      "error": "team not found"
+    },
+    {
+      "id": 31,
+      "name": "Estrella Roja",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 32,
+      "name": "Besiktas",
+      "league": "Basketbol Süper Ligi",
+      "error": "team not found"
+    },
+    {
+      "id": 33,
+      "name": "Zalgiris Kaunas",
+      "league": "LKL",
+      "error": "team not found"
+    },
+    {
+      "id": 35,
+      "name": "Bayern Múnich",
+      "league": "easyCredit BBL",
+      "error": "team not found"
+    },
+    {
+      "id": 36,
+      "name": "Virtus Bolonia",
+      "league": "LBA Serie A",
+      "error": "only 1 players"
+    },
+    {
+      "id": 37,
+      "name": "Movistar Estudiantes",
+      "league": "Primera FEB",
+      "error": "only 1 players"
+    },
+    {
+      "id": 38,
+      "name": "Flexicar Fuenlabrada",
+      "league": "Primera FEB",
+      "error": "team not found"
+    },
+    {
+      "id": 39,
+      "name": "Palencia Baloncesto",
+      "league": "Primera FEB",
+      "error": "team not found"
+    },
+    {
+      "id": 40,
+      "name": "HLA Alicante",
+      "league": "Primera FEB",
+      "error": "only 0 players"
+    },
+    {
+      "id": 41,
+      "name": "Real Valladolid",
+      "league": "Primera FEB",
+      "error": "team not found"
+    },
+    {
+      "id": 42,
+      "name": "Gipuzkoa Basket",
+      "league": "Primera FEB",
+      "error": "only 2 players"
+    },
+    {
+      "id": 43,
+      "name": "Club Ourense Baloncesto",
+      "league": "Primera FEB",
+      "error": "team not found"
+    },
+    {
+      "id": 44,
+      "name": "Tizona Burgos",
+      "league": "Primera FEB",
+      "error": "team not found"
+    },
+    {
+      "id": 45,
+      "name": "JL Bourg",
+      "league": "LNB Élite",
+      "error": "team not found"
+    },
+    {
+      "id": 46,
+      "name": "Nanterre 92",
+      "league": "LNB Élite",
+      "error": "only 2 players"
+    },
+    {
+      "id": 47,
+      "name": "Le Mans Sarthe Basket",
+      "league": "LNB Élite",
+      "error": "only 1 players"
+    },
+    {
+      "id": 48,
+      "name": "Cholet Basket",
+      "league": "LNB Élite",
+      "error": "only 1 players"
+    },
+    {
+      "id": 49,
+      "name": "SIG Strasbourg",
+      "league": "LNB Élite",
+      "error": "team not found"
+    },
+    {
+      "id": 50,
+      "name": "Limoges CSP",
+      "league": "LNB Élite",
+      "error": "only 1 players"
+    },
+    {
+      "id": 51,
+      "name": "JDA Dijon",
+      "league": "LNB Élite",
+      "error": "team not found"
+    },
+    {
+      "id": 52,
+      "name": "Le Portel",
+      "league": "LNB Élite",
+      "error": "team not found"
+    },
+    {
+      "id": 53,
+      "name": "Germani Brescia",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 54,
+      "name": "Reyer Venezia",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 57,
+      "name": "Pallacanestro Reggiana",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 58,
+      "name": "Pallacanestro Trieste",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 59,
+      "name": "Dinamo Sassari",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 60,
+      "name": "Pallacanestro Varese",
+      "league": "LBA Serie A",
+      "error": "team not found"
+    },
+    {
+      "id": 62,
+      "name": "ratiopharm Ulm",
+      "league": "easyCredit BBL",
+      "error": "only 6 players"
+    },
+    {
+      "id": 63,
+      "name": "Würzburg Baskets",
+      "league": "easyCredit BBL",
+      "error": "team not found"
+    },
+    {
+      "id": 64,
+      "name": "MHP RIESEN Ludwigsburg",
+      "league": "easyCredit BBL",
+      "error": "only 6 players"
+    },
+    {
+      "id": 65,
+      "name": "Telekom Baskets Bonn",
+      "league": "easyCredit BBL",
+      "error": "team not found"
+    },
+    {
+      "id": 66,
+      "name": "NINERS Chemnitz",
+      "league": "easyCredit BBL",
+      "error": "team not found"
+    },
+    {
+      "id": 67,
+      "name": "EWE Baskets Oldenburg",
+      "league": "easyCredit BBL",
+      "error": "only 0 players"
+    },
+    {
+      "id": 68,
+      "name": "Veolia Towers Hamburg",
+      "league": "easyCredit BBL",
+      "error": "team not found"
+    },
+    {
+      "id": 70,
+      "name": "ROSTOCK SEAWOLVES",
+      "league": "easyCredit BBL",
+      "error": "only 1 players"
+    },
+    {
+      "id": 71,
+      "name": "Galatasaray",
+      "league": "Basketbol Süper Ligi",
+      "error": "team not found"
+    },
+    {
+      "id": 74,
+      "name": "TOFAŞ Bursa",
+      "league": "Basketbol Süper Ligi",
+      "error": "only 3 players"
+    },
+    {
+      "id": 75,
+      "name": "Bursaspor",
+      "league": "Basketbol Süper Ligi",
+      "error": "team not found"
+    },
+    {
+      "id": 76,
+      "name": "Mersin SK",
+      "league": "Basketbol Süper Ligi",
+      "error": "only 0 players"
+    },
+    {
+      "id": 78,
+      "name": "Darüşşafaka",
+      "league": "Basketbol Süper Ligi",
+      "error": "only 1 players"
+    },
+    {
+      "id": 79,
+      "name": "AEK Athens",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 80,
+      "name": "Aris Thessaloniki",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 81,
+      "name": "PAOK Thessaloniki",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 82,
+      "name": "Promitheas Patras",
+      "league": "Greek Basket League",
+      "error": "only 2 players"
+    },
+    {
+      "id": 83,
+      "name": "Peristeri",
+      "league": "Greek Basket League",
+      "error": "only 1 players"
+    },
+    {
+      "id": 84,
+      "name": "Panionios",
+      "league": "Greek Basket League",
+      "error": "team not found"
+    },
+    {
+      "id": 85,
+      "name": "Budućnost VOLI",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 86,
+      "name": "Cedevita Olimpija",
+      "league": "ABA League",
+      "error": "only 7 players"
+    },
+    {
+      "id": 87,
+      "name": "Cibona",
+      "league": "ABA League",
+      "error": "only 5 players"
+    },
+    {
+      "id": 88,
+      "name": "FMP Beograd",
+      "league": "ABA League",
+      "error": "only 6 players"
+    },
+    {
+      "id": 89,
+      "name": "Igokea",
+      "league": "ABA League",
+      "error": "only 7 players"
+    },
+    {
+      "id": 90,
+      "name": "Krka Novo Mesto",
+      "league": "ABA League",
+      "error": "only 7 players"
+    },
+    {
+      "id": 91,
+      "name": "Bosna Sarajevo",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 92,
+      "name": "Mega Basket",
+      "league": "ABA League",
+      "error": "only 2 players"
+    },
+    {
+      "id": 93,
+      "name": "SC Derby",
+      "league": "ABA League",
+      "error": "only 1 players"
+    },
+    {
+      "id": 94,
+      "name": "Spartak Subotica",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 95,
+      "name": "U-BT Cluj-Napoca",
+      "league": "ABA League",
+      "error": "only 2 players"
+    },
+    {
+      "id": 96,
+      "name": "Zadar",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 97,
+      "name": "Rytas Vilnius",
+      "league": "LKL",
+      "error": "team not found"
+    },
+    {
+      "id": 98,
+      "name": "Lietkabelis",
+      "league": "LKL",
+      "error": "only 7 players"
+    },
+    {
+      "id": 99,
+      "name": "Neptūnas Klaipėda",
+      "league": "LKL",
+      "error": "team not found"
+    },
+    {
+      "id": 100,
+      "name": "Juventus Utena",
+      "league": "LKL",
+      "error": "team not found"
+    },
+    {
+      "id": 101,
+      "name": "Šiauliai",
+      "league": "LKL",
+      "error": "team not found"
+    },
+    {
+      "id": 102,
+      "name": "Hapoel Jerusalem",
+      "league": "Israeli Premier League",
+      "error": "team not found"
+    },
+    {
+      "id": 103,
+      "name": "Bnei Herzliya",
+      "league": "Israeli Premier League",
+      "error": "only 3 players"
+    },
+    {
+      "id": 104,
+      "name": "Hapoel Holon",
+      "league": "Israeli Premier League",
+      "error": "only 1 players"
+    },
+    {
+      "id": 105,
+      "name": "Hapoel Be’er Sheva",
+      "league": "Israeli Premier League",
+      "error": "only 1 players"
+    },
+    {
+      "id": 107,
+      "name": "HKK Široki",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 108,
+      "name": "Slovan Bratislava",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 109,
+      "name": "Perspektiva Ilirija",
+      "league": "ABA League",
+      "error": "team not found"
+    },
+    {
+      "id": 111,
+      "name": "Instituto Córdoba",
+      "league": "Liga Nacional Argentina",
+      "error": "team not found"
+    },
+    {
+      "id": 112,
+      "name": "Boca Juniors",
+      "league": "Liga Nacional Argentina",
+      "error": "team not found"
+    },
+    {
+      "id": 113,
+      "name": "Quimsa",
+      "league": "Liga Nacional Argentina",
+      "error": "only 2 players"
+    },
+    {
+      "id": 114,
+      "name": "Olímpico La Banda",
+      "league": "Liga Nacional Argentina",
+      "error": "team not found"
+    },
+    {
+      "id": 115,
+      "name": "San Lorenzo",
+      "league": "Liga Nacional Argentina",
+      "error": "only 5 players"
+    },
+    {
+      "id": 116,
+      "name": "Obras Basket",
+      "league": "Liga Nacional Argentina",
+      "error": "team not found"
+    },
+    {
+      "id": 117,
+      "name": "Regatas Corrientes",
+      "league": "Liga Nacional Argentina",
+      "error": "only 5 players"
+    },
+    {
+      "id": 118,
+      "name": "Peñarol Mar del Plata",
+      "league": "Liga Nacional Argentina",
+      "error": "only 1 players"
+    },
+    {
+      "id": 119,
+      "name": "Ferro Carril Oeste",
+      "league": "Liga Nacional Argentina",
+      "error": "team not found"
+    },
+    {
+      "id": 120,
+      "name": "Gimnasia Comodoro",
+      "league": "Liga Nacional Argentina",
+      "error": "only 4 players"
+    }
+  ],
+  "clubs_complete": 52,
+  "players_total": 512,
+  "coverage_pct": 34.7
+}

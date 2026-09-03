@@ -130,8 +130,6 @@ const INDIVIDUAL={
   'oshae brissett':81,
   'yam madar':80,
   'bonzie colson jr':80,
-
-  'johnathan motley':82,
   'jared butler':81,
 
   'jonas valanciunas':85,
@@ -163,12 +161,13 @@ for(const id of REVIEW_IDS){
   const rated=rows.filter(r=>Number.isFinite(Number(r.ovr)));
   if(!rated.length)continue;
   const before=rated.reduce((s,r)=>s+Number(r.ovr),0)/rated.length;
-  /* Compress extremes slightly while moving the whole roster to the club target.
-     Limit the shift so incomplete/stale source rosters cannot create absurd jumps. */
+  /* Compress extremes slightly while moving the whole roster toward the club target.
+     Cap the roster-wide movement so provisional/stale source lists cannot create absurd jumps. */
   const shift=clamp(target-before,-2.5,7.5);
+  const center=before+shift;
   for(const row of rated){
     const relative=Number(row.ovr)-before;
-    row.ovr=clamp(Math.round(target+relative*0.94),66,91);
+    row.ovr=clamp(Math.round(center+relative*0.94),66,91);
     const override=INDIVIDUAL[key(row.name)];
     if(Number.isFinite(override)){
       row.ovr=override;
@@ -180,7 +179,7 @@ for(const id of REVIEW_IDS){
     playersReviewed++;
   }
   const after=rated.reduce((s,r)=>s+Number(r.ovr),0)/rated.length;
-  clubSummary[id]={players:rated.length,before:Number(before.toFixed(2)),target,after:Number(after.toFixed(2)),rawShift:Number(shift.toFixed(2))};
+  clubSummary[id]={players:rated.length,before:Number(before.toFixed(2)),target,after:Number(after.toFixed(2)),appliedShift:Number(shift.toFixed(2))};
 }
 
 pack.ratingsAudit={

@@ -1,0 +1,4 @@
+(function(g){
+'use strict';
+g.BBGM_REAL_ROSTERS_202627=Object.assign({},g.BBGM_REAL_ROSTERS_202627||{},g.BBGM_REAL_ROSTERS_MANUAL_ACB_202627||{});
+})(typeof globalThis!=='undefined'?globalThis:this);

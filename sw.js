@@ -1,5 +1,5 @@
 importScripts('./js/version.js');
-const CACHE_NAME = self.BBGM_VERSION?.cacheName || 'basketball-gm-beta-v031';
+const CACHE_NAME = self.BBGM_VERSION?.cacheName || 'basketball-gm-beta-v032';
 const CORE = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const CORE = [
   './js/engine.js',
   './js/data.js',
   './js/data-quality.js',
+  './js/market-ai.js',
   './js/real-free-agents-2026-27.js',
   './js/real-rosters-2026-27.generated.js',
   './js/real-rosters-manual-acb.js',

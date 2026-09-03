@@ -24,4 +24,6 @@ jobs:
           node v19_long_term_test.js
           node v20_logic_test.js
       - name: Public build integration test
-        run: node production_integration_test.js
+        run: |
+          node production_integration_test.js
+          node market_ai_test.js

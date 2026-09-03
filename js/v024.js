@@ -2,6 +2,7 @@
 'use strict';
 
 const DB_NAME='basketball_gm_offline', STORE='saves', MAIN_SAVE='main_v08';
+const VERSION=window.BBGM_VERSION||{code:'0.31.0-beta',label:'v0.31 Beta'};
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Math.round(n||0));
@@ -223,7 +224,7 @@ function processSeasonChange(s){
 }
 function processWorld(s){
   const v=s.v24,date=s.currentDate||'';const days=v.lastProcessedDate?daysBetween(v.lastProcessedDate,date):0;
-  updateAdaptation(s,days);processRosterChanges(s);processCoachChanges(s);processInbox(s);processLatestMatch(s);processSeasonChange(s);maybeRumor(s);maybeCreateDecision(s);v.lastProcessedDate=date;v.version='0.24-beta';s.version='0.24-beta';
+  updateAdaptation(s,days);processRosterChanges(s);processCoachChanges(s);processInbox(s);processLatestMatch(s);processSeasonChange(s);maybeRumor(s);maybeCreateDecision(s);v.lastProcessedDate=date;v.version='0.24-beta';s.version=VERSION.code;
 }
 
 function fitMetrics(c){
@@ -246,7 +247,7 @@ function injectHome(s){
   const host=homeHost();if(!host)return;let root=$('#v24Hub');if(root)root.remove();
   const c=userClub(s);if(!c)return;const p=planning(s),lock=lockerSummary(s),fit=fitMetrics(c),nm=nextMatchInfo(s),ph=philosophy(c),dec=(s.v24.decisions||[]).find(x=>!x.resolved),newsTeam=s.v24.news.filter(n=>n.scope==='TEAM').slice(0,5),newsWorld=s.v24.news.filter(n=>n.scope==='WORLD').slice(0,5),lastMatch=userMatches(s).slice(-1)[0],narr=lastMatch?latestMatchNarrative(s,lastMatch):null;
   root=document.createElement('section');root.id='v24Hub';root.className='v24-hub card';
-  root.innerHTML=`<div class="v24-hub-head"><div><div class="eyebrow">v0.24 · Mundo y carrera</div><h2>${esc(c.name)} <span class="v24-version">World & Career</span></h2></div><div class="v24-head-actions"><button class="btn small" data-v24-difficulty>Dificultad: ${difficultyES[s.v24.difficulty]}</button><button class="btn small" data-v24-saves>Partidas</button></div></div>
+  root.innerHTML=`<div class="v24-hub-head"><div><div class="eyebrow">${VERSION.label} · Mundo y carrera</div><h2>${esc(c.name)} <span class="v24-version">World & Career</span></h2></div><div class="v24-head-actions"><button class="btn small" data-v24-difficulty>Dificultad: ${difficultyES[s.v24.difficulty]}</button><button class="btn small" data-v24-saves>Partidas</button></div></div>
   ${dec?`<div class="v24-decision"><div><span class="v24-alert-dot"></span><b>${esc(dec.title)}</b><p>${esc(dec.text)}</p></div><button class="btn primary" data-v24-open-decision>Decidir</button></div>`:''}
   <div class="v24-tabs" role="tablist"><button class="active" data-v24-tab="news">Noticias</button><button data-v24-tab="plan">Planificación</button><button data-v24-tab="locker">Vestuario</button><button data-v24-tab="career">Carrera</button></div>
   <div class="v24-tab active" data-v24-panel="news"><div class="v24-news-switch"><button class="active" data-v24-news="TEAM">Mi equipo</button><button data-v24-news="WORLD">Mundo</button></div><div data-v24-news-list>${newsHtml(newsTeam)}</div></div>

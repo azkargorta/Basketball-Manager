@@ -2,6 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
+const APP_VERSION=g.BBGM_VERSION||{code:'0.31.0-beta',label:'v0.31 Beta',saveFormat:'basketball-manager-v031'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -155,7 +156,7 @@ const injuryCatalog=[
 ];
 function ensureV13State(){
   if(!state)return;
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   state.medical=state.medical||{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:state.currentDate};
   state.medical.injuryHistory=state.medical.injuryHistory||[];
   state.nba=state.nba||{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]};
@@ -237,7 +238,7 @@ function coachTrust(p){const c=userClub(),rot=BBGM.rotation(c),mins=rot.playerMi
 function positionDepth(pos){const rot=BBGM.rotation(userClub());return userClub().roster.filter(p=>p.primaryPosition===pos||p.secondaryPosition===pos).map(p=>({p,ovr:BBGM.overall(p,pos),mins:rot.playerMinutes[p.id]||0})).sort((a,b)=>b.ovr-a.ovr)}
 function squadNeed(pos){const d=positionDepth(pos),top=d[0]?.ovr||0,second=d[1]?.ovr||0,count=d.length;let severity=0;if(count<2)severity+=38;if(count<3)severity+=12;if(top<76)severity+=(76-top)*2;if(second<70)severity+=(70-second)*1.5;return {pos,depth:d,severity:Math.round(severity),label:severity>=35?'Alta':severity>=18?'Media':'Baja'}}
 function allSquadNeeds(){return ['PG','SG','SF','PF','C'].map(squadNeed).sort((a,b)=>b.severity-a.severity)}
-function ensureV12State(){if(!state)return;state.version='0.21-beta';state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
+function ensureV12State(){if(!state)return;state.version=APP_VERSION.code;state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
 function ensureCoachSquadRequest(){if(!state?.coachManagement||state.coachManagement.squadRequest?.season===state.season)return;const need=allSquadNeeds()[0],low=userClub().roster.slice().sort((a,b)=>coachTrust(a)-coachTrust(b))[0];state.coachManagement.squadRequest={season:state.season,position:need.pos,severity:need.severity,status:'PENDING',exitPlayerId:low&&coachTrust(low)<54?low.id:null}}
 function setPlanningPriority(pos){state.planning.priorityPosition=pos||null;saveLocal(false);render();toast(pos?`Prioridad: ${positionLabel[pos]}`:'Prioridad eliminada')}
 function setCaptain(id){const p=userClub().roster.find(x=>x.id===id);if(!p)return;state.lockerRoom.captainId=id;p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100);saveLocal(false);render();toast(`${fullName(p)} es el capitán`)}
@@ -281,7 +282,7 @@ function ensureMentorPairs(){
 }
 function mentorEffectAfterUserMatch(){ensureMentorPairs();for(const m of state.lockerRoom.mentorPairs||[]){const v=userClub().roster.find(p=>p.id===m.mentorId),y=playerLocation(m.youngId)?.player;if(!v||!y)continue;y.state.confidence=BBGM.clamp((y.state.confidence||65)+.12,0,100);y.state.morale=BBGM.clamp((y.state.morale||65)+.06,0,100)}}
 function ensureV14State(){
-  if(!state)return;state.version='0.21-beta';state.agentRelations=state.agentRelations||{};state.lockerRoom=state.lockerRoom||{};state.lockerRoom.relationshipOverrides=state.lockerRoom.relationshipOverrides||{};state.lockerRoom.mentorPairs=state.lockerRoom.mentorPairs||[];state.lockerRoom.lastPersonalityGame=state.lockerRoom.lastPersonalityGame||0;
+  if(!state)return;state.version=APP_VERSION.code;state.agentRelations=state.agentRelations||{};state.lockerRoom=state.lockerRoom||{};state.lockerRoom.relationshipOverrides=state.lockerRoom.relationshipOverrides||{};state.lockerRoom.mentorPairs=state.lockerRoom.mentorPairs||[];state.lockerRoom.lastPersonalityGame=state.lockerRoom.lastPersonalityGame||0;
   const all=[...state.world.clubs.flatMap(c=>c.roster),...(state.world.freeAgents||[]),...(state.academy?.players||[])];for(const p of all){p.personality=p.personality||{};for(const k of ['professionalism','ambition','loyalty','temperament','pressure','adaptability','ego'])if(p.personality[k]==null)p.personality[k]=50;p.state=p.state||{};if(p.state.roleSatisfaction==null)p.state.roleSatisfaction=72;if(p.state.contractSatisfaction==null)p.state.contractSatisfaction=72;if(p.agent&&!Object.prototype.hasOwnProperty.call(state.agentRelations,p.agent))state.agentRelations[p.agent]=50}
   ensureMentorPairs();
 }
@@ -346,7 +347,7 @@ const ACHIEVEMENT_DEFS=[
 // ===== v0.17 experiencia de juego: pretemporada, agenda, centro de avisos, búsqueda y resúmenes =====
 function ensureV17State(){
   if(!state)return;
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   state.preseason=state.preseason||{active:false,weeksRemaining:0,focus:'BALANCED',friendlies:[],season:null};
   state.weeklySummaries=Array.isArray(state.weeklySummaries)?state.weeklySummaries:[];
   state.weeklyMeta=state.weeklyMeta||{lastDate:state.currentDate};
@@ -396,7 +397,7 @@ function contractAgendaHtml(){const exp=userClub().roster.filter(p=>p.contractYe
 function runAiFrontOfficeV17(){ensureV17State();const month=state.currentDate.slice(0,7);if(state.aiFrontOffice.lastMonth===month)return;state.aiFrontOffice.lastMonth=month;const rng=new BBGM.RNG(hashCode(`${month}-frontoffice-v17`)),clubs=state.world.clubs.filter(c=>c.id!==state.userClubId&&c.leagueLevel!=='NBA');for(let k=0;k<Math.min(12,clubs.length);k++){const c=rng.pick(clubs),exp=c.roster.filter(p=>p.contractYears===1);if(exp.length){const p=exp.sort((a,b)=>aiFitScore(c,b)-aiFitScore(c,a))[0];if(p&&aiFitScore(c,p)>52&&rng.next()<.62){p.contractYears=2+(rng.next()<.25?1:0);p.salary=Math.round(Math.max(p.salary,BBGM.salaryExpectation(p,c.reputation)*.92)/50000)*50000;if(rng.next()<.22)state.marketNews.unshift({date:state.currentDate,text:`${c.name} renueva a ${fullName(p)} por ${p.contractYears} temporadas.`})}}}for(const c of clubs.filter(c=>['ACB','EL'].some(cid=>state.standings[cid]?.[c.id]?.gp>=8))){const rows=['ACB','EL'].map(cid=>state.standings[cid]?.[c.id]).filter(Boolean),gp=rows.reduce((n,x)=>n+x.gp,0),w=rows.reduce((n,x)=>n+x.w,0);if(gp>=10&&w/gp<.29&&rng.next()<.12&&state.world.coachMarket?.length){const old=c.coach,nw=state.world.coachMarket.shift();c.coach={...nw};state.world.coachMarket.push({...old,id:`M-${Date.now()}-${c.id}`});state.marketNews.unshift({date:state.currentDate,text:`${c.name} destituye a ${old.name} y contrata a ${nw.name}.`})}}}
 function ensureV16State(){
   if(!state)return;
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   state.seasonArchive=Array.isArray(state.seasonArchive)?state.seasonArchive:[];
   state.achievements=state.achievements||{unlocked:{}};
   state.achievements.unlocked=state.achievements.unlocked||{};
@@ -1026,7 +1027,7 @@ function upgradeState(s){
   if(!state.scouting.assignments)state.scouting.assignments=[];if(!state.scouting.knowledge)state.scouting.knowledge={};
   state.scouting.nextAssignmentId=state.scouting.nextAssignmentId||Math.max(0,...state.scouting.assignments.map(a=>a.id||0))+1;
   ensureAcademy();
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   return state;
 }
@@ -1036,7 +1037,7 @@ function newGame(){
   const calendar=BBGM.buildCalendar(world.competitions.filter(c=>c.standings),'2026-09-25');
   calendar.push(...initialSupercopaMatches(2026));calendar.sort((a,b)=>a.date.localeCompare(b.date));
   state={
-    version:'0.21-beta',saveName:'Carrera Baskonia',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,
+    version:APP_VERSION.code,saveName:'Carrera Baskonia',season:'2026/27',currentDate:'2026-09-01',userClubId:1,nextEventId:100,
     manager:{name:'Director deportivo',reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},
     world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[{id:'ACB',label:'Finalizar entre los 6 primeros de ACB',target:6},{id:'EL',label:'Alcanzar al menos el Play-In de Euroliga',target:10},{id:'YOUTH',label:'Desarrollar talento joven',target:1},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(1,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
   };
@@ -1047,7 +1048,7 @@ function newGame(){
   state.sponsorship.offers=createSponsorOffers(state.season);
   for(const c of world.competitions.filter(c=>c.standings))state.standings[c.id]=Object.fromEntries(c.clubIds.map(id=>[id,{clubId:id,gp:0,w:0,l:0,pf:0,pa:0}]));
   addInbox('INFO','Bienvenido a Baskonia','La directiva espera una temporada competitiva en ACB y Euroliga.');
-  addInbox('INFO','Data Pack ficticio 2026/27','La plantilla inicial usa nombres ficticios y ratings propios, pero su jerarquía, tamaño de rotación, salarios y perfiles se han calibrado por nivel de club para una experiencia más realista.');
+  addInbox('INFO','Data Pack real 2026/27','La partida comienza con identidades y plantillas reales. Ratings, potenciales, salarios y economía son estimaciones propias del juego.');
   addInbox('SCOUTING','Scouting disponible','Tienes tres ojeadores. Los jugadores externos muestran información parcial hasta que los investigues.');
   addInbox('TRAINING','Plan mensual pendiente','Puedes asignar un foco de entrenamiento a cada jugador desde Plantilla.');
   addInbox('SPONSOR','Decisión de patrocinio pendiente','Tienes cuatro propuestas de patrocinio con distinto fijo y variables. Revísalas desde Más → Patrocinadores.');
@@ -1089,7 +1090,7 @@ async function loadLocal(){
 
 function exportSave(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download='basketball_gm_v20_save.json';a.click();URL.revokeObjectURL(a.href);
+  a.href=URL.createObjectURL(blob);a.download=`${APP_VERSION.saveFormat}_save.json`;a.click();URL.revokeObjectURL(a.href);
 }
 
 function importSave(file){
@@ -1276,13 +1277,13 @@ function render(){
   if(!state){renderStart();return}
   ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   const c=userClub(),wb=wageBill(c),room=availableWage(c);
-  app.innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand">BASKETBALL GM<small>Beta v0.21</small></div><nav class="nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calendario','▦')}${navButton('standings','Clasificación','≡')}${navButton('stats','Estadísticas','Σ')}${navButton('more','Más','•••')}</nav><div class="side-footer">Offline · guardado local<br>${state.season}</div></aside><main class="main"><header class="topbar"><div><div class="club-title">${c.name}</div><div class="club-meta">${state.season} · ${state.currentDate}</div></div><div class="top-actions"><span class="budget">Caja ${fmtMoney(c.cashBudget)} · Salarios ${fmtMoney(wb)} / ${fmtMoney(c.salaryBudget)}</span><button class="btn small icon-btn" id="themeBtn" title="Cambiar apariencia">◐</button><button class="btn small" id="globalSearchBtn">⌕ Buscar</button><button class="btn small" id="saveBtn">Guardar</button></div></header><section class="content" id="view"></section></main><nav class="bottom-nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calend.','▦')}${navButton('stats','Estad.','Σ')}${navButton('more','Más','•••')}</nav></div>`;
+  app.innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand">BASKETBALL GM<small>${APP_VERSION.label}</small></div><nav class="nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calendario','▦')}${navButton('standings','Clasificación','≡')}${navButton('stats','Estadísticas','Σ')}${navButton('more','Más','•••')}</nav><div class="side-footer">Offline · guardado local<br>${state.season}</div></aside><main class="main"><header class="topbar"><div><div class="club-title">${c.name}</div><div class="club-meta">${state.season} · ${state.currentDate}</div></div><div class="top-actions"><span class="budget">Caja ${fmtMoney(c.cashBudget)} · Salarios ${fmtMoney(wb)} / ${fmtMoney(c.salaryBudget)}</span><button class="btn small icon-btn" id="themeBtn" title="Cambiar apariencia">◐</button><button class="btn small" id="globalSearchBtn">⌕ Buscar</button><button class="btn small" id="saveBtn">Guardar</button></div></header><section class="content" id="view"></section></main><nav class="bottom-nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calend.','▦')}${navButton('stats','Estad.','Σ')}${navButton('more','Más','•••')}</nav></div>`;
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;render()});
   document.getElementById('saveBtn').onclick=()=>saveLocal(true);const gs=document.getElementById('globalSearchBtn');if(gs)gs.onclick=()=>openGlobalSearch();const th=document.getElementById('themeBtn');if(th)th.onclick=()=>{state.ui.theme=state.ui.theme==='light'?'dark':'light';applyThemeV19();saveLocal(false);render()};applyThemeV19();renderView();
 }
 
 function renderStart(){
-  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">Offline prototype</div><h1>Basketball GM</h1><p>Versión jugable centrada en dirección deportiva, con plantillas ficticias calibradas al ecosistema 2026/27, mercado, scouting, cantera, economía e historial offline.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note">Puedes continuar partidas anteriores. Puedes continuar una partida v0.8 y se añadirán los nuevos clubes NBA y módulos compatibles. Para probar la calibración nueva de plantillas, contratos, salarios y arquetipos, crea una partida nueva v0.20.</div></div></div>`;
+  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">${APP_VERSION.label} · funciona offline</div><h1>Basketball GM</h1><p>Simulador de dirección deportiva con plantillas reales 2026/27, mercado, scouting, cantera, economía e historial de carrera.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note">Puedes continuar partidas anteriores. Para aplicar la normalización completa de posiciones, alturas y perfiles del Data Pack, crea una partida nueva en ${APP_VERSION.label}.</div></div></div>`;
   document.getElementById('newGame').onclick=newGame;
   document.getElementById('continue').onclick=async()=>{if(!(await loadLocal()))alert('No hay una partida guardada en este navegador.')};
   document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
@@ -1640,7 +1641,7 @@ function renderMore(v){
   <div class="card diagnostic-entry"><h3>Diagnóstico de partida</h3><div class="stat-row"><span>Balance global</span><b>${diagnosticVerdictV19(collectDiagnosticsV19()).label}</b></div><div class="stat-row"><span>Snapshots guardados</span><b>${state.balanceHistory?.length||0}</b></div><p class="muted">Revisa edades, medias, élite, agentes libres, economía y equilibrio posicional del universo.</p><button class="btn good" id="openDiagnostics">Abrir diagnóstico</button></div>
   <div class="card"><h3>Universo de jugadores</h3><div class="stat-row"><span>Clubes cargados</span><b>${state.world.clubs.length}</b></div><div class="stat-row"><span>Jugadores en clubes</span><b>${state.world.clubs.reduce((n,c)=>n+c.roster.length,0)}</b></div><div class="stat-row"><span>Agentes libres</span><b>${state.world.freeAgents.length}</b></div><div class="stat-row"><span>Ligas / mercados</span><b>${(state.world.leagues||[]).length}</b></div></div>
   </div>`;
-  v.querySelector('.grid.two')?.insertAdjacentHTML('beforeend',`<div class="card beta-card"><div class="eyebrow">Beta cerrada</div><h3>Pruebas y feedback</h3><div class="stat-row"><span>Versión</span><b>v0.21 Beta</b></div><p class="muted">Si encuentras un error, exporta el informe técnico y, si depende de tu partida, también el save desde Guardado.</p><div class="action-stack"><button class="btn good" id="betaReport">Exportar informe beta</button><button class="btn" id="betaInstallHelp">Instalar en este dispositivo</button></div></div>`);
+  v.querySelector('.grid.two')?.insertAdjacentHTML('beforeend',`<div class="card beta-card"><div class="eyebrow">Beta cerrada</div><h3>Pruebas y feedback</h3><div class="stat-row"><span>Versión</span><b>${APP_VERSION.label}</b></div><p class="muted">Si encuentras un error, exporta el informe técnico y, si depende de tu partida, también el save desde Guardado.</p><div class="action-stack"><button class="btn good" id="betaReport">Exportar informe beta</button><button class="btn" id="betaInstallHelp">Instalar en este dispositivo</button></div></div>`);
   const betaReport=document.getElementById('betaReport');if(betaReport)betaReport.onclick=()=>{const payload={version:state.version,season:state.season,date:state.currentDate,device:{userAgent:navigator.userAgent,viewport:[window.innerWidth,window.innerHeight],standalone:window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true},diagnostic:collectDiagnosticsV19()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-beta-report-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href);toast('Informe beta exportado')};
   const betaInstall=document.getElementById('betaInstallHelp');if(betaInstall)betaInstall.onclick=()=>{const b=document.getElementById('pwaInstallBtn');if(b&&!b.hidden)b.click();else toast('En móvil: menú Compartir/⋮ → Añadir a pantalla de inicio o Instalar app')};
   const inboxBtn=document.getElementById('openInbox');if(inboxBtn)inboxBtn.onclick=()=>{currentView='inbox';render()};const preBtn=document.getElementById('openPreseason');if(preBtn)preBtn.onclick=()=>{currentView='preseason';render()};document.getElementById('save2').onclick=()=>saveLocal(true);document.getElementById('export').onclick=exportSave;document.getElementById('toStart').onclick=()=>{state=null;render()};document.getElementById('openStandings').onclick=()=>{currentView='standings';render()};document.getElementById('talkCoach').onclick=()=>{currentView='coach';render()};document.getElementById('openSponsors').onclick=()=>{currentView='sponsors';render()};const planningBtn=document.getElementById('openPlanning');if(planningBtn)planningBtn.onclick=()=>{currentView='planning';render()};const ol=document.getElementById('openLocker');if(ol)ol.onclick=()=>{currentView='locker';render()};const om=document.getElementById('openMedical');if(om)om.onclick=()=>{currentView='medical';render()};const on=document.getElementById('openNba');if(on)on.onclick=()=>{currentView='nba';render()};const intlBtn=document.getElementById('openInternational');if(intlBtn)intlBtn.onclick=()=>{currentView='international';render()};const oh=document.getElementById('openHistory');if(oh)oh.onclick=()=>{currentView='history';render()};const of=document.getElementById('openFinance');if(of)of.onclick=()=>{currentView='finance';render()};const od=document.getElementById('openDiagnostics');if(od)od.onclick=()=>{currentView='diagnostics';render()};
@@ -1768,7 +1769,7 @@ const V19_MENTAL=['basketballIq','decisionMaking','consistency','competitiveness
 // ===== v0.20 — Realismo, noticias y mercado final =====
 function ensureV20State(){
   if(!state)return;
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   state.worldNews=Array.isArray(state.worldNews)?state.worldNews:[];
   state.realismV20=state.realismV20||{pack:state.world?.realismPack?.version||'legacy',lastNewsGame:0,lastContractGame:0,lastAiReviewMonth:null};
   state.realismV20.lastNewsGame=state.realismV20.lastNewsGame||0;
@@ -1815,11 +1816,11 @@ function v20AiRenewalsAndPlanning(){
     }
   }
 }
-function v20HomeNewsHtml(){ensureV20State();const n=state.worldNews.slice(0,5);return `<div class="card" style="margin-top:16px"><div class="section-inline"><div><div class="eyebrow">Mundo del baloncesto</div><h3>Noticias</h3></div><span class="pill">v0.21 Beta · datos ficticios</span></div>${n.length?n.map(x=>`<div class="news-line"><span class="muted">${x.date}</span><span>${x.text}</span></div>`).join(''):'<p class="muted">Las noticias del mundo aparecerán al avanzar la temporada.</p>'}</div>`}
+function v20HomeNewsHtml(){ensureV20State();const n=state.worldNews.slice(0,5);return `<div class="card" style="margin-top:16px"><div class="section-inline"><div><div class="eyebrow">Mundo del baloncesto</div><h3>Noticias</h3></div><span class="pill">${APP_VERSION.label} · mundo simulado</span></div>${n.length?n.map(x=>`<div class="news-line"><span class="muted">${x.date}</span><span>${x.text}</span></div>`).join(''):'<p class="muted">Las noticias del mundo aparecerán al avanzar la temporada.</p>'}</div>`}
 
 function ensureV19State(){
   if(!state)return;
-  state.version='0.21-beta';
+  state.version=APP_VERSION.code;
   state.ui=state.ui||{theme:'dark',compactMobile:true};
   if(!['dark','light'].includes(state.ui.theme))state.ui.theme='dark';
   state.balanceHistory=Array.isArray(state.balanceHistory)?state.balanceHistory:[];

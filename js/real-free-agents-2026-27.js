@@ -31,16 +31,14 @@ const REAL_FREE_AGENTS=[
  {name:'Boo Buie',position:'PG',age:26,ovr:72,potential:73,source:'G League'},
  {name:'Izan Almansa',position:'C',age:21,ovr:73,potential:86,source:'International'}
 ];
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function splitName(name){const p=String(name).trim().split(/\s+/);return {firstName:p.shift()||'',lastName:p.join(' ')}}
-function setTargetOverall(player,target){if(!player?.attributes||typeof BBGM.overall!=='function')return;const now=BBGM.overall(player);if(!Number.isFinite(now))return;const d=target-now;for(const k of Object.keys(player.attributes))if(Number.isFinite(Number(player.attributes[k])))player.attributes[k]=clamp(Number(player.attributes[k])+d,25,99);player.realWorldRatingTarget=target}
 function cloneSlot(base,id){const p=Object.assign({},base);p.id=id;p.attributes=Object.assign({},base.attributes||{});p.tendencies=Object.assign({},base.tendencies||{});p.state=Object.assign({},base.state||{});p.personality=Object.assign({},base.personality||{});return p}
 BBGM.createFreeAgents=function(){
  const slots=original.apply(this,arguments)||[];
  if(!slots.length)return slots;
  while(slots.length<REAL_FREE_AGENTS.length)slots.push(cloneSlot(slots[slots.length-1]||slots[0],900000+slots.length));
  slots.length=REAL_FREE_AGENTS.length;
- REAL_FREE_AGENTS.forEach((r,i)=>{const p=slots[i],n=splitName(r.name);p.firstName=n.firstName;p.lastName=n.lastName;p.primaryPosition=r.position;p.age=r.age;p.freeAgent=true;p.contractYears=0;p.releaseClause=null;p.marketEligibleEurope=true;p.marketSource=r.source;p.realWorldIdentity=true;p.realWorldSnapshot='2026-09-02';p.potentialReal=r.potential;setTargetOverall(p,r.ovr);});
+ REAL_FREE_AGENTS.forEach((r,i)=>{const p=slots[i],n=splitName(r.name);p.firstName=n.firstName;p.lastName=n.lastName;p.age=r.age;p.freeAgent=true;p.contractYears=0;p.releaseClause=null;p.marketEligibleEurope=true;p.marketSource=r.source;p.realWorldIdentity=true;p.realWorldSnapshot='2026-09-02';p.potentialReal=r.potential;if(typeof BBGM.normalizeRealWorldPlayer==='function')BBGM.normalizeRealWorldPlayer(p,r);});
  return slots;
 };
 BBGM.realInitialFreeAgents202627=REAL_FREE_AGENTS;

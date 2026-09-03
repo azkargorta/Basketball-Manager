@@ -1,4 +1,5 @@
-const CACHE_NAME = 'basketball-gm-beta-v024';
+importScripts('./js/version.js');
+const CACHE_NAME = self.BBGM_VERSION?.cacheName || 'basketball-gm-beta-v031';
 const CORE = [
   './',
   './index.html',
@@ -6,11 +7,43 @@ const CORE = [
   './css/mobile-safe-area.css',
   './css/v022.css',
   './css/v024.css',
+  './css/mobile-table-usability.css',
+  './js/version.js',
   './js/engine.js',
   './js/data.js',
+  './js/data-quality.js',
+  './js/real-free-agents-2026-27.js',
+  './js/real-rosters-2026-27.generated.js',
+  './js/real-rosters-manual-acb.js',
+  './js/real-rosters-manual-euro.js',
+  './js/real-rosters-manual-italy.js',
+  './js/real-rosters-manual-extra-2026-27.js',
+  './js/real-rosters-manual-more-2026-27.js',
+  './js/real-rosters-manual-greece-turkey-2026-27.js',
+  './js/real-rosters-manual-batch3-2026-27.js',
+  './js/real-rosters-manual-bigblock-2026-27.js',
+  './js/real-rosters-manual-batch4-2026-27.js',
+  './js/real-rosters-manual-batch5-2026-27.js',
+  './js/real-rosters-manual-batch6-2026-27.js',
+  './js/real-rosters-manual-batch7-2026-27.js',
+  './js/real-rosters-manual-batch8-2026-27.js',
+  './js/real-rosters-manual-batch9-2026-27.js',
+  './js/real-rosters-manual-batch10-2026-27.js',
+  './js/real-rosters-manual-batch11-2026-27.js',
+  './js/real-rosters-manual-batch12-2026-27.js',
+  './js/real-rosters-manual-batch13-2026-27.js',
+  './js/real-rosters-manual-batch14-2026-27.js',
+  './js/real-rosters-manual-batch15-2026-27.js',
+  './js/real-rosters-manual-batch16-2026-27.js',
+  './js/real-rosters-manual-merge.js',
+  './js/data-pack-real-2026-27.js',
+  './js/real-ratings-review-acb-euroleague-2026-27.js',
   './js/app.js',
   './js/v022.js',
   './js/v024.js',
+  './js/v025.js',
+  './js/v026.js',
+  './js/v027.js',
   './js/pwa.js',
   './manifest.webmanifest',
   './icons/app-icon-192.png',
@@ -48,7 +81,7 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(event.request,{ignoreSearch:true}).then(cached => {
       const fresh = fetch(event.request).then(response => {
         if (response && response.ok) {
           const copy = response.clone();

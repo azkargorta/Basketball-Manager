@@ -1,0 +1,27 @@
+name: Test production build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Unit and simulation tests
+        run: |
+          node smoke_test.js
+          node v14_logic_test.js
+          node v15_logic_test.js
+          node v16_logic_test.js
+          node v17_logic_test.js
+          node v19_long_term_test.js
+          node v20_logic_test.js
+      - name: Public build integration test
+        run: node production_integration_test.js

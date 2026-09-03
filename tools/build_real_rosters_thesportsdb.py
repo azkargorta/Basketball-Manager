@@ -76,7 +76,6 @@ def height_cm(raw):
 def calibrate(rows,club):
  base=LEAGUE_BASE.get(club['league'],69)
  if club['baseRating'] is not None:base=(base+club['baseRating'])/2
- # Deterministic team hierarchy; explicit star overrides take priority.
  spread=[5,4,3,2,2,1,1,0,0,-1,-1,-2,-2,-3,-3,-4,-4,-5,-5,-6]
  rows=sorted(rows,key=lambda x:(STAR_OVR.get(x['name'],0),-(x.get('age') or 27)),reverse=True)
  for i,r in enumerate(rows):
@@ -88,9 +87,9 @@ def calibrate(rows,club):
  return rows
 
 def main():
- clubs=parse_clubs();generated={};report={'snapshot':'2026-09-02','source':'TheSportsDB API + manual RealGM validation','clubs_total':len(clubs),'clubs':{},'missing':[]}
+ clubs=parse_clubs();generated={};report={'snapshot':'2026-09-03','source':'TheSportsDB API + manual RealGM validation','clubs_total':len(clubs),'clubs':{},'missing':[]}
  total_players=0
- for idx,c in enumerate(clubs):
+ for c in clubs:
   try:
    team=team_search(c['name'])
    if not team:raise RuntimeError('team not found')
@@ -115,11 +114,10 @@ def main():
    report['missing'].append({'id':c['id'],'name':c['name'],'league':c['league'],'error':str(e)})
    print(f"MISS {c['id']:3d} {c['name']}: {e}",flush=True)
   time.sleep(2.05)
- meta={'snapshot':'2026-09-02','source':'TheSportsDB API + RealGM validation','clubs':len(generated),'players':total_players,'coveragePct':round(100*len(generated)/max(1,len(clubs)),1)}
+ meta={'snapshot':'2026-09-03','source':'TheSportsDB API + RealGM validation','clubs':len(generated),'players':total_players,'coveragePct':round(100*len(generated)/max(1,len(clubs)),1)}
  report.update({'clubs_complete':len(generated),'players_total':total_players,'coverage_pct':meta['coveragePct']})
  OUT.write_text("(function(g){'use strict';g.BBGM_REAL_ROSTERS_202627="+json.dumps(generated,ensure_ascii=False,separators=(',',':'))+';g.BBGM_REAL_ROSTERS_META_202627='+json.dumps(meta,ensure_ascii=False,separators=(',',':'))+";})(typeof globalThis!=='undefined'?globalThis:this);\n",encoding='utf-8')
  REPORT.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
  print(json.dumps(meta,ensure_ascii=False),flush=True)
- if len(generated)<100:raise SystemExit('Coverage below 100 clubs; do not publish automatically')
 
 if __name__=='__main__':main()

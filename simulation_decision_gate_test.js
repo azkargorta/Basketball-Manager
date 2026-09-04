@@ -11,7 +11,7 @@ for(const fn of ['advanceToNextEvent','simulateToNextUserMatch','simulateToDate'
 }
 if(!app.includes("pending?'Resolver decisión':'Simular'")||!app.includes("pending?'Resolver decisión':'Siguiente partido'"))throw new Error('Los botones no avisan de la decisión pendiente');
 if(!app.includes('setTimeout(()=>interruptForPendingDecision(false),0)'))throw new Error('La decisión nueva no aparece tras cerrar el resultado');
-if(!version.includes("label:'v0.41 Beta'")||!html.includes('js/app.js?v=v041')||!sw.includes('basketball-gm-beta-v041'))throw new Error('Versión o caché incorrectas');
+if(!version.includes("label:'v0.42 Beta'")||!html.includes('js/app.js?v=v042')||!sw.includes('basketball-gm-beta-v042'))throw new Error('Versión o caché incorrectas');
 
 globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
@@ -24,4 +24,4 @@ A.setState({inbox:[{id:1,type:'RESULT',resolved:false},{id:2,type:'DECISION',res
 if(A.pendingDecision()?.id!==2)throw new Error('No detecta la decisión sin resolver');
 A.getState().inbox[1].resolved=true;
 if(A.pendingDecision()!==null)throw new Error('Una decisión resuelta sigue bloqueando la simulación');
-console.log(JSON.stringify({simulationBlocked:true,automaticNotice:true,resolvedAllowsContinue:true,version:'v0.41',ok:true},null,2));
+console.log(JSON.stringify({simulationBlocked:true,automaticNotice:true,resolvedAllowsContinue:true,version:'v0.42',ok:true},null,2));

@@ -16,5 +16,5 @@ for(const factor of ['leadership*.005','morale*.001','pair*.002','temperament*.0
 }
 for(const outcome of ['SUCCESS','PARTIAL','FAILURE'])if(!app.includes(`'${outcome}'`))throw new Error(`Falta desenlace ${outcome}`);
 for(const selector of ['.decision-situation','.decision-factors','.decision-choice-list','.decision-inline-result'])if(!css.includes(selector))throw new Error(`Falta estilo ${selector}`);
-if(!version.includes("label:'v0.41 Beta'")||!html.includes('js/app.js?v=v041'))throw new Error('La versión o la caché no se actualizaron a v0.41');
+if(!version.includes("label:'v0.42 Beta'")||!html.includes('js/app.js?v=v042'))throw new Error('La versión o la caché no se actualizaron a v0.42');
 console.log(JSON.stringify({presentedSituation:true,meaningfulChoices:true,captainFactors:5,captainOutcomes:3,persistentConsequences:true,ok:true},null,2));

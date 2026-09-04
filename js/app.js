@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.41.0-beta',label:'v0.41 Beta',saveFormat:'basketball-manager-v041'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.42.0-beta',label:'v0.42 Beta',saveFormat:'basketball-manager-v042'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -426,13 +426,37 @@ function decisionChoiceDetail(effect){return {
   LIST_PLAYER:'El jugador quedará disponible en el mercado. Puede calmar la incertidumbre, pero debilita su compromiso.',
   TALK_COACH_REST:'Reducirás su carga durante cuatro partidos para bajar fatiga y riesgo físico.',
   KEEP_LOAD:'Mantendrás el plan competitivo aunque el jugador pueda sentirse poco protegido.',
+  CLUB_NOT_FOR_SALE:'Cerrarás la puerta a cualquier negociación. El jugador se sentirá respaldado y mejorará su moral.',
+  CLUB_INVITE_OFFER:'Invitarás al club interesado a presentar una oferta formal cuyo importe dependerá del valor del jugador.',
+  CLUB_LOAN_OPEN:'Autorizarás estudiar una cesión. El jugador seguirá perteneciendo al club y podrá ganar minutos en otro equipo.',
+  YOUTH_KEEP:'El joven seguirá en tu proyecto, entrenará con el primer equipo y recibirá una pequeña mejora de moral.',
+  NBA_DECLARE:'Apoyarás que se presente al Draft NBA. Aumentará su moral, pero podría abandonar el club si es elegido.',
+  NBA_WITHDRAW:'Le recomendarás esperar otra temporada. Seguirá en el proyecto, aunque su moral puede bajar ligeramente.',
+  BOARD_YOUTH:'La prioridad será desarrollar jóvenes. Subirán la confianza de la directiva y tu valoración en desarrollo.',
+  BOARD_RESULTS:'Priorizarás el rendimiento inmediato. Mejorarán ligeramente la confianza directiva y tu planificación.',
+  FIN_WAGES:'Moverás hasta 350.000 € de caja para aumentar en 500.000 € el presupuesto salarial. La salud financiera bajará ligeramente.',
+  FIN_SCOUT:'Invertirás hasta 300.000 € de caja en scouting. Mejorarán tu valoración y la capacidad de los ojeadores.',
+  FIN_STABLE:'No gastarás recursos adicionales. Mejorarán la salud financiera y la confianza de la directiva.',
+  V20_RENEW_NOW:'Abrirás inmediatamente la negociación de renovación con el jugador y su agente.',
+  V20_RENEW_WAIT:'Aplazarás la renovación. Bajarán la satisfacción contractual del jugador y la relación con su agente.',
   LOCKER_MEDIATE:'Dirigirás una reunión cara a cara. Tu gestión de personal influirá directamente en ambos jugadores.',
   LOCKER_CAPTAIN:'El capitán intentará resolverlo. El desenlace dependerá de liderazgo, moral, química, temperamento y azar.',
   PLAYER_CAPTAIN:'El capitán hablará con el jugador sobre su papel. Liderazgo, relación personal, temperamento y azar decidirán el resultado.',
   LOCKER_IGNORE:'No intervendrás. El conflicto puede empeorar y afectar a la moral de ambos.',
   LOCKER_SUPPORT:'Respaldarás la iniciativa y reforzarás ligeramente la moral de toda la plantilla.',
-  LOCKER_FOCUS:'Rechazarás la reunión para mantener toda la atención en los partidos.'
-}[effect]||'La elección se aplicará inmediatamente y quedará registrada en la partida.'}
+  LOCKER_FOCUS:'Rechazarás la reunión para mantener toda la atención en los partidos y reforzar ligeramente tu autoridad.',
+  PERS_SUPPORT_ADAPT:'Darás apoyo personal al jugador. Mejorarán claramente su adaptación, su moral y la relación con su agente.',
+  PERS_HOME_EXIT:'Aceptarás buscar una salida. El jugador pedirá el traspaso y quedará disponible en el mercado.',
+  PERS_HARDLINE:'Le exigirás que se centre. Mejorará un poco su adaptación, pero bajarán su moral y la relación con su agente.',
+  PERS_PROMISE_WIN:'Prometerás construir un proyecto ganador esta temporada. Mejorarán su moral y la relación con su agente.',
+  PERS_NO_PROMISE:'No comprometerás al club. El jugador perderá moral y, si es muy ambicioso, puede pedir salir.',
+  PERS_EXIT_MARKET:'Abrirás la puerta a su marcha. Pedirá el traspaso, quedará en el mercado y empeorará la relación con su agente.',
+  PERS_ROLE_HOLD:'Mantendrás su papel actual. Bajarán su moral y su satisfacción con el rol.',
+  PERS_RENEW_WARM:'Le comunicarás que quieres renovarlo. Mejorarán mucho su satisfacción contractual y la relación con su agente.',
+  PERS_RENEW_WAIT:'Pospondrás la conversación hasta final de temporada. Su moral bajará ligeramente.',
+  PERS_MENTOR_SUPPORT:'Formalizarás la mentoría. Mejorarán mucho la relación entre ambos, la confianza del joven y la moral del veterano.',
+  PERS_MENTOR_NATURAL:'No intervendrás en la mentoría. La relación entre ambos seguirá creciendo, pero más lentamente.'
+}[effect]||'No hay una previsión disponible para esta opción.'}
 function captainInterventionChance(ev){
   const cap=userClub().roster.find(x=>x.id===state.lockerRoom.captainId),p=ev.playerId?playerLocation(ev.playerId)?.player:null,p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;
   if(!cap)return {cap:null,available:false,chance:0,pair:0,temperament:100,leadership:0};

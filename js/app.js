@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.37.0-beta',label:'v0.37 Beta',saveFormat:'basketball-manager-v037'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.38.0-beta',label:'v0.38 Beta',saveFormat:'basketball-manager-v038'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -1051,9 +1051,9 @@ function upgradeState(s){
   if(!state.world.competitions)state.world.competitions=freshWorld.competitions.map(c=>({...c}));
   if(!state.special)state.special={series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false};
   if(!state.special.series)state.special.series={};if(!state.special.champions)state.special.champions={};
-  if(!state.board)state.board={confidence:72,objectives:[{id:'ACB',label:'Finalizar entre los 6 primeros de ACB',target:6},{id:'EL',label:'Alcanzar al menos el Play-In de Euroliga',target:10},{id:'YOUTH',label:'Desarrollar talento joven',target:1},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]};
-  const userProject=state.world.clubs.find(c=>c.id===state.userClubId);const userComps=(state.world.competitions||[]).filter(c=>c.clubIds?.includes(state.userClubId));const goals=state.board?.objectives||[];const invalidGoals=goals.some(o=>(o.id==='EL'&&!userComps.some(c=>c.id==='EL'))||(o.id==='ACB'&&!userComps.some(c=>c.id==='ACB')));if(state.board&&(state.board.projectClubId!==state.userClubId||invalidGoals||!goals.some(o=>o.id==='LEAGUE'))){state.board.objectives=projectObjectives(userProject);state.board.projectClubId=state.userClubId;}
+  if(!state.board)state.board={confidence:72,objectives:[]};
   ensureClubProjects();
+  const userProject=state.world.clubs.find(c=>c.id===state.userClubId);const userComps=(state.world.competitions||[]).filter(c=>c.clubIds?.includes(state.userClubId));const goals=state.board?.objectives||[];const invalidGoals=goals.some(o=>(o.id==='EL'&&!userComps.some(c=>c.id==='EL'))||(o.id==='ACB'&&!userComps.some(c=>c.id==='ACB')));const staleObjectiveModel=state.board?.objectiveModelVersion!==3;if(state.board&&(staleObjectiveModel||state.board.projectClubId!==state.userClubId||invalidGoals||!goals.some(o=>o.id==='LEAGUE'))){state.board.objectives=projectObjectives(userProject);state.board.projectClubId=state.userClubId;state.board.objectiveModelVersion=3;}
   if(!state.coachManagement)state.coachManagement={relationship:72};
   state.world.clubs.forEach(c=>{if(!c.coachMinuteRequests)c.coachMinuteRequests={}});
   if(!state.sponsorship)state.sponsorship={active:null,offers:createSponsorOffers(state.season),evaluatedSeason:null,lastBonus:0,brandReputation:60};
@@ -1096,15 +1096,19 @@ function newGame(selectedClubId=1){
   state={
     version:APP_VERSION.code,saveName:`Carrera ${world.clubs.find(c=>c.id===selectedClubId)?.name||'Basketball GM'}`,season:'2026/27',currentDate:'2026-09-01',userClubId:selectedClubId,nextEventId:100,
     manager:{name:'Director deportivo',reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},
-    world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[{id:'ACB',label:'Finalizar entre los 6 primeros de ACB',target:6},{id:'EL',label:'Alcanzar al menos el Play-In de Euroliga',target:10},{id:'YOUTH',label:'Desarrollar talento joven',target:1},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(selectedClubId,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
+    world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[],projectClubId:selectedClubId,objectiveModelVersion:3},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(selectedClubId,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
   };
   ensureAcademy();
   ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
+  ensureClubProjects();
+  state.board.objectives=projectObjectives(userClub());
+  state.board.projectClubId=state.userClubId;
+  state.board.objectiveModelVersion=3;
   activatePreseason('2026-09-01');
   world.clubs.forEach(c=>c.coachMinuteRequests={});
   state.sponsorship.offers=createSponsorOffers(state.season);
   for(const c of world.competitions.filter(c=>c.standings))state.standings[c.id]=Object.fromEntries(c.clubIds.map(id=>[id,{clubId:id,gp:0,w:0,l:0,pf:0,pa:0}]));
-  addInbox('INFO','Bienvenido a Baskonia','La directiva espera una temporada competitiva en ACB y Euroliga.');
+  addInbox('INFO',`Bienvenido a ${userClub().name}`,`La directiva presenta un proyecto ${userClub().careerProject?.name?.toLowerCase()||'deportivo'} y fija como prioridad ${state.board.objectives[0]?.label?.toLowerCase()||'competir en tu liga'}.`);
   addInbox('INFO','Data Pack real 2026/27','La partida comienza con identidades y plantillas reales. Ratings, potenciales, salarios y economía son estimaciones propias del juego.');
   addInbox('SCOUTING','Scouting disponible','Tienes tres ojeadores. Los jugadores externos muestran información parcial hasta que los investigues.');
   addInbox('TRAINING','Plan mensual pendiente','Puedes asignar un foco de entrenamiento a cada jugador desde Plantilla.');

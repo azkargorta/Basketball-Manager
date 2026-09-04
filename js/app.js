@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.35.0-beta',label:'v0.35 Beta',saveFormat:'basketball-manager-v035'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.36.0-beta',label:'v0.36 Beta',saveFormat:'basketball-manager-v036'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -1050,7 +1050,7 @@ function upgradeState(s){
   if(!state.special)state.special={series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false};
   if(!state.special.series)state.special.series={};if(!state.special.champions)state.special.champions={};
   if(!state.board)state.board={confidence:72,objectives:[{id:'ACB',label:'Finalizar entre los 6 primeros de ACB',target:6},{id:'EL',label:'Alcanzar al menos el Play-In de Euroliga',target:10},{id:'YOUTH',label:'Desarrollar talento joven',target:1},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]};
-  const userProject=state.world.clubs.find(c=>c.id===state.userClubId);const userComps=(state.world.competitions||[]).filter(c=>c.clubIds?.includes(state.userClubId));if(state.board&&!state.board.projectClubId){const staleEuro=(state.board.objectives||[]).some(o=>o.id==='EL')&&!userComps.some(c=>c.id==='EL');if(staleEuro||!state.board.objectives?.some(o=>o.id==='LEAGUE'))state.board.objectives=projectObjectives(userProject);state.board.projectClubId=state.userClubId;}
+  const userProject=state.world.clubs.find(c=>c.id===state.userClubId);const userComps=(state.world.competitions||[]).filter(c=>c.clubIds?.includes(state.userClubId));const goals=state.board?.objectives||[];const invalidGoals=goals.some(o=>(o.id==='EL'&&!userComps.some(c=>c.id==='EL'))||(o.id==='ACB'&&!userComps.some(c=>c.id==='ACB')));if(state.board&&(state.board.projectClubId!==state.userClubId||invalidGoals||!goals.some(o=>o.id==='LEAGUE'))){state.board.objectives=projectObjectives(userProject);state.board.projectClubId=state.userClubId;}
   ensureClubProjects();
   if(!state.coachManagement)state.coachManagement={relationship:72};
   state.world.clubs.forEach(c=>{if(!c.coachMinuteRequests)c.coachMinuteRequests={}});

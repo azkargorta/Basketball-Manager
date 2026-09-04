@@ -1,0 +1,233 @@
+/* Basketball Manager v0.33 — coherent visual system and mobile-first navigation */
+
+:root {
+  --accent: #f59a52;
+  --accent-strong: #e9782d;
+  --bg: #0a0f16;
+  --panel: #121923;
+  --panel2: #1a2430;
+  --line: #293646;
+  --muted: #a9b5c5;
+  --radius: 16px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+html[data-theme="light"] {
+  --accent: #c85d17;
+  --accent-strong: #a9470d;
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --panel2: #edf1f5;
+  --line: #d6dee8;
+  --muted: #5d6a7c;
+  --shadow: 0 5px 18px rgba(35, 50, 69, .08);
+}
+
+html { color-scheme: dark; scroll-behavior: smooth; }
+html[data-theme="light"] { color-scheme: light; }
+body {
+  font-size: 15px;
+  line-height: 1.45;
+  background: radial-gradient(circle at 90% 0, rgba(245, 154, 82, .09), transparent 30%), var(--bg);
+}
+
+button, select, input { min-height: 44px; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 72%, white);
+  outline-offset: 2px;
+}
+
+.nav button { min-height: 46px; }
+.nav button, .bottom-nav button { display: flex; align-items: center; gap: 10px; }
+.nav-icon { display: inline-grid; place-items: center; flex: 0 0 auto; font-size: 18px; line-height: 1; }
+.nav-label { min-width: 0; }
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--line) 78%, transparent);
+}
+.club-title { letter-spacing: -.018em; }
+.club-meta { color: var(--muted); }
+
+.content { max-width: 1280px; }
+.card {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  border-color: var(--line);
+}
+.card:hover { border-color: color-mix(in srgb, var(--line) 78%, var(--accent) 22%); }
+.card h2, .card h3 { letter-spacing: -.018em; }
+.section-title h1 { line-height: 1.1; }
+.section-title p { max-width: 68ch; line-height: 1.5; }
+.eyebrow { color: var(--accent); font-size: 12px; letter-spacing: .075em; }
+.muted, .tiny { line-height: 1.45; }
+.tiny { font-size: 12px; }
+
+.btn {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  box-shadow: none;
+}
+.btn.small, .tiny-btn { min-height: 44px; padding: 9px 12px; font-size: 13px; }
+.btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #1c0c02;
+}
+.pill, .morale-pill { min-height: 28px; align-items: center; font-size: 12px; }
+.tabs button, .market-tabs button, .profile-tabs button { min-height: 44px; padding: 10px 13px; }
+.field label { font-size: 13px; }
+.field select, .field input, .calendar-toolbar select {
+  min-height: 46px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--panel2);
+}
+.stat-row { min-height: 44px; align-items: center; }
+.msg-title, .rank-item, .news-line { font-size: 14px; }
+.msg-text, .pc-meta, .notice-row p { font-size: 13px; }
+
+.more-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.more-shortcut {
+  min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  padding: 14px 16px;
+  color: var(--text);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 11%, var(--panel)), var(--panel));
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+}
+.more-shortcut b { font-size: 15px; }
+.more-shortcut span { color: var(--muted); font-size: 13px; }
+.more-shortcut:hover { border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  body { font-size: 16px; }
+  .shell, .main { min-height: 100dvh; }
+
+  .topbar {
+    box-sizing: border-box;
+    height: calc(70px + env(safe-area-inset-top));
+    min-height: calc(70px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left));
+  }
+  .club-title { max-width: 45vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 17px; }
+  .club-meta { font-size: 12px; }
+  .top-actions { gap: 6px; }
+  .top-actions .btn { min-height: 44px; padding: 8px 11px; }
+  .top-actions #saveBtn { display: none; }
+  .top-actions #globalSearchBtn { font-size: 0; width: 44px; padding: 0; }
+  .top-actions #globalSearchBtn::first-letter { font-size: 21px; }
+
+  .content {
+    width: 100%;
+    margin: 0;
+    padding: 18px max(12px, env(safe-area-inset-right)) calc(104px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .section-title { gap: 10px; margin-bottom: 18px; }
+  .section-title h1 { font-size: clamp(27px, 8vw, 34px); }
+  .section-title p { margin-top: 7px; font-size: 14px; }
+  .eyebrow { font-size: 12px; }
+  .card { padding: 16px; border-radius: 16px; box-shadow: 0 4px 14px rgba(0, 0, 0, .14); }
+  .grid.two, .grid.three, .grid.four { gap: 12px; }
+
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    min-height: calc(76px + env(safe-area-inset-bottom)) !important;
+    padding: 7px max(5px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left)) !important;
+    overflow: visible !important;
+    background: color-mix(in srgb, var(--bg) 94%, transparent) !important;
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, .2);
+  }
+  .bottom-nav button {
+    min-width: 0 !important;
+    min-height: 61px !important;
+    padding: 7px 2px 6px !important;
+    flex: initial !important;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    color: var(--muted);
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 13px !important;
+    font-size: 12px !important;
+    font-weight: 750;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: none !important;
+  }
+  .bottom-nav .nav-icon { width: 28px; height: 25px; font-size: 21px; }
+  .bottom-nav button.active {
+    color: var(--text) !important;
+    background: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  }
+  .bottom-nav button.active .nav-icon { color: var(--accent); }
+
+  .modal-backdrop {
+    align-items: end;
+    padding: max(12px, env(safe-area-inset-top)) 0 0;
+  }
+  .modal {
+    width: 100%;
+    max-height: calc(94dvh - env(safe-area-inset-top));
+    padding: 18px 14px max(20px, env(safe-area-inset-bottom));
+    border-radius: 22px 22px 0 0;
+  }
+  .modal-head { position: sticky; top: -18px; z-index: 12; padding: 12px 0; background: var(--panel); }
+
+  .table-wrap { border-radius: 13px; scrollbar-color: var(--accent) var(--panel2); }
+  .table-wrap::before { font-size: 12px; background: var(--panel2); }
+  .table-wrap th, .table-wrap td { padding: 12px 11px; font-size: 13px; }
+
+  .start-screen { padding: max(24px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
+  .start-card { padding: 24px 20px; border-radius: 22px; }
+  .start-card h1 { font-size: clamp(32px, 10vw, 42px); line-height: 1.04; }
+  .start-actions { gap: 12px; }
+  .start-actions .btn { min-height: 50px; }
+  .toast { left: 12px; right: 12px; bottom: calc(90px + env(safe-area-inset-bottom)); text-align: center; font-size: 14px; }
+}
+
+@media (max-width: 620px) {
+  .more-shortcuts { grid-template-columns: 1fr; gap: 9px; }
+  .more-shortcut { min-height: 68px; }
+  .more-sections { gap: 10px !important; }
+  .action-row { display: grid; grid-template-columns: 1fr; }
+  .action-row .btn, .action-stack .btn { width: 100%; }
+  .objective-row { min-height: 54px; }
+  .profile-summary-grid small, .weekly-kpis span, .card-stats span { font-size: 12px; }
+  .profile-summary-grid span, .objective-row small, .record-line small { font-size: 12px; }
+  .court-player b { font-size: 11px; }
+  .court-player small, .court-pos { font-size: 10px; }
+}
+
+@media (max-width: 370px) {
+  .bottom-nav button { font-size: 11px !important; }
+  .bottom-nav .nav-icon { font-size: 19px; }
+  .club-title { max-width: 40vw; font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}

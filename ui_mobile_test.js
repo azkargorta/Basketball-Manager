@@ -3,7 +3,7 @@ const fs = require('fs');
 const read = file => fs.readFileSync(`${__dirname}/${file}`, 'utf8');
 const app = read('js/app.js');
 const html = read('index.html');
-const css = read('css/ui-v033.css');
+const css = `${read('css/ui-v033.css')}\n${read('css/ui-v034.css')}`;
 const sw = read('sw.js');
 
 const bottomMarkup = app.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
@@ -18,8 +18,8 @@ for (const view of ['academy', 'standings', 'stats']) {
 }
 
 const lastStyle = [...html.matchAll(/<link\s+rel="stylesheet"\s+href="([^"]+)"/g)].at(-1)?.[1] || '';
-if (!lastStyle.startsWith('css/ui-v033.css')) throw new Error('ui-v033.css debe ser la última capa visual');
-if (!sw.includes("'./css/ui-v033.css'")) throw new Error('ui-v033.css no está disponible offline');
+if (!lastStyle.startsWith('css/ui-v034.css')) throw new Error('ui-v034.css debe ser la última capa visual');
+if (!sw.includes("'./css/ui-v033.css'") || !sw.includes("'./css/ui-v034.css'")) throw new Error('Las capas visuales no están disponibles offline');
 
 const required = [
   'grid-template-columns: repeat(5, minmax(0, 1fr))',

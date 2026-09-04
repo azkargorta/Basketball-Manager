@@ -2,7 +2,7 @@
 'use strict';
 
 const DB_NAME='basketball_gm_offline', STORE='saves', MAIN_SAVE='main_v08';
-const VERSION=window.BBGM_VERSION||{code:'0.32.0-beta',label:'v0.32 Beta'};
+const VERSION=window.BBGM_VERSION||{code:'0.34.0-beta',label:'v0.34 Beta'};
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Math.round(n||0));

@@ -611,7 +611,9 @@ function evaluateSponsorBonuses(){
   if(total){financeEntry(userClub(),'INCOME','SPONSOR_BONUS',total,`Variables patrocinador ${sp.name}`);state.sponsorship.brandReputation=BBGM.clamp((state.sponsorship.brandReputation||60)+3,20,100);addInbox('SPONSOR','Bonus de patrocinio',`${sp.name} paga ${fmtMoney(total)} en variables: ${won.join(', ')}.`)}
   if(!total)state.sponsorship.brandReputation=BBGM.clamp((state.sponsorship.brandReputation||60)-1,20,100);state.sponsorship.evaluatedSeason=state.season;state.sponsorship.lastBonus=total;return total;
 }
+function projectObjectives(clubObj){const rep=clubObj?.reputation||65,target=rep>=86?3:rep>=76?6:rep>=66?9:12;return [{id:'LEAGUE',label:`Finalizar entre los ${target} primeros de liga`,target},{id:'YOUTH',label:'Desarrollar talento joven',target:rep<70?1:2},{id:'FIN',label:'Mantener una estructura financiera sostenible',target:1}]}
 function boardObjectiveState(o){
+  if(o.id==='LEAGUE'){const league=(state.world.competitions||[]).find(x=>x.standings&&x.clubIds?.includes(state.userClubId));const p=league?sortedStandings(league.id).findIndex(x=>x.clubId===state.userClubId)+1:0;return {text:p?`${p}.º / objetivo Top ${o.target}`:'Sin partidos',ok:p&&p<=o.target}}
   if(o.id==='ACB'){const p=sortedStandings('ACB').findIndex(x=>x.clubId===state.userClubId)+1;return {text:p?`${p}.º / objetivo Top ${o.target}`:'Sin partidos',ok:p&&p<=o.target}}
   if(o.id==='EL'){const p=sortedStandings('EL').findIndex(x=>x.clubId===state.userClubId)+1;return {text:p?`${p}.º / objetivo Top ${o.target}`:'Sin partidos',ok:p&&p<=o.target}}
   if(o.id==='YOUTH'){const young=userClub().roster.filter(p=>p.age<=21).reduce((n,p)=>n+((seasonStatsMap()[p.id]?.g||0)>=5?1:0),0);return {text:`${young} joven(es) con 5+ PJ`,ok:young>=o.target}}

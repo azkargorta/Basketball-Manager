@@ -1484,7 +1484,7 @@ function renderHome(v){
   v.insertAdjacentHTML('beforeend',v20HomeNewsHtml());
   v.insertAdjacentHTML('beforeend',`<div style="margin-top:16px">${weeklySummaryHtml()}</div>`);v.insertAdjacentHTML('beforeend',dashboardExtraHtml());
   const lh=document.getElementById('openLockerHome');if(lh)lh.onclick=()=>{currentView='locker';render()};const ph=document.getElementById('openPlanningHome');if(ph)ph.onclick=()=>{currentView='planning';render()};
-  const nextBtn=document.getElementById('nextMatchBtn');if(nextBtn)nextBtn.onclick=state.seasonComplete?showEndSeasonModal:state.offseason?.active?advanceOffseasonWeek:state.preseason?.active?advancePreseasonWeek:advanceToNextEvent;if(nm)document.getElementById('playBtn').onclick=simulateToNextUserMatch;
+  const nextBtn=document.getElementById('nextMatchBtn');if(nextBtn)nextBtn.onclick=pending?()=>interruptForPendingDecision():state.seasonComplete?showEndSeasonModal:state.offseason?.active?advanceOffseasonWeek:state.preseason?.active?advancePreseasonWeek:advanceToNextEvent;if(nm)document.getElementById('playBtn').onclick=simulateToNextUserMatch;
   const oph=document.getElementById('openPreHome');if(oph)oph.onclick=()=>{currentView='preseason';render()};const oi=document.getElementById('openInboxHome');if(oi)oi.onclick=()=>{currentView='inbox';render()};const ow=document.getElementById('openWeekly');if(ow)ow.onclick=()=>showWeeklySummaryModal();const tc=document.getElementById('talkCoachHome');if(tc)tc.onclick=()=>{currentView='coach';render()};const sh=document.getElementById('sponsorHome');if(sh)sh.onclick=()=>{currentView='sponsors';render()};bindInboxActions(v);bindProfileButtons(v);
 }
 

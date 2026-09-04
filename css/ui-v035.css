@@ -1,3 +1,14 @@
 /* v0.35: header labels stay understandable on touch screens. */
 .search-btn{white-space:nowrap}
 @media(max-width:620px){.top-actions .search-btn{min-width:72px;padding-inline:10px}.top-actions .search-btn span{display:inline}}
+
+/* v0.40: decisiones de vestuario presentadas antes de aplicar consecuencias. */
+.decision-situation{margin:12px 0 16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}
+.decision-situation>p{margin:0 0 12px;line-height:1.5}
+.decision-factors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.decision-factors>div{min-width:0;padding:9px 10px;border-radius:10px;background:rgba(255,255,255,.035)}
+.decision-factors span,.decision-factors b{display:block;overflow-wrap:anywhere}.decision-factors span{font-size:.72rem;color:var(--muted);margin-bottom:3px}.decision-factors b{font-size:.88rem}
+.decision-choice-list{display:grid;gap:9px}.decision-choice-list button{width:100%;min-height:62px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}.decision-choice-list button:hover,.decision-choice-list button:focus-visible{border-color:var(--accent);background:rgba(0,104,179,.1)}.decision-choice-list button:disabled{opacity:.45;cursor:not-allowed}.decision-choice-list b,.decision-choice-list span{display:block}.decision-choice-list span{margin-top:4px;color:var(--muted);font-size:.8rem;line-height:1.4}
+.decision-result-card,.decision-inline-result{border:1px solid rgba(86,211,138,.32);background:rgba(86,211,138,.08);border-radius:13px;padding:13px}.decision-result-card p{margin:0;line-height:1.5}.decision-inline-result{margin-top:10px}.decision-inline-result b,.decision-inline-result span{display:block}.decision-inline-result span{margin-top:4px;font-size:.8rem;line-height:1.4;color:var(--muted)}
+.decision-history-row{padding:11px 0;border-top:1px solid var(--line)}.decision-history-row:first-of-type{border-top:0}.decision-history-row>div{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.decision-history-row span{font-size:.75rem;color:var(--muted)}.decision-history-row p{margin:5px 0 0;font-size:.84rem;line-height:1.4;color:var(--muted)}
+@media(max-width:620px){.decision-factors{grid-template-columns:1fr}.decision-choice-list button{min-height:68px}}

@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.38.0-beta',label:'v0.38 Beta',saveFormat:'basketball-manager-v038'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.40.0-beta',label:'v0.40 Beta',saveFormat:'basketball-manager-v040'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -238,7 +238,7 @@ function coachTrust(p){const c=userClub(),rot=BBGM.rotation(c),mins=rot.playerMi
 function positionDepth(pos){const rot=BBGM.rotation(userClub());return userClub().roster.filter(p=>p.primaryPosition===pos||p.secondaryPosition===pos).map(p=>({p,ovr:BBGM.overall(p,pos),mins:rot.playerMinutes[p.id]||0})).sort((a,b)=>b.ovr-a.ovr)}
 function squadNeed(pos){const d=positionDepth(pos),top=d[0]?.ovr||0,second=d[1]?.ovr||0,count=d.length;let severity=0;if(count<2)severity+=38;if(count<3)severity+=12;if(top<76)severity+=(76-top)*2;if(second<70)severity+=(70-second)*1.5;return {pos,depth:d,severity:Math.round(severity),label:severity>=35?'Alta':severity>=18?'Media':'Baja'}}
 function allSquadNeeds(){return ['PG','SG','SF','PF','C'].map(squadNeed).sort((a,b)=>b.severity-a.severity)}
-function ensureV12State(){if(!state)return;state.version=APP_VERSION.code;state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
+function ensureV12State(){if(!state)return;state.version=APP_VERSION.code;state.watchlist=Array.isArray(state.watchlist)?state.watchlist:[];state.marketDynamics=state.marketDynamics||{rumors:[],agentOffers:[],lastPulseGame:0};state.planning=state.planning||{priorityPosition:null};state.lockerRoom=state.lockerRoom||{captainId:null,lastIncidentGame:0};state.lockerRoom.decisionHistory=Array.isArray(state.lockerRoom.decisionHistory)?state.lockerRoom.decisionHistory:[];state.coachManagement=state.coachManagement||{relationship:72};state.coachManagement.interventions=state.coachManagement.interventions||{month:state.currentDate?.slice(0,7)||'',count:0};state.coachManagement.squadRequest=state.coachManagement.squadRequest||null;const roster=userClub()?.roster||[];if(roster.length&&!roster.some(p=>p.id===state.lockerRoom.captainId))state.lockerRoom.captainId=roster.slice().sort((a,b)=>leadershipScore(b)-leadershipScore(a))[0]?.id||null;for(const sc of [...(state.scouting?.staff||[]),...(state.world?.scoutMarket||[])]){if(sc.focusLeague==null){const opts=['Liga ACB','EuroLeague','NBA','LNB Élite','LBA Serie A','Basketbol Süper Ligi','ABA League'];sc.focusLeague=opts[Math.abs((sc.id||1)*7)%opts.length]}if(sc.focusCountry==null){const opts=['España','USA','Serbia','Francia','Italia','Turquía','Lituania'];sc.focusCountry=opts[Math.abs((sc.id||1)*11)%opts.length]}}ensureCoachSquadRequest();ensureV13State()}
 function ensureCoachSquadRequest(){if(!state?.coachManagement||state.coachManagement.squadRequest?.season===state.season)return;const need=allSquadNeeds()[0],low=userClub().roster.slice().sort((a,b)=>coachTrust(a)-coachTrust(b))[0];state.coachManagement.squadRequest={season:state.season,position:need.pos,severity:need.severity,status:'PENDING',exitPlayerId:low&&coachTrust(low)<54?low.id:null}}
 function setPlanningPriority(pos){state.planning.priorityPosition=pos||null;saveLocal(false);render();toast(pos?`Prioridad: ${positionLabel[pos]}`:'Prioridad eliminada')}
 function setCaptain(id){const p=userClub().roster.find(x=>x.id===id);if(!p)return;state.lockerRoom.captainId=id;p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100);saveLocal(false);render();toast(`${fullName(p)} es el capitán`)}
@@ -414,10 +414,65 @@ function notificationTarget(e){
 function notificationActionsHtml(e){
   const actions=[];
   if(e.type==='TRANSFER_OFFER'&&!e.resolved)actions.push(`<button class="btn small good" data-offer-accept="${e.id}">Aceptar</button>`,`<button class="btn small" data-offer-reject="${e.id}">Rechazar</button>`);
-  if(e.type==='DECISION'&&!e.resolved)actions.push(...(e.choices||[]).map((c,i)=>`<button class="btn small ${i===0?'good':''}" data-decision="${e.id}" data-choice="${i}">${c.label}</button>`));
+  if(e.type==='DECISION'&&!e.resolved)actions.push(`<button class="btn small good" data-open-decision="${e.id}">${decisionActionLabel(e)}</button>`);
   const target=notificationTarget(e);if(target)actions.push(`<button class="btn small inbox-primary-action" data-inbox-open="${e.id}">${target.label} <span aria-hidden="true">→</span></button>`);
-  return actions.length?`<div class="inbox-actions">${actions.join('')}</div>`:'';
+  const outcome=e.decisionResult?`<div class="decision-inline-result"><b>Decisión: ${e.decision||'registrada'}</b><span>${e.decisionResult}</span></div>`:'';
+  return `${outcome}${actions.length?`<div class="inbox-actions">${actions.join('')}</div>`:''}`;
 }
+function decisionActionLabel(e){const effects=(e.choices||[]).map(c=>c.effect);return effects.some(x=>x?.startsWith('LOCKER_')||x==='PLAYER_CAPTAIN'||x==='TALK_COACH_MORE')?'Mediar':e.playerId?'Gestionar situación':'Tomar decisión'}
+function decisionChoiceDetail(effect){return {
+  TALK_COACH_MORE:'Pedirás al entrenador cinco minutos extra durante los próximos cinco partidos. Puede tensar vuestra relación.',
+  HOLD_ROLE:'Mantendrás la jerarquía actual. Protege el plan deportivo, pero el jugador puede perder moral y satisfacción.',
+  LIST_PLAYER:'El jugador quedará disponible en el mercado. Puede calmar la incertidumbre, pero debilita su compromiso.',
+  TALK_COACH_REST:'Reducirás su carga durante cuatro partidos para bajar fatiga y riesgo físico.',
+  KEEP_LOAD:'Mantendrás el plan competitivo aunque el jugador pueda sentirse poco protegido.',
+  LOCKER_MEDIATE:'Dirigirás una reunión cara a cara. Tu gestión de personal influirá directamente en ambos jugadores.',
+  LOCKER_CAPTAIN:'El capitán intentará resolverlo. El desenlace dependerá de liderazgo, moral, química, temperamento y azar.',
+  PLAYER_CAPTAIN:'El capitán hablará con el jugador sobre su papel. Liderazgo, relación personal, temperamento y azar decidirán el resultado.',
+  LOCKER_IGNORE:'No intervendrás. El conflicto puede empeorar y afectar a la moral de ambos.',
+  LOCKER_SUPPORT:'Respaldarás la iniciativa y reforzarás ligeramente la moral de toda la plantilla.',
+  LOCKER_FOCUS:'Rechazarás la reunión para mantener toda la atención en los partidos.'
+}[effect]||'La elección se aplicará inmediatamente y quedará registrada en la partida.'}
+function captainInterventionChance(ev){
+  const cap=userClub().roster.find(x=>x.id===state.lockerRoom.captainId),p=ev.playerId?playerLocation(ev.playerId)?.player:null,p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;
+  if(!cap)return {cap:null,available:false,chance:0,pair:0,temperament:100,leadership:0};
+  if(cap.id===p?.id||cap.id===p2?.id)return {cap,available:false,chance:0,pair:0,temperament:p?.personality?.temperament||50,leadership:leadershipScore(cap),morale:cap.state?.morale??70};
+  const pair=p&&p2?chemistryPair(p,p2):p&&p.id!==cap.id?chemistryPair(cap,p):lockerRoomMetrics().pairAvg,temperament=p2?((p?.personality?.temperament||50)+(p2.personality?.temperament||50))/2:(p?.personality?.temperament||50),leadership=leadershipScore(cap),morale=cap.state?.morale??70;
+  const chance=BBGM.clamp(.15+leadership*.005+morale*.001+pair*.002-temperament*.0025,.18,.88);
+  return {cap,available:true,chance,pair,temperament,leadership,morale};
+}
+function resolveCaptainDelegation(ev){
+  const p=ev.playerId?playerLocation(ev.playerId)?.player:null,p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null,f=captainInterventionChance(ev),rng=new BBGM.RNG(hashCode(`${state.season}-${ev.id}-${state.currentDate}-captain-decision`)),roll=rng.next(),success=roll<f.chance,partial=!success&&roll<f.chance+.18;
+  if(!f.available)return f.cap?'El capitán está implicado directamente y no puede mediar en su propia situación.':'No había un capitán disponible para intervenir.';
+  if(success){
+    f.cap.state.morale=BBGM.clamp((f.cap.state.morale||70)+2,0,100);
+    if(p)p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100);
+    if(p2){p2.state.morale=BBGM.clamp((p2.state.morale||70)+2,0,100);changeRelationship(p,p2,7)}else if(p)p.state.roleSatisfaction=BBGM.clamp((p.state.roleSatisfaction||70)+3,0,100);
+  }else if(partial){if(p&&p2)changeRelationship(p,p2,2);else if(p)p.state.morale=BBGM.clamp((p.state.morale||70)-1,0,100)}
+  else{
+    f.cap.state.morale=BBGM.clamp((f.cap.state.morale||70)-2,0,100);
+    if(p)p.state.morale=BBGM.clamp((p.state.morale||70)-3,0,100);
+    if(p2){p2.state.morale=BBGM.clamp((p2.state.morale||70)-3,0,100);changeRelationship(p,p2,-6)}else if(p)p.state.roleSatisfaction=BBGM.clamp((p.state.roleSatisfaction||70)-5,0,100);
+  }
+  ev.captainResolution={captainId:f.cap.id,chance:Math.round(f.chance*100),roll:+roll.toFixed(4),outcome:success?'SUCCESS':partial?'PARTIAL':'FAILURE'};
+  if(p2)return success?`${fullName(f.cap)} gestiona bien la conversación: su liderazgo se impone y la relación entre los jugadores mejora 7 puntos.`:partial?`${fullName(f.cap)} contiene el problema, pero no lo resuelve del todo. La relación mejora 2 puntos y habrá que vigilarla.`:`La intervención de ${fullName(f.cap)} sale mal. Los jugadores rechazan su mediación: baja la moral y la relación empeora 6 puntos.`;
+  return success?`${fullName(f.cap)} convence a ${fullName(p)} para aceptar su papel por ahora. Mejoran su moral y la satisfacción con el rol.`:partial?`${fullName(f.cap)} calma momentáneamente a ${fullName(p)}, pero la petición de minutos sigue latente.`:`${fullName(p)} rechaza la intervención de ${fullName(f.cap)}. Bajan su moral y satisfacción, y el capitán también queda afectado.`;
+}
+function decisionSituationHtml(ev){
+  const p=ev.playerId?playerLocation(ev.playerId)?.player:null,p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null,rot=p?BBGM.rotation(userClub()):null,mins=p?(rot.playerMinutes[p.id]||0):0,expected=p?(expectedRoleMinutes[p.role]||14):0;
+  const rows=[];
+  if(p)rows.push(['Jugador',fullName(p)],['Moral',`${Math.round(p.state?.morale??70)}/100`],['Satisfacción con el rol',`${Math.round(p.state?.roleSatisfaction??70)}/100`]);
+  if(p&&p2)rows.push(['Otro jugador',fullName(p2)],['Relación actual',`${chemistryPair(p,p2)}/100`]);
+  else if(p)rows.push(['Minutos',`${Math.round(mins)} previstos · ${Math.round(expected)} esperados por su rol`],['Personalidad',personalityArchetype(p)]);
+  if((ev.choices||[]).some(c=>['LOCKER_CAPTAIN','PLAYER_CAPTAIN'].includes(c.effect))){const f=captainInterventionChance(ev);rows.push(['Capitán',f.cap?`${fullName(f.cap)} · liderazgo ${Math.round(f.leadership)}`:'No hay capitán'],['Opciones del capitán',f.available?`${Math.round(f.chance*100)}% de resolver bien la situación`:f.cap?'No puede mediar porque está implicado':'No puede intervenir hasta que nombres uno']);}
+  return `<div class="decision-situation"><p>${ev.text}</p><div class="decision-factors">${rows.map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join('')}</div></div>`;
+}
+function openDecisionModal(id){
+  const ev=state.inbox.find(e=>String(e.id)===String(id));if(!ev)return;if(ev.resolved){toast('Esta decisión ya está resuelta');return}
+  const captainFactors=captainInterventionChance(ev),back=modal(`<div class="modal-head"><div><div class="eyebrow">Decisión de gestión</div><h2>${ev.title}</h2></div><button class="btn" data-close>Cerrar</button></div>${decisionSituationHtml(ev)}<div class="decision-choice-list">${(ev.choices||[]).map((c,i)=>{const disabled=['LOCKER_CAPTAIN','PLAYER_CAPTAIN'].includes(c.effect)&&!captainFactors.available;return `<button data-modal-decision="${ev.id}" data-choice="${i}" ${disabled?'disabled':''}><b>${c.label}</b><span>${decisionChoiceDetail(c.effect)}</span></button>`}).join('')}</div><p class="tiny muted">La decisión se guarda al elegir una opción y sus consecuencias afectan a la partida.</p>`);
+  back.querySelector('[data-close]').onclick=()=>back.remove();back.querySelectorAll('[data-modal-decision]').forEach(b=>b.onclick=()=>{const choice=(ev.choices||[])[+b.dataset.choice],result=resolveDecision(+b.dataset.modalDecision,+b.dataset.choice,true);back.remove();if(choice?.effect!=='V20_RENEW_NOW')showDecisionResult(ev,result)});
+}
+function showDecisionResult(ev,result){const back=modal(`<div class="modal-head"><div><div class="eyebrow">Consecuencia</div><h2>${ev.decision}</h2></div><button class="btn" data-close>Cerrar</button></div><div class="decision-result-card"><p>${result||ev.decisionResult||'La decisión ha quedado registrada.'}</p></div><div class="modal-actions"><button class="btn primary" data-close-bottom>Continuar</button></div>`);back.querySelector('[data-close]').onclick=()=>back.remove();back.querySelector('[data-close-bottom]').onclick=()=>back.remove()}
 function preseasonMatchFromEvent(e){
   const fr=(state.preseason?.friendlies||[]).find(x=>String(x.id)===String(e.preseasonMatchId)||(x.date===e.date&&x.status==='PLAYED'));if(!fr?.result)return null;
   return {id:fr.id,date:fr.date,round:'Amistoso',competitionName:'Pretemporada',homeClubId:fr.home?state.userClubId:fr.opponentId,awayClubId:fr.home?fr.opponentId:state.userClubId,result:fr.result};
@@ -747,7 +802,7 @@ function maybeGenerateDecisionEvent(){
   const tired=roster.slice().sort((a,b)=>(b.state.fatigue||0)-(a.state.fatigue||0))[0];
   const roll=rng.next();
   if(roll<.34&&lowSat){
-    addInbox('DECISION',`${fullName(lowSat)} pide más protagonismo`,`El jugador está preocupado por su rol y sus minutos. Puedes implicar al entrenador, mantener el reparto actual o abrirle la puerta del mercado.`,{playerId:lowSat.id,choices:[{label:'Hablar con el entrenador',effect:'TALK_COACH_MORE'},{label:'Mantener el reparto',effect:'HOLD_ROLE'},{label:'Escuchar ofertas',effect:'LIST_PLAYER'}]});
+    addInbox('DECISION',`${fullName(lowSat)} pide más protagonismo`,`El jugador está preocupado por su rol y sus minutos. Puedes implicarte, delegar la conversación en el capitán, mantener el reparto actual o abrirle la puerta del mercado.`,{playerId:lowSat.id,choices:[{label:'Hablar con el entrenador',effect:'TALK_COACH_MORE'},{label:'Delegar en el capitán',effect:'PLAYER_CAPTAIN'},{label:'Mantener el reparto',effect:'HOLD_ROLE'},{label:'Escuchar ofertas',effect:'LIST_PLAYER'}]});
   }else if(roll<.57&&tired){
     addInbox('DECISION',`${fullName(tired)} acusa la carga de partidos`,`El cuerpo médico advierte de fatiga acumulada (${Math.round(tired.state.fatigue||0)}/100).`,{playerId:tired.id,choices:[{label:'Pedir más descanso',effect:'TALK_COACH_REST'},{label:'Mantener minutos',effect:'KEEP_LOAD'}]});
   }else if(roll<.80){
@@ -759,15 +814,15 @@ function maybeGenerateDecisionEvent(){
     addInbox('DECISION','La directiva plantea una prioridad','La directiva quiere saber dónde pondrás el foco durante las próximas semanas.',{choices:[{label:'Potenciar cantera',effect:'BOARD_YOUTH'},{label:'Priorizar resultados',effect:'BOARD_RESULTS'}]});
   }
 }
-function resolveDecision(id,choiceIndex){
-  const ev=state.inbox.find(e=>e.id===id);if(!ev||ev.resolved)return;const ch=(ev.choices||[])[choiceIndex];if(!ch)return;const p=ev.playerId?playerLocation(ev.playerId)?.player:null;
-  if(ch.effect==='TALK_COACH_MORE'&&p){setCoachMinuteRequest(p,5,5,'PLAYER_MEETING');p.state.morale=BBGM.clamp(p.state.morale+5,0,100);p.state.roleSatisfaction=BBGM.clamp((p.state.roleSatisfaction||70)+8,0,100);state.coachManagement.relationship=BBGM.clamp((state.coachManagement.relationship||72)-.5,0,100)}
+function resolveDecision(id,choiceIndex,fromModal=false){
+  const ev=state.inbox.find(e=>e.id===id);if(!ev||ev.resolved)return '';const ch=(ev.choices||[])[choiceIndex];if(!ch)return '';const p=ev.playerId?playerLocation(ev.playerId)?.player:null;let result='La decisión se ha aplicado a la situación.';
+  if(ch.effect==='TALK_COACH_MORE'&&p){setCoachMinuteRequest(p,5,5,'PLAYER_MEETING');p.state.morale=BBGM.clamp(p.state.morale+5,0,100);p.state.roleSatisfaction=BBGM.clamp((p.state.roleSatisfaction||70)+8,0,100);state.coachManagement.relationship=BBGM.clamp((state.coachManagement.relationship||72)-.5,0,100);result=`${fullName(p)} agradece tu apoyo. Tendrá una petición de +5 minutos durante 5 partidos; su moral y satisfacción mejoran, aunque la relación con el entrenador baja ligeramente.`}
   if(ch.effect==='TALK_COACH_REST'&&p){setCoachMinuteRequest(p,-6,4,'REST');p.state.morale=BBGM.clamp(p.state.morale+2,0,100);p.state.fatigue=BBGM.clamp((p.state.fatigue||0)-5,0,100)}
   if(ch.effect==='KEEP_LOAD'&&p){p.state.morale=BBGM.clamp(p.state.morale-1.5,0,100)}
-  if(ch.effect==='HOLD_ROLE'&&p){p.state.morale=BBGM.clamp(p.state.morale-3,0,100);state.manager.reputation=BBGM.clamp(state.manager.reputation+.3,0,100)}
+  if(ch.effect==='HOLD_ROLE'&&p){p.state.morale=BBGM.clamp(p.state.morale-3,0,100);p.state.roleSatisfaction=BBGM.clamp((p.state.roleSatisfaction||70)-4,0,100);state.manager.reputation=BBGM.clamp(state.manager.reputation+.3,0,100);result=`Mantienes el reparto actual. ${fullName(p)} pierde moral y satisfacción, mientras tu autoridad como director deportivo se refuerza ligeramente.`}
   if(ch.effect==='V20_RENEW_NOW'&&p){ev.resolved=true;ev.decision=ch.label;saveLocal(false);openContractNegotiation(p,{type:'RENEW'});return}
   if(ch.effect==='V20_RENEW_WAIT'&&p){p.state.contractSatisfaction=BBGM.clamp((p.state.contractSatisfaction||70)-3,0,100);changeAgentRelation(p.agent,-.5)}
-  if(ch.effect==='LIST_PLAYER'&&p){p.transferListed=true;p.state.morale=BBGM.clamp(p.state.morale-1,0,100)}
+  if(ch.effect==='LIST_PLAYER'&&p){p.transferListed=true;p.state.morale=BBGM.clamp(p.state.morale-1,0,100);result=`${fullName(p)} queda disponible para recibir ofertas. Su moral baja ligeramente y el mercado ya conoce su situación.`}
   if(ch.effect==='CLUB_NOT_FOR_SALE'&&p){p.state.morale=BBGM.clamp(p.state.morale+2.5,0,100);p.transferListed=false}
   if(ch.effect==='CLUB_INVITE_OFFER'&&p&&ev.fromClubId){const buyer=club(ev.fromClubId),fee=Math.round(BBGM.marketValue(p)*(1.00+.18*Math.random())/50000)*50000;addInbox('TRANSFER_OFFER',`Oferta por ${fullName(p)}`,`${buyer.name} responde a tu apertura y ofrece ${fmtMoney(fee)}.`,{playerId:p.id,fromClubId:buyer.id,fee})}
   if(ch.effect==='CLUB_LOAN_OPEN'&&p){p.loanAvailable=true;p.state.morale=BBGM.clamp(p.state.morale+.5,0,100);addInbox('LOAN','Interés en cesión',`Has comunicado que estudiarías una cesión para ${fullName(p)}. Podrás elegir destino desde Plantilla.`)}
@@ -779,9 +834,9 @@ function resolveDecision(id,choiceIndex){
   if(ch.effect==='FIN_WAGES'){const cost=Math.min(350000,Math.max(0,userClub().cashBudget));financeEntry(userClub(),'EXPENSE','BUDGET_MOVE',-cost,'Reasignación a margen salarial');userClub().salaryBudget+=500000;userClub().financialHealth=BBGM.clamp((userClub().financialHealth||65)-1,0,100)}
   if(ch.effect==='FIN_SCOUT'){const cost=Math.min(300000,Math.max(0,userClub().cashBudget));financeEntry(userClub(),'EXPENSE','BUDGET_MOVE',-cost,'Inversión extraordinaria en scouting');state.manager.scouting=BBGM.clamp((state.manager.scouting||50)+1.3,0,100);for(const sc of state.scouting.staff){sc.judgingCurrent=BBGM.clamp(sc.judgingCurrent+.5,0,100);sc.judgingPotential=BBGM.clamp(sc.judgingPotential+.5,0,100)}}
   if(ch.effect==='FIN_STABLE'){userClub().financialHealth=BBGM.clamp((userClub().financialHealth||65)+3,0,100);state.board.confidence=BBGM.clamp((state.board.confidence||70)+1,0,100)}
-  if(ch.effect==='LOCKER_MEDIATE'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p)p.state.morale=BBGM.clamp(p.state.morale+3,0,100);if(p2)p2.state.morale=BBGM.clamp(p2.state.morale+3,0,100);if(p&&p2)changeRelationship(p,p2,8);state.manager.staffManagement=BBGM.clamp((state.manager.staffManagement||50)+.6,0,100)}
-  if(ch.effect==='LOCKER_CAPTAIN'){const cap=userClub().roster.find(x=>x.id===state.lockerRoom.captainId);if(cap)cap.state.morale=BBGM.clamp(cap.state.morale+2,0,100);if(p)p.state.morale=BBGM.clamp(p.state.morale+1.5,0,100)}
-  if(ch.effect==='LOCKER_IGNORE'){if(p)p.state.morale=BBGM.clamp(p.state.morale-2,0,100);const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p2)p2.state.morale=BBGM.clamp(p2.state.morale-2,0,100);if(p&&p2)changeRelationship(p,p2,-5)}
+  if(ch.effect==='LOCKER_MEDIATE'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p)p.state.morale=BBGM.clamp(p.state.morale+3,0,100);if(p2)p2.state.morale=BBGM.clamp(p2.state.morale+3,0,100);if(p&&p2)changeRelationship(p,p2,8);state.manager.staffManagement=BBGM.clamp((state.manager.staffManagement||50)+.6,0,100);result=p&&p2?`La reunión rebaja la tensión. ${fullName(p)} y ${fullName(p2)} mejoran su moral y su relación sube 8 puntos.`:'La reunión mejora el ambiente del vestuario.'}
+  if(ch.effect==='LOCKER_CAPTAIN'||ch.effect==='PLAYER_CAPTAIN')result=resolveCaptainDelegation(ev);
+  if(ch.effect==='LOCKER_IGNORE'){if(p)p.state.morale=BBGM.clamp(p.state.morale-2,0,100);const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p2)p2.state.morale=BBGM.clamp(p2.state.morale-2,0,100);if(p&&p2)changeRelationship(p,p2,-5);result=p&&p2?`No intervienes. ${fullName(p)} y ${fullName(p2)} pierden moral y su relación empeora 5 puntos.`:'La tensión del vestuario empeora al no intervenir.'}
   if(ch.effect==='LOCKER_SUPPORT'){for(const x of userClub().roster)x.state.morale=BBGM.clamp((x.state.morale||70)+1.2,0,100)}
   if(ch.effect==='LOCKER_FOCUS'){state.manager.reputation=BBGM.clamp((state.manager.reputation||50)+.2,0,100)}
   if(ch.effect==='PERS_SUPPORT_ADAPT'&&p){p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||50)+8,0,100);p.state.morale=BBGM.clamp((p.state.morale||70)+4,0,100);changeAgentRelation(p.agent,1)}
@@ -795,7 +850,7 @@ function resolveDecision(id,choiceIndex){
   if(ch.effect==='PERS_RENEW_WAIT'&&p){p.state.morale=BBGM.clamp((p.state.morale||70)-1,0,100)}
   if(ch.effect==='PERS_MENTOR_SUPPORT'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p&&p2){changeRelationship(p,p2,7);p2.state.confidence=BBGM.clamp((p2.state.confidence||65)+4,0,100);p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100)}}
   if(ch.effect==='PERS_MENTOR_NATURAL'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p&&p2)changeRelationship(p,p2,2)}
-  ev.resolved=true;ev.decision=ch.label;saveLocal(false);render();toast('Decisión registrada');
+  ev.resolved=true;ev.decision=ch.label;ev.decisionResult=result;state.lockerRoom=state.lockerRoom||{};state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory||[];state.lockerRoom.decisionHistory.unshift({eventId:ev.id,date:state.currentDate,title:ev.title,decision:ch.label,result,captainResolution:ev.captainResolution||null});state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory.slice(0,40);saveLocal(false);if(app)render();if(!fromModal)toast('Decisión registrada');return result;
 }
 function advanceOffseasonWeek(){if(!state.offseason?.active)return;state.currentDate=addDays(state.currentDate,7);processScouting(state.currentDate);processMedicalTo(state.currentDate);for(let i=0;i<3;i++)runAiMarketStep();generateMarketPulse();state.offseason.weeksRemaining--;if(state.offseason.weeksRemaining<=0){state.offseason.active=false;state.currentDate=`${seasonStartYear()}-08-25`;activatePreseason(state.currentDate);addInbox('SEASON','Mercado principal cerrado','Comienza la pretemporada: tres semanas para afinar plantilla, roles y carga antes de competir.');toast('Comienza la pretemporada')}else toast(`Quedan ${state.offseason.weeksRemaining} semanas de mercado`);maybeRecordWeeklySummary(true);saveLocal(false);render()}
 
@@ -1387,6 +1442,7 @@ function inboxHtml(){
 function bindInboxActions(root=document){
   root.querySelectorAll('[data-offer-accept]').forEach(b=>b.onclick=()=>acceptIncomingOffer(+b.dataset.offerAccept));
   root.querySelectorAll('[data-offer-reject]').forEach(b=>b.onclick=()=>rejectIncomingOffer(+b.dataset.offerReject));
+  root.querySelectorAll('[data-open-decision]').forEach(b=>b.onclick=()=>openDecisionModal(+b.dataset.openDecision));
   root.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>resolveDecision(+b.dataset.decision,+b.dataset.choice));
   root.querySelectorAll('[data-inbox-open]').forEach(b=>b.onclick=()=>openInboxTarget(b.dataset.inboxOpen));
 }
@@ -1969,6 +2025,6 @@ function renderDiagnosticsV19(v){
   v.querySelector('#diagBack').onclick=()=>{currentView='more';render()};v.querySelector('#diagSnapshot').onclick=()=>{recordBalanceSnapshotV19('manual');saveLocal(false);renderDiagnosticsV19(v);toast('Snapshot guardado')};v.querySelector('#diagExport').onclick=()=>{const blob=new Blob([JSON.stringify({diagnostic:d,verdict:ver,history:state.balanceHistory||[]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-diagnostico-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href)};v.querySelector('#diagProject20').onclick=()=>showProjectionV19();
 }
 function showProjectionV19(){const rows=projectedBalanceV19(20),back=modal(`<div class="modal-head"><div><div class="eyebrow">Proyección sin modificar partida</div><h2>Equilibrio a 20 años</h2></div><button class="btn" data-close>Cerrar</button></div><div class="projection-grid">${rows.map(x=>`<div class="projection-card"><small>Año +${x.year}</small><b>${x.avgOvr.toFixed(1)} OVR</b><span>${x.avgAge.toFixed(1)} años · ${x.elite} jugadores 85+ · ${x.super90} 90+</span></div>`).join('')}</div><p class="muted">Es una proyección de estrés basada en la curva anual de balance; no simula resultados de partidos ni altera el guardado.</p>`);back.querySelector('[data-close]').onclick=()=>back.remove()}
-g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState};
+g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState,decisionActionLabel,decisionChoiceDetail,captainInterventionChance,resolveCaptainDelegation,resolveDecision};
 if(app)render();
 })(typeof globalThis!=='undefined'?globalThis:this);

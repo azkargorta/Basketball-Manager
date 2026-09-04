@@ -10,7 +10,7 @@ const assets=[...scripts,...styles,'manifest.webmanifest','icons/app-icon-192.pn
 const appSource=read('js/app.js');
 if(appSource.includes("Bienvenido a Baskonia"))throw new Error('Nueva carrera conserva el mensaje fijo de Baskonia');
 if(!appSource.includes('state.board.objectives=projectObjectives(userClub())'))throw new Error('Nueva carrera no genera objetivos para el club elegido');
-if(!appSource.includes('objectiveModelVersion=3'))throw new Error('Falta la migración de objetivos v0.38');
+if(!appSource.includes('objectiveModelVersion=4'))throw new Error('Falta la migración actual de objetivos por club');
 const sw=read('sw.js');
 const coreBlock=sw.match(/const CORE\s*=\s*\[([\s\S]*?)\];/);
 if(!coreBlock)throw new Error('No se pudo leer CORE en sw.js');

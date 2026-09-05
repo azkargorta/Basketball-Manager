@@ -1180,7 +1180,7 @@ function upgradeState(s){
   state.scouting.nextAssignmentId=state.scouting.nextAssignmentId||Math.max(0,...state.scouting.assignments.map(a=>a.id||0))+1;
   ensureAcademy();
   state.version=APP_VERSION.code;
-  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
+  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();ensureV46State();
   return state;
 }
 
@@ -1326,6 +1326,7 @@ function simulateToNextUserMatch(){
   state.currentDate=nm.date;
   processDeferredConsequencesV21();
   addInbox('RESULT',`${club(nm.homeClubId).shortName} ${nm.homeScore}-${nm.awayScore} ${club(nm.awayClubId).shortName}`,`${comp(nm.competitionId).name} · ${typeof nm.round==='number'?'Jornada '+nm.round:nm.round}`,{matchId:nm.id});
+  recordSeasonNarrativeV46(nm,res);
   maybeGenerateDecisionEvent();maybeGenerateLockerEvent();maybeGeneratePersonalityEvent();maybeGenerateYouthInterest();maybeGenerateContractDecisionV20();runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateMarketPulse();generateWorldNewsV20();maybeRecordWeeklySummary();
   if(state.autosave)saveLocal(false);
   render();showResultModal(nm,res);
@@ -1511,13 +1512,67 @@ function rejectIncomingOffer(id){const ev=state.inbox.find(e=>e.id===id);if(!ev)
 
 function navButton(view,label,icon){return `<button data-view="${view}" class="${currentView===view?'active':''}" aria-label="${label}"><span class="nav-icon" aria-hidden="true">${icon}</span><span class="nav-label">${label}</span></button>`}
 
+// ===== v0.46: onboarding, tácticas explicadas, staff y narrativa =====
+function ensureV46State(){
+  if(!state)return;
+  state.ui=state.ui||{theme:'dark'};
+  state.ui.tutorialV46=!!state.ui.tutorialV46;
+  state.careerV46=state.careerV46||{};
+  state.careerV46.story=Array.isArray(state.careerV46.story)?state.careerV46.story:[];
+  state.careerV46.lastStoryGame=Number.isFinite(state.careerV46.lastStoryGame)?state.careerV46.lastStoryGame:0;
+  state.lockerRoom=state.lockerRoom||{};
+  state.lockerRoom.groups=Array.isArray(state.lockerRoom.groups)?state.lockerRoom.groups:[];
+}
+function tacticalGuidanceV46(c){
+  const s=c.style||{},high=x=>x>57,low=x=>x<43;
+  const items=[
+    high(s.pace)?['Ritmo alto','Más posesiones y puntos · aumenta el cansancio','warning']:low(s.pace)?['Ritmo bajo','Reduce el desgaste · puede bajar la producción ofensiva','positive']:['Ritmo equilibrado','Compromiso estable entre rendimiento y desgaste','positive'],
+    high(s.perimeterFocus)?['Ataque exterior','Más triples y espacios · dependes más del acierto','positive']:low(s.perimeterFocus)?['Ataque interior','Más presencia cerca del aro · exige fortaleza física','positive']:['Ataque equilibrado','Reparte el riesgo entre juego interior y exterior','positive'],
+    high(s.pressure)?['Presión alta','Más recuperaciones · más fatiga y riesgo de faltas','warning']:low(s.pressure)?['Presión baja','Protege la energía · concedes más iniciativa al rival','positive']:['Presión normal','Defensa estable sin coste extraordinario','positive'],
+    high(s.offensiveReboundEmphasis)?['Rebote agresivo','Más segundas opciones · peor balance defensivo','warning']:['Rebote conservador','Mejor transición defensiva · menos segundas jugadas','positive']
+  ];
+  return `<div class="v46-tactical-impact" id="v46TacticalImpact"><h4>Impacto previsto del estilo</h4><div class="v46-impact-grid">${items.map(x=>`<div><b class="v46-${x[2]}">${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div></div>`;
+}
+function staffImpactV46(){
+  const c=userClub(),coach=c.coach||{},sc=(state.scouting?.staff||[]),doctor=state.medical?.doctor||{};
+  const scout=Math.round(sc.reduce((n,x)=>n+(x.judgingCurrent||0),0)/Math.max(1,sc.length)),medical=Math.round(doctor.prevention||0);
+  return `<div class="v46-staff-impact"><div class="section-inline"><h4>Impacto actual del staff</h4><span class="v46-badge">Se aplica a la simulación</span></div><div class="v46-impact-grid"><div><b class="v46-positive">Entrenador</b><span>${Math.round(coach.manManagement||0)} gestión · ${Math.round(coach.youthTrust||0)} confianza en jóvenes</span></div><div><b class="v46-positive">Scouting</b><span>${sc.length} ojeador(es) · nivel medio ${scout}</span></div><div><b class="v46-positive">Departamento médico</b><span>Prevención ${medical}/100 · influye en recaídas y recuperación</span></div><div><b class="v46-warning">Coste staff</b><span>${fmtMoney(staffCost())} de ${fmtMoney(c.staffBudget||0)} presupuestados</span></div></div></div>`;
+}
+function lockerDynamicsV46(){
+  const r=userClub().roster||[],cap=r.find(p=>p.id===state.lockerRoom?.captainId),young=r.filter(p=>(p.age||99)<=23).length,leaders=r.filter(p=>leadershipScore(p)>=72).length;
+  const groups=state.lockerRoom.groups?.length?state.lockerRoom.groups:[{name:'Liderazgo',count:leaders},{name:'Jóvenes',count:young},{name:'Rotación',count:Math.max(0,r.length-leaders-young)}];
+  return `<div class="v46-locker-dynamics"><div class="section-inline"><h4>Dinámica del vestuario</h4><span class="pill">Capitán: ${cap?fullName(cap):'—'}</span></div><div class="v46-impact-grid">${groups.map(g=>`<div><b>${g.name}</b><span>${g.count} jugador(es) · observa su moral y relaciones</span></div>`).join('')}</div><p class="tiny muted">Las decisiones, los minutos y los resultados modifican estos equilibrios durante la temporada.</p></div>`;
+}
+function enhanceV46View(){
+  if(!state)return;
+  if(currentView==='squad'){
+    const save=document.getElementById('saveStyle'),card=save?.closest('.card');if(card&&!card.querySelector('#v46TacticalImpact'))card.insertAdjacentHTML('beforeend',tacticalGuidanceV46(userClub()));
+  }
+  if(currentView==='more'){const host=document.querySelector('.more-sections');if(host&&!host.querySelector('.v46-staff-impact'))host.insertAdjacentHTML('afterbegin',staffImpactV46())}
+  if(currentView==='locker'){const host=document.querySelector('#view');if(host&&!host.querySelector('.v46-locker-dynamics'))host.insertAdjacentHTML('beforeend',lockerDynamicsV46())}
+  if(currentView==='home'&&state.careerV46.story.length){const host=document.querySelector('#view');if(host&&!host.querySelector('.v46-story-callout')){const s=state.careerV46.story[0];host.insertAdjacentHTML('afterbegin',`<div class="v46-story-callout"><h4>${s.title}</h4><p>${s.text}</p></div>`)}}
+}
+function maybeShowV46Tutorial(){
+  if(!state||state.ui.tutorialV46||document.querySelector('.v46-tutorial-modal'))return;
+  const back=modal(`<div class="v46-tutorial-modal"><div class="modal-head"><div><div class="eyebrow">Primeros pasos</div><h2>Tu carrera empieza aquí</h2></div><button class="btn" data-close>Ahora no</button></div><p class="muted">Estas son las cuatro cosas que conviene revisar antes de simular.</p><div class="v46-tutorial-grid"><article><b>1 · Inicio</b><p>Resuelve primero las decisiones pendientes y revisa los objetivos de la directiva.</p></article><article><b>2 · Plantilla</b><p>Configura roles, minutos y estilo; el entrenador y el staff influyen en los resultados.</p></article><article><b>3 · Mercado</b><p>Busca jugadores, observa sus atributos con scouting y controla el margen salarial.</p></article><article><b>4 · Carrera</b><p>Los resultados, el vestuario y las finanzas afectan a tu reputación y a futuras ofertas.</p></article></div><div class="modal-actions"><button class="btn primary" id="finishV46Tutorial">Entendido, empezar</button></div></div>`);
+  back.classList.add('v46-tutorial-overlay');
+  const finish=()=>{state.ui.tutorialV46=true;saveLocal(false);back.remove()};back.querySelector('[data-close]').onclick=finish;back.querySelector('#finishV46Tutorial').onclick=finish;
+}
+function recordSeasonNarrativeV46(match,res){
+  ensureV46State();const played=userGamesPlayedV20(),home=match.homeClubId===state.userClubId,win=home?match.homeScore>match.awayScore:match.awayScore>match.homeScore;
+  if(!played||played===state.careerV46.lastStoryGame||played%5!==0)return;state.careerV46.lastStoryGame=played;
+  const recent=state.history.slice(-5),wins=recent.filter(h=>{const m=state.calendar.find(x=>x.id===h.matchId);return m&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)&&((m.homeClubId===state.userClubId&&m.homeScore>m.awayScore)||(m.awayClubId===state.userClubId&&m.awayScore>m.homeScore))}).length;
+  const title=wins>=4?'El vestuario cree en el proyecto':wins<=1?'La presión empieza a aumentar':'El equipo busca estabilidad';const text=wins>=4?`${userClub().name} encadena ${wins} victorias en sus últimos partidos. La directiva valora el impulso y el capitán gana influencia.`:wins<=1?`${userClub().name} solo ha ganado ${wins} de sus últimos cinco partidos. Conviene revisar la rotación, la moral y el plan de mercado.`:`El equipo mantiene un rendimiento irregular. El próximo tramo puede cambiar la percepción de la directiva.`;
+  state.careerV46.story.unshift({date:state.currentDate,title,text});state.careerV46.story=state.careerV46.story.slice(0,12);worldNewsPushV20('STORY',text,{clubId:state.userClubId});
+}
+
 function render(){
   if(!state){renderStart();return}
   ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
   const c=userClub(),wb=wageBill(c),room=availableWage(c);
   app.innerHTML=`<div class="shell"><aside class="sidebar"><div class="brand">BASKETBALL GM<small>${APP_VERSION.label}</small></div><nav class="nav">${navButton('home','Inicio','⌂')}${navButton('squad','Plantilla','◉')}${navButton('market','Mercado','⇄')}${navButton('academy','Cantera','◇')}${navButton('schedule','Calendario','▦')}${navButton('standings','Clasificación','≡')}${navButton('stats','Estadísticas','Σ')}${navButton('more','Más','•••')}</nav><div class="side-footer">Offline · guardado local<br>${state.season}</div></aside><main class="main"><header class="topbar"><div><div class="club-title">${c.name}</div><div class="club-meta">${state.season} · ${state.currentDate}</div></div><div class="top-actions"><span class="budget">Caja ${fmtMoney(c.cashBudget)} · Salarios ${fmtMoney(wb)} / ${fmtMoney(c.salaryBudget)}</span><button class="btn small icon-btn" id="themeBtn" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar entre modo claro y oscuro">◐</button><button class="btn small search-btn" id="globalSearchBtn" title="Buscar jugador o club" aria-label="Buscar jugador o club">⌕ <span>Buscar</span></button><button class="btn small" id="saveBtn">Guardar</button></div></header><section class="content" id="view"></section></main><nav class="bottom-nav" aria-label="Navegación principal">${navButton('home','Inicio','⌂')}${navButton('squad','Equipo','◉')}${navButton('schedule','Partidos','▦')}${navButton('market','Mercado','⇄')}${navButton('more','Más','•••')}</nav></div>`;
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{currentView=b.dataset.view;render()});
-  document.getElementById('saveBtn').onclick=()=>saveLocal(true);const gs=document.getElementById('globalSearchBtn');if(gs)gs.onclick=()=>openGlobalSearch();const th=document.getElementById('themeBtn');if(th)th.onclick=()=>{state.ui.theme=state.ui.theme==='light'?'dark':'light';applyThemeV19();saveLocal(false);render()};applyThemeV19();renderView();
+  document.getElementById('saveBtn').onclick=()=>saveLocal(true);const gs=document.getElementById('globalSearchBtn');if(gs)gs.onclick=()=>openGlobalSearch();const th=document.getElementById('themeBtn');if(th)th.onclick=()=>{state.ui.theme=state.ui.theme==='light'?'dark':'light';applyThemeV19();saveLocal(false);render()};applyThemeV19();renderView();enhanceV46View();maybeShowV46Tutorial();
 }
 
 function renderStart(){

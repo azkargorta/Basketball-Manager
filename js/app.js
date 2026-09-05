@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.43.0-beta',label:'v0.43 Beta',saveFormat:'basketball-manager-v043'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.44.0-beta',label:'v0.44 Beta',saveFormat:'basketball-manager-v044'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -879,7 +879,7 @@ function resolveDecision(id,choiceIndex,fromModal=false){
   if(ch.effect==='PERS_RENEW_WAIT'&&p){p.state.morale=BBGM.clamp((p.state.morale||70)-1,0,100)}
   if(ch.effect==='PERS_MENTOR_SUPPORT'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p&&p2){changeRelationship(p,p2,7);p2.state.confidence=BBGM.clamp((p2.state.confidence||65)+4,0,100);p.state.morale=BBGM.clamp((p.state.morale||70)+2,0,100)}}
   if(ch.effect==='PERS_MENTOR_NATURAL'){const p2=ev.otherPlayerId?playerLocation(ev.otherPlayerId)?.player:null;if(p&&p2)changeRelationship(p,p2,2)}
-  ev.resolved=true;ev.decision=ch.label;ev.decisionResult=result;state.lockerRoom=state.lockerRoom||{};state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory||[];state.lockerRoom.decisionHistory.unshift({eventId:ev.id,date:state.currentDate,title:ev.title,decision:ch.label,result,captainResolution:ev.captainResolution||null});state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory.slice(0,40);saveLocal(false);if(app)render();if(!fromModal)toast('Decisión registrada');return result;
+  ev.resolved=true;ev.decision=ch.label;ev.decisionResult=result;scheduleDecisionFollowUpV21(ev,ch);state.lockerRoom=state.lockerRoom||{};state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory||[];state.lockerRoom.decisionHistory.unshift({eventId:ev.id,date:state.currentDate,title:ev.title,decision:ch.label,result,captainResolution:ev.captainResolution||null});state.lockerRoom.decisionHistory=state.lockerRoom.decisionHistory.slice(0,40);saveLocal(false);if(app)render();if(!fromModal)toast('Decisión registrada');return result;
 }
 function advanceOffseasonWeek(){if(interruptForPendingDecision())return;if(!state.offseason?.active)return;state.currentDate=addDays(state.currentDate,7);processScouting(state.currentDate);processMedicalTo(state.currentDate);for(let i=0;i<3;i++)runAiMarketStep();generateMarketPulse();state.offseason.weeksRemaining--;if(state.offseason.weeksRemaining<=0){state.offseason.active=false;state.currentDate=`${seasonStartYear()}-08-25`;activatePreseason(state.currentDate);addInbox('SEASON','Mercado principal cerrado','Comienza la pretemporada: tres semanas para afinar plantilla, roles y carga antes de competir.');toast('Comienza la pretemporada')}else toast(`Quedan ${state.offseason.weeksRemaining} semanas de mercado`);maybeRecordWeeklySummary(true);saveLocal(false);render()}
 
@@ -1012,6 +1012,7 @@ function ensurePlayerContractFields(p,index=0){
   if(p.state.morale==null)p.state.morale=70;
   if(p.state.roleSatisfaction==null)p.state.roleSatisfaction=75;
   if(p.state.contractSatisfaction==null)p.state.contractSatisfaction=72;
+  p.contractTerms=p.contractTerms||{signingBonus:0,performanceBonus:0,clubOption:false,playerOption:false,nbaClause:!!p.nbaRights};
 }
 
 
@@ -1323,11 +1324,88 @@ function simulateToNextUserMatch(){
   const res=simulateOne(nm,true);
   processAcademyTo(nm.date);processScouting(nm.date);processMedicalTo(nm.date);
   state.currentDate=nm.date;
+  processDeferredConsequencesV21();
   addInbox('RESULT',`${club(nm.homeClubId).shortName} ${nm.homeScore}-${nm.awayScore} ${club(nm.awayClubId).shortName}`,`${comp(nm.competitionId).name} · ${typeof nm.round==='number'?'Jornada '+nm.round:nm.round}`,{matchId:nm.id});
   maybeGenerateDecisionEvent();maybeGenerateLockerEvent();maybeGeneratePersonalityEvent();maybeGenerateYouthInterest();maybeGenerateContractDecisionV20();runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateMarketPulse();generateWorldNewsV20();maybeRecordWeeklySummary();
   if(state.autosave)saveLocal(false);
   render();showResultModal(nm,res);
 }
+
+// ===== v0.44 career integration: deferred consequences, employment and club offers =====
+function ensureCareerV21(){
+  if(!state)return;
+  state.careerV21=state.careerV21||{};
+  const c=state.careerV21;
+  c.deferred=Array.isArray(c.deferred)?c.deferred:[];
+  c.offers=Array.isArray(c.offers)?c.offers:[];
+  c.history=Array.isArray(c.history)?c.history:[];
+  c.status=c.status||'ACTIVE';
+  c.badSeasons=Number.isFinite(c.badSeasons)?c.badSeasons:0;
+  c.lastEvaluationSeason=c.lastEvaluationSeason||null;
+  return c;
+}
+function careerPlayedCountV21(){return userGamesPlayedV20()}
+function scheduleDeferredV21(type,dueGame,payload={}){
+  const c=ensureCareerV21();if(!c)return null;
+  const item={id:`DF-${state.season}-${state.nextEventId++}`,type,dueGame,payload,createdDate:state.currentDate,resolved:false};
+  c.deferred.push(item);return item;
+}
+function scheduleDecisionFollowUpV21(ev,ch){
+  const effect=ch?.effect;if(!effect)return;
+  const due=careerPlayedCountV21()+5;
+  if(['TALK_COACH_MORE','TALK_COACH_REST','PLAYER_CAPTAIN','LOCKER_CAPTAIN','LOCKER_MEDIATE'].includes(effect)){
+    scheduleDeferredV21('DECISION_FOLLOW_UP',due,{eventTitle:ev.title,effect,playerId:ev.playerId,otherPlayerId:ev.otherPlayerId});
+  }else if(['BOARD_YOUTH','BOARD_RESULTS','FIN_WAGES','FIN_SCOUT','FIN_STABLE'].includes(effect)){
+    scheduleDeferredV21('BOARD_FOLLOW_UP',due,{eventTitle:ev.title,effect});
+  }else if(['PERS_PROMISE_WIN','PERS_ROLE_HOLD','PERS_NO_PROMISE','PERS_EXIT_MARKET'].includes(effect)){
+    scheduleDeferredV21('PLAYER_FOLLOW_UP',due,{eventTitle:ev.title,effect,playerId:ev.playerId});
+  }
+}
+function processDeferredConsequencesV21(){
+  const c=ensureCareerV21();if(!c)return;
+  const played=careerPlayedCountV21();
+  for(const item of c.deferred.filter(x=>!x.resolved&&x.dueGame<=played)){
+    const p=item.payload||{};
+    if(item.type==='DECISION_FOLLOW_UP'){
+      const player=p.playerId?playerLocation(p.playerId)?.player:null;
+      const other=p.otherPlayerId?playerLocation(p.otherPlayerId)?.player:null;
+      if(p.effect==='TALK_COACH_MORE'&&player){player.state.morale=BBGM.clamp((player.state.morale||70)+1.5,0,100);addInbox('COACH','Seguimiento de la petición de minutos',`${fullName(player)} ha mantenido la mejora de minutos durante el periodo acordado. Su satisfacción sube ligeramente.` ,{playerId:player.id});}
+      else if(['PLAYER_CAPTAIN','LOCKER_CAPTAIN','LOCKER_MEDIATE'].includes(p.effect)){const harmony=lockerRoomMetrics().harmony;if(player)player.state.morale=BBGM.clamp((player.state.morale||70)+(harmony>=65?1:-1),0,100);if(other)other.state.morale=BBGM.clamp((other.state.morale||70)+(harmony>=65?1:-1),0,100);addInbox('LOCKER','Efecto diferido de una mediación',harmony>=65?'La situación se ha estabilizado y el vestuario mantiene una armonía saludable.':'La tensión no ha desaparecido por completo; conviene vigilar la relación y la moral.');}
+      else if(p.effect==='TALK_COACH_REST'&&player){player.state.fatigue=BBGM.clamp((player.state.fatigue||0)-3,0,75);addInbox('COACH','Seguimiento del descanso','La reducción de carga ha ayudado a recuperar físicamente al jugador.',{playerId:player.id});}
+    }else if(item.type==='BOARD_FOLLOW_UP'){
+      const ok=financialBoardState().ok,delta=ok?1:-2;state.board.confidence=BBGM.clamp((state.board.confidence||70)+delta,0,100);addInbox('BOARD','La directiva revisa tu decisión',ok?'La medida ha dado resultados y la confianza mejora ligeramente.':'La directiva considera que la medida todavía no ha dado el resultado esperado y reduce ligeramente su confianza.');
+    }else if(item.type==='PLAYER_FOLLOW_UP'&&p.playerId){
+      const player=playerLocation(p.playerId)?.player;if(player){const stable=(player.state?.morale||70)>=60;addInbox('PLAYER_UNHAPPY','Seguimiento de la situación del jugador',stable?`${fullName(player)} mantiene una actitud profesional tras la conversación.`:`${fullName(player)} sigue intranquilo y podría pedir una salida si la situación no mejora.`,{playerId:player.id});if(!stable)player.state.roleSatisfaction=BBGM.clamp((player.state.roleSatisfaction||70)-2,0,100)}}
+    item.resolved=true;item.resolvedDate=state.currentDate;
+  }
+  c.deferred=c.deferred.filter(x=>!x.resolved||x.resolvedDate===state.currentDate);
+}
+function careerOfferCandidatesV21(){
+  const rep=state.manager?.reputation||50,uc=userClub();
+  return state.world.clubs.filter(c=>c.id!==uc.id&&c.leagueLevel!=='NBA').map(c=>({club:c,score:(c.reputation||50)-Math.abs((c.reputation||50)-rep)*.55+(c.id%7)})).filter(x=>x.score>=rep-18).sort((a,b)=>b.score-a.score).slice(0,3).map(x=>x.club);
+}
+function generateCareerOffersV21(){
+  const c=ensureCareerV21();if(!c||c.offers.some(x=>x.status==='PENDING'))return c?.offers||[];
+  const uc=userClub(),offers=careerOfferCandidatesV21().map((clubObj,i)=>({id:`JOB-${state.season}-${clubObj.id}`,clubId:clubObj.id,status:'PENDING',season:state.season,role:'Director deportivo',objective:clubObj.careerProject?.name||'Construir un proyecto competitivo',salaryBudget:clubObj.salaryBudget||0,confidence:Math.round(58+i*7),deadline:state.currentDate}));
+  c.offers=offers;return offers;
+}
+function evaluateCareerV21(){
+  const c=ensureCareerV21();if(!c||c.lastEvaluationSeason===state.season)return;
+  const objective=projectObjectives(userClub()).find(x=>x.id==='LEAGUE'),league=objective?.leagueId?sortedStandings(objective.leagueId):sortedStandings('ACB'),position=league.findIndex(x=>x.clubId===state.userClubId)+1,confidence=Math.round(state.board?.confidence||70),success=position>0&&position<=objective.target;
+  if(success)c.badSeasons=0;else c.badSeasons++;
+  const rating=BBGM.clamp(Math.round((success?72:48)+(confidence-60)*.35+(financialBoardState().ok?8:-8)),0,100),repDelta=success?2:-2;
+  state.manager.reputation=BBGM.clamp((state.manager.reputation||50)+repDelta,0,100);
+  c.history.unshift({season:state.season,clubId:state.userClubId,position,target:objective.target,confidence,rating,success});c.history=c.history.slice(0,20);c.lastEvaluationSeason=state.season;
+  if(confidence<20&&c.badSeasons>=2){c.status='DISMISSED';addInbox('BOARD','La directiva termina tu etapa','Has sido despedido como director deportivo. Revisa las ofertas disponibles para continuar tu carrera en otro club.');}
+  else if(confidence<30&&c.badSeasons>=2){c.status='AT_RISK';addInbox('BOARD','Tu puesto está en riesgo','La directiva considera insuficientes los resultados de las últimas temporadas. Una mala temporada más podría terminar tu etapa en el club.');}
+  else c.status='ACTIVE';
+  if(success||c.status!=='ACTIVE')generateCareerOffersV21();
+}
+function acceptCareerOfferV21(offerId){
+  const c=ensureCareerV21(),offer=c.offers.find(x=>x.id===offerId),next=offer?club(offer.clubId):null;if(!offer||!next||offer.status!=='PENDING')return false;
+  const previous=userClub();offer.status='ACCEPTED';c.offers.filter(x=>x.status==='PENDING').forEach(x=>x.status='DECLINED');state.userClubId=next.id;state.saveName=`Carrera ${next.name}`;state.board={...(state.board||{}),confidence:offer.confidence,objectives:projectObjectives(next),projectClubId:next.id};state.manager.reputation=BBGM.clamp((state.manager.reputation||50)+Math.round((next.reputation-previous.reputation)*.06),0,100);c.status='ACTIVE';addInbox('SEASON','Nuevo proyecto',`Has dejado ${previous.name} para convertirte en director deportivo de ${next.name}. Sus objetivos y presupuesto se aplicarán en la próxima temporada.`);saveLocal(false);return true;
+}
+function rejectCareerOfferV21(offerId){const offer=ensureCareerV21().offers.find(x=>x.id===offerId);if(offer)offer.status='DECLINED';saveLocal(false);return !!offer}
 
 function simulateToDate(target){
   if(interruptForPendingDecision())return;
@@ -1341,12 +1419,15 @@ function endSeason(){
   state.seasonComplete=true;state.seasonSummaries=state.seasonSummaries||[];
   state.seasonSummaries.push({season:state.season,acbChampion:state.special?.champions?.ACB_PO||acb[0]?.clubId,elChampion:state.special?.champions?.EL_F4||el[0]?.clubId,copaChampion:state.special?.champions?.COPA||null,supercopaChampion:state.special?.champions?.SUPERCOPA||null,userAcb:acb.findIndex(x=>x.clubId===state.userClubId)+1,userEl:el.findIndex(x=>x.clubId===state.userClubId)+1});
   const pa=acb.findIndex(x=>x.clubId===state.userClubId)+1,pe=el.findIndex(x=>x.clubId===state.userClubId)+1;let bd=(pa<=6?4:pa<=10?0:-5)+(pe<=10?4:pe<=14?0:-5);if(state.special?.champions?.COPA===state.userClubId)bd+=8;if(state.special?.champions?.ACB_PO===state.userClubId||state.special?.champions?.EL_F4===state.userClubId)bd+=12;bd+=(financialBoardState().ok?3:-5);state.board.confidence=BBGM.clamp((state.board.confidence||70)+bd,0,100);const league=(state.world.competitions||[]).find(x=>x.standings&&x.clubIds?.includes(state.userClubId));const rows=league?sortedStandings(league.id):[];evolveAllClubProjects();state.board.objectives=projectObjectives(userClub());archiveCurrentSeason();
-  evaluateAchievements(true);addInbox('SEASON','Temporada completada',`Fin de ${state.season}. ACB: ${pa}.º · Euroliga: ${pe}.º · Confianza directiva: ${Math.round(state.board.confidence)}/100.`);
+  evaluateCareerV21();evaluateAchievements(true);addInbox('SEASON','Temporada completada',`Fin de ${state.season}. ACB: ${pa}.º · Euroliga: ${pe}.º · Confianza directiva: ${Math.round(state.board.confidence)}/100.`);
   saveLocal(false);render();showEndSeasonModal();
 }
 function showEndSeasonModal(){
+  ensureCareerV21();
   const acb=sortedStandings('ACB'),el=sortedStandings('EL'),userA=acb.findIndex(x=>x.clubId===state.userClubId)+1,userE=el.findIndex(x=>x.clubId===state.userClubId)+1;
   const back=modal(`<div class="modal-head"><div><div class="eyebrow">Final de temporada</div><h2 style="margin:2px 0">${state.season}</h2></div><button class="btn" data-close>Cerrar</button></div><div class="grid two"><div class="card inner-card"><h3>Tu temporada</h3><div class="stat-row"><span>Liga ACB</span><b>${userA}.º</b></div><div class="stat-row"><span>Euroliga</span><b>${userE}.º</b></div><div class="stat-row"><span>Salud financiera</span><b>${Math.round(userClub().financialHealth||65)}/100</b></div><div class="stat-row"><span>Caja final</span><b>${fmtMoney(userClub().cashBudget)}</b></div></div><div class="card inner-card"><h3>Campeones</h3><div class="stat-row"><span>Liga ACB</span><b>${club(state.special?.champions?.ACB_PO||acb[0]?.clubId)?.name||'—'}</b></div><div class="stat-row"><span>Euroliga</span><b>${club(state.special?.champions?.EL_F4||el[0]?.clubId)?.name||'—'}</b></div><div class="stat-row"><span>Copa</span><b>${club(state.special?.champions?.COPA)?.name||'—'}</b></div></div></div><div class="card inner-card" style="margin-top:14px"><div class="eyebrow">Evaluación de directiva</div><h3>${state.board.confidence>=80?'Temporada sobresaliente':state.board.confidence>=65?'Balance positivo':state.board.confidence>=50?'Objetivos parcialmente cumplidos':'Temporada decepcionante'}</h3><div class="stat-row"><span>Confianza</span><b>${Math.round(state.board.confidence)}/100</b></div><div class="stat-row"><span>Armonía vestuario</span><b>${Math.round(lockerRoomMetrics().harmony)}/100</b></div><div class="stat-row"><span>Salud financiera</span><b>${Math.round(userClub().financialHealth||65)}/100</b></div><div class="stat-row"><span>Principal necesidad</span><b>${positionLabel[allSquadNeeds()[0].pos]}</b></div></div><p class="muted" style="margin-top:15px">La transición hará envejecer a los jugadores, descontará un año de contrato, liberará contratos vencidos, procesará algunas retiradas y generará una nueva hornada de cantera.</p><div class="modal-actions"><button class="btn primary" id="nextSeason">Comenzar siguiente temporada</button></div>`);
+  const offers=(state.careerV21?.offers||[]).filter(x=>x.status==='PENDING');
+  if(offers.length){const host=back.querySelector('.modal-actions');const box=document.createElement('div');box.className='card inner-card';box.style.marginTop='14px';box.innerHTML=`<div class="eyebrow">Mercado de directores deportivos</div><h3>Ofertas para continuar tu carrera</h3>${offers.map(o=>{const c=club(o.clubId);return `<div class="stat-row"><span><b>${c?.name||'Club'}</b><small>${o.objective} · Confianza inicial ${o.confidence}/100</small></span><span><button class="btn small good" data-career-accept="${o.id}">Aceptar</button> <button class="btn small" data-career-reject="${o.id}">Rechazar</button></span></div>`}).join('')}`;host.before(box);box.querySelectorAll('[data-career-accept]').forEach(b=>b.onclick=()=>{acceptCareerOfferV21(b.dataset.careerAccept);back.remove();showEndSeasonModal()});box.querySelectorAll('[data-career-reject]').forEach(b=>b.onclick=()=>{rejectCareerOfferV21(b.dataset.careerReject);b.closest('.stat-row')?.remove();});}
   back.querySelector('[data-close]').onclick=()=>back.remove();back.querySelector('#nextSeason').onclick=()=>{back.remove();startNextSeason()};
 }
 function maxPlayerId(){let mx=0;for(const c of state.world.clubs)for(const p of c.roster)mx=Math.max(mx,p.id);for(const p of state.world.freeAgents||[])mx=Math.max(mx,p.id);for(const p of state.academy?.players||[])mx=Math.max(mx,p.id);for(const l of state.academy?.loans||[])mx=Math.max(mx,l.player?.id||0);return mx}
@@ -1903,7 +1984,7 @@ function finalizeContract(p,context,offer){
     if(seller){seller.roster=seller.roster.filter(x=>x.id!==p.id);seller.cashBudget+=fee}financeEntry(uc,'EXPENSE','TRANSFER_OUT',-fee,`Fichaje de ${fullName(p)} desde ${seller?.name||'otro club'}`);uc.roster.push(p);p.state.teamAdaptation=45;p.transferListed=false;
     state.marketNews.unshift({date:state.currentDate,text:`${uc.name} ficha a ${fullName(p)} desde ${seller?seller.name:'otro club'} por ${fmtMoney(fee)}.`});
   }
-  p.salary=offer.salary;p.contractYears=offer.years;p.role=offer.role;p.promisedRole=offer.role;p.releaseClause=offer.clause;p.state.contractSatisfaction=82;p.state.roleSatisfaction=78;
+  p.salary=offer.salary;p.contractYears=offer.years;p.role=offer.role;p.promisedRole=offer.role;p.releaseClause=offer.clause;p.contractTerms=p.contractTerms||{};p.contractTerms.signingBonus=Math.round(offer.salary*.18/5000)*5000;p.contractTerms.performanceBonus=offer.role==='STAR'?Math.round(offer.salary*.12/5000)*5000:Math.round(offer.salary*.06/5000)*5000;p.contractTerms.nbaClause=!!p.nbaRights;p.state.contractSatisfaction=82;p.state.roleSatisfaction=78;
   addInbox('CONTRACT',context.type==='RENEW'?'Renovación completada':'Fichaje completado',`${fullName(p)} firma ${offer.years} año(s) por ${fmtMoney(offer.salary)} anuales.`,{playerId:p.id});
 }
 
@@ -2067,6 +2148,6 @@ function renderDiagnosticsV19(v){
   v.querySelector('#diagBack').onclick=()=>{currentView='more';render()};v.querySelector('#diagSnapshot').onclick=()=>{recordBalanceSnapshotV19('manual');saveLocal(false);renderDiagnosticsV19(v);toast('Snapshot guardado')};v.querySelector('#diagExport').onclick=()=>{const blob=new Blob([JSON.stringify({diagnostic:d,verdict:ver,history:state.balanceHistory||[]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-diagnostico-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href)};v.querySelector('#diagProject20').onclick=()=>showProjectionV19();
 }
 function showProjectionV19(){const rows=projectedBalanceV19(20),back=modal(`<div class="modal-head"><div><div class="eyebrow">Proyección sin modificar partida</div><h2>Equilibrio a 20 años</h2></div><button class="btn" data-close>Cerrar</button></div><div class="projection-grid">${rows.map(x=>`<div class="projection-card"><small>Año +${x.year}</small><b>${x.avgOvr.toFixed(1)} OVR</b><span>${x.avgAge.toFixed(1)} años · ${x.elite} jugadores 85+ · ${x.super90} 90+</span></div>`).join('')}</div><p class="muted">Es una proyección de estrés basada en la curva anual de balance; no simula resultados de partidos ni altera el guardado.</p>`);back.querySelector('[data-close]').onclick=()=>back.remove()}
-g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,pendingDecision,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState,decisionActionLabel,decisionChoiceDetail,captainInterventionChance,resolveCaptainDelegation,resolveDecision};
+g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,pendingDecision,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState,decisionActionLabel,decisionChoiceDetail,captainInterventionChance,resolveCaptainDelegation,resolveDecision,ensureCareerV21,scheduleDeferredV21,processDeferredConsequencesV21,evaluateCareerV21,generateCareerOffersV21,acceptCareerOfferV21,rejectCareerOfferV21};
 if(app)render();
 })(typeof globalThis!=='undefined'?globalThis:this);

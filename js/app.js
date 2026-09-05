@@ -1274,7 +1274,7 @@ function injuryRiskV47(p,mins,c){const base=injuryRisk(p,mins),doctor=c?.id===st
 function simulateOne(m,show=false){
   const home=club(m.homeClubId),away=club(m.awayClubId);
   const seed=Number(String(Date.now()).slice(-9))+m.round+m.homeClubId*37+m.awayClubId*11;
-  const res=BBGM.simulateMatch(home,away,seed);applyStaffMatchEffectsV47(m,res);
+  const res=BBGM.simulateMatch(home,away,seed);applyStaffMatchEffectsV47(m,res);applyMatchDecisionV48(m,res);
   m.status='PLAYED';m.homeScore=res.homeScore;m.awayScore=res.awayScore;m.overtimePeriods=res.overtimePeriods;m.result=res;
   updateStandings(m);
   updatePlayerState(home,res.homeStats,res.homeScore>res.awayScore);
@@ -1315,6 +1315,7 @@ function nextScoutingCompletion(){
 }
 function advanceToNextEvent(){
   if(interruptForPendingDecision())return;
+  ensureMatchDecisionStateV48();
   if(state.offseason?.active){advanceOffseasonWeek();return}if(state.preseason?.active){advancePreseasonWeek();return}
   const nm=nextUserMatch(),sa=nextScoutingCompletion();
   if(sa&&(!nm||sa.endDate<nm.date)){
@@ -1326,6 +1327,43 @@ function advanceToNextEvent(){
   simulateToNextUserMatch();
 }
 
+
+/* v0.48: decisiones jugables en partidos decisivos. */
+function ensureMatchDecisionStateV48(){
+  if(!state)return;
+  state.matchDecisionV48=state.matchDecisionV48||{pending:null,history:[]};
+  state.matchDecisionV48.history=Array.isArray(state.matchDecisionV48.history)?state.matchDecisionV48.history:[];
+}
+function isDecisiveMatchV48(m){
+  const text=`${m.competitionId||''} ${m.round||''} ${m.stage||''} ${comp(m.competitionId)?.name||''}`.toLowerCase();
+  return /(final|semifinal|cuartos|quarter|playoff|play-in|promoc|copa)/.test(text);
+}
+function matchDecisionScenarioV48(m){
+  const uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],key=Math.abs(hashCode(`${state.season}-${m.id}-decision-v48`))%3;
+  if(key===0)return {type:'STAR_FOULS',playerId:top?.id,title:'Tu estrella llega al tramo decisivo con cuatro faltas',text:`${top?fullName(top):'Tu jugador más importante'} tiene cuatro faltas y quedan los minutos decisivos. ¿Asumes el riesgo?`,choices:[{id:'KEEP',label:'Mantenerlo en pista',detail:'Más talento y anotación, pero puede cometer la quinta falta.'},{id:'BENCH',label:'Sentarlo unos minutos',detail:'Proteges al jugador, aunque pierdes impacto ofensivo.'}]};
+  if(key===1)return {type:'LAST_DEFENSE',title:'Última defensa del partido',text:'El rival prepara la última posesión con el marcador apretado. Elige cómo proteger la ventaja.',choices:[{id:'MAN',label:'Defensa individual',detail:'Presiona al creador y protege mejor el tiro exterior.'},{id:'ZONE',label:'Defensa en zona',detail:'Protege la pintura, pero concede más opciones de pase.'},{id:'FOUL',label:'Hacer falta táctica',detail:'Evita el triple, pero envía al rival a los tiros libres.'}]};
+  return {type:'LAST_SHOT',title:'Decisión para la última posesión',text:'Tienes una última posesión para cerrar el partido. Elige el tipo de lanzamiento.',choices:[{id:'THREE',label:'Buscar el triple',detail:'Puedes ganar el partido, pero el porcentaje de acierto es menor.'},{id:'TWO',label:'Atacar para dos',detail:'Opción más segura, aunque quizá no sea suficiente para ganar.'},{id:'STAR',label:'Jugar para la estrella',detail:'Concentra la responsabilidad en tu mejor jugador.'}]};
+}
+function maybeOpenMatchDecisionV48(m){
+  ensureMatchDecisionStateV48();if(!isDecisiveMatchV48(m))return false;
+  const d=state.matchDecisionV48;if(d.pending?.matchId===m.id)return false;
+  if(d.history.some(x=>x.matchId===m.id))return false;
+  const ev=matchDecisionScenarioV48(m),back=modal(`<div class="v48-match-decision"><div class="modal-head"><div><div class="eyebrow">Decision Maker · Partido decisivo</div><h2>${ev.title}</h2></div><button class="btn" data-close>Decidir después</button></div><p class="decision-situation-text">${ev.text}</p><div class="v48-decision-choices">${ev.choices.map(c=>`<button class="v48-decision-choice" data-match-choice="${c.id}"><b>${c.label}</b><span>${c.detail}</span></button>`).join('')}</div><p class="tiny muted">La respuesta más favorable depende del contexto, los jugadores y una parte de azar. El resultado se aplicará al marcador.</p></div>`);
+  back.querySelector('[data-close]').onclick=()=>back.remove();
+  back.querySelectorAll('[data-match-choice]').forEach(b=>b.onclick=()=>{d.pending={matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,title:ev.title};d.history.push({matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,date:state.currentDate});saveLocal(false);back.remove();simulateToNextUserMatch()});
+  return true;
+}
+function applyMatchDecisionV48(m,res){
+  ensureMatchDecisionStateV48();const d=state.matchDecisionV48.pending;if(!d||d.matchId!==m.id)return;
+  const userHome=m.homeClubId===state.userClubId,uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],coach=uc.coach||{},quality=BBGM.clamp(((top?BBGM.overall(top):70)-70)*.008+((coach.manManagement||65)-65)*.004, -.12,.16),rng=new BBGM.RNG(Math.abs(hashCode(`${state.season}-${m.id}-decision-result-v48`))),success=rng.next()<BBGM.clamp(.52+quality,-.02,.92);
+  const add=(points,opponent=0)=>{if(userHome){res.homeScore+=points;res.awayScore+=opponent}else{res.awayScore+=points;res.homeScore+=opponent}};
+  let summary='';
+  if(d.type==='STAR_FOULS'){if(d.choice==='KEEP'&&success){add(2);summary=`${top?fullName(top):'Tu estrella'} respondió y anotó la jugada decisiva.`}else if(d.choice==='KEEP'){add(0,2);summary=`${top?fullName(top):'Tu estrella'} cometió la quinta falta y el rival aprovechó el cambio.`}else if(success){summary='La segunda unidad defendió el resultado y el descanso protegió a tu estrella.'}else{add(2,0);summary='Faltó talento en la última posesión y el rival tomó la iniciativa.'}}
+  else if(d.type==='LAST_DEFENSE'){if(d.choice==='MAN'&&success){add(0,-2);summary='La defensa individual negó la línea de pase y cerró el partido.'}else if(d.choice==='ZONE'&&success){add(0,-2);summary='La zona protegió la pintura y forzó un tiro incómodo.'}else if(d.choice==='FOUL'&&success){add(0,-1);summary='La falta táctica evitó el triple y el rival solo pudo sumar desde el tiro libre.'}else{add(0,3);summary='El rival encontró la respuesta y convirtió la última posesión.'}}
+  else if(d.type==='LAST_SHOT'){if((d.choice==='THREE'&&success)||((d.choice==='TWO'||d.choice==='STAR')&&success)){add(d.choice==='THREE'?3:2);summary=d.choice==='THREE'?'El triple entra y cambia el desenlace.':d.choice==='STAR'?'La estrella asume la responsabilidad y anota.':'El ataque al aro encuentra la canasta.'}else{summary='La última posesión no termina en canasta y el marcador se mantiene.'}}
+  d.pending=null;d.history[d.history.length-1].summary=summary;res.matchDecision={title:d.title,choice:d.choice,summary};saveLocal(false);
+}
+
 function simulateToNextUserMatch(){
   if(interruptForPendingDecision())return;
   if(state.offseason?.active){advanceOffseasonWeek();return}if(state.preseason?.active){advancePreseasonWeek();return}
@@ -1334,11 +1372,12 @@ function simulateToNextUserMatch(){
   for(const m of prior)simulateOne(m,false);
   const sameDay=state.calendar.filter(m=>m.status==='SCHEDULED'&&m.date===nm.date&&m.id!==nm.id);
   for(const m of sameDay)simulateOne(m,false);
+  if(maybeOpenMatchDecisionV48(nm))return;
   const res=simulateOne(nm,true);
   processAcademyTo(nm.date);processScouting(nm.date);processMedicalTo(nm.date);
   state.currentDate=nm.date;
   processDeferredConsequencesV21();
-  addInbox('RESULT',`${club(nm.homeClubId).shortName} ${nm.homeScore}-${nm.awayScore} ${club(nm.awayClubId).shortName}`,`${comp(nm.competitionId).name} · ${typeof nm.round==='number'?'Jornada '+nm.round:nm.round}`,{matchId:nm.id});
+  addInbox('RESULT',`${club(nm.homeClubId).shortName} ${nm.homeScore}-${nm.awayScore} ${club(nm.awayClubId).shortName}`,`${comp(nm.competitionId).name} · ${typeof nm.round==='number'?'Jornada '+nm.round:nm.round}${res.matchDecision?.summary?' · '+res.matchDecision.summary:''}`,{matchId:nm.id});
   recordSeasonNarrativeV46(nm,res);
   maybeGenerateDecisionEvent();maybeGenerateLockerEvent();maybeGeneratePersonalityEvent();maybeGenerateYouthInterest();maybeGenerateContractDecisionV20();runAiMarketStep();runAiFrontOfficeV17();v20AiRenewalsAndPlanning();generateMarketPulse();generateWorldNewsV20();maybeRecordWeeklySummary();
   if(state.autosave)saveLocal(false);

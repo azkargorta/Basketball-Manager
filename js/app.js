@@ -2,7 +2,7 @@
 'use strict';
 
 const BBGM=g.BBGM;
-const APP_VERSION=g.BBGM_VERSION||{code:'0.42.0-beta',label:'v0.42 Beta',saveFormat:'basketball-manager-v042'};
+const APP_VERSION=g.BBGM_VERSION||{code:'0.43.0-beta',label:'v0.43 Beta',saveFormat:'basketball-manager-v043'};
 const app=document.getElementById('app');
 const SAVE_KEY='bbgm_v14_save';
 const OLD_SAVE_KEYS=['bbgm_v13_save','bbgm_v12_save','bbgm_v11_save','bbgm_v10_save','bbgm_v09_save','bbgm_v08_save','bbgm_v07_save','bbgm_v06_save','bbgm_v05_save','bbgm_v04_save','bbgm_v03_save','bbgm_v02_save'];
@@ -824,7 +824,7 @@ function hasScheduledGames(){return state.calendar.some(m=>m.status==='SCHEDULED
 function progressWorldUntilUserMatch(){let guard=0;while(!nextUserMatch()&&guard++<300){const m=state.calendar.filter(x=>x.status==='SCHEDULED').sort((a,b)=>a.date.localeCompare(b.date))[0];if(!m)return false;simulateOne(m,false);processAcademyTo(m.date);processScouting(m.date);processMedicalTo(m.date);state.currentDate=m.date}return !!nextUserMatch()}
 function maybeGenerateDecisionEvent(){
   const played=(state.calendar||[]).filter(m=>m.status==='PLAYED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).length;
-  if(!played||played%4!==0||state.lastDecisionGame===played)return;state.lastDecisionGame=played;
+  if(!played||played%5!==0||state.lastDecisionGame===played)return;state.lastDecisionGame=played;
   const rng=new BBGM.RNG(hashCode(`${state.season}-${played}-decision-v11`)),roster=userClub().roster.slice();
   ensureV15State();if(played%12===0&&state.economy.lastDecisionGame!==played){state.economy.lastDecisionGame=played;addInbox('DECISION','Revisión presupuestaria de la directiva','La directiva te permite reajustar una parte de los recursos para el siguiente tramo de temporada.',{choices:[{label:'Dar más margen salarial',effect:'FIN_WAGES'},{label:'Invertir en scouting',effect:'FIN_SCOUT'},{label:'Proteger la caja',effect:'FIN_STABLE'}]});return}
   const lowSat=roster.slice().sort((a,b)=>(a.state.roleSatisfaction||70)-(b.state.roleSatisfaction||70))[0];
@@ -971,6 +971,14 @@ function startScouting(playerId,scoutId,type){
 }
 
 function addInbox(type,title,text,extra={}){
+  if(type==='DECISION'){
+    const played=(state.calendar||[]).filter(m=>m.status==='PLAYED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).length;
+    state.decisionPacing=state.decisionPacing||{lastGame:null,minGap:5};
+    const last=Number(state.decisionPacing.lastGame);
+    const pending=(state.inbox||[]).some(e=>e.type==='DECISION'&&!e.resolved);
+    if(pending||(Number.isFinite(last)&&played-last<state.decisionPacing.minGap))return null;
+    state.decisionPacing.lastGame=played;
+  }
   const ev={id:state.nextEventId++,type,title,text,resolved:false,date:state.currentDate,...extra};
   state.inbox.unshift(ev);
   return ev;

@@ -10,8 +10,8 @@ if(app.includes('BBGM.teamOverall('))throw new Error('Decision Maker sigue llama
 if(!app.includes('projectedMatchResultV4811(m)')||!app.includes('BBGM.simulateMatch(club(m.homeClubId),club(m.awayClubId),matchSimulationSeedV4811(m))'))throw new Error('El marcador previo no usa la simulación real de los equipos');
 if(!app.includes('date:addDays(startDate,4+i*5)'))throw new Error('Los amistosos pueden solaparse con el primer partido oficial');
 if(!app.includes('const progressionDate=state.currentDate>nm.date?state.currentDate:nm.date'))throw new Error('Una partida antigua puede retroceder de fecha al jugar un partido pendiente');
-if(!version.includes("label:'v0.48.11 Beta'")||!html.includes('js/app.js?v=v04811')||!sw.includes('basketball-gm-beta-v04811'))throw new Error('Versión o caché incorrectas');
-if(!html.includes("serviceWorker.register('./sw.js?v=v04811', { updateViaCache: 'none' })")||!html.includes("addEventListener('controllerchange'"))throw new Error('La app instalada no activa y recarga la caché v0.48.11');
+if(!version.includes("label:'v0.48.12 Beta'")||!html.includes('js/app.js?v=v04812')||!sw.includes('basketball-gm-beta-v04812'))throw new Error('Versión o caché incorrectas');
+if(!html.includes("serviceWorker.register('./sw.js?v=v04812', { updateViaCache: 'none' })")||!html.includes("addEventListener('controllerchange'"))throw new Error('La app instalada no activa y recarga la caché v0.48.12');
 if(sw.includes('ignoreSearch:true')||!sw.includes('fetch(event.request)'))throw new Error('El service worker todavía puede mezclar archivos de distintas versiones');
 if(app.includes('Decision Maker'))throw new Error('La ventana todavía muestra el nombre Decision Maker');
 if(!app.includes('if(!isCloseMatchDecisionV4810({home:projected.homeScore,away:projected.awayScore}))return false'))throw new Error('La decisión puede aparecer con un marcador amplio');
@@ -45,4 +45,4 @@ const recoveredResult={homeScore:68,awayScore:68};
 A.applyMatchDecisionV48(opener,recoveredResult);
 if(A.getState().matchDecisionV48.pending!==null||!Array.isArray(A.getState().matchDecisionV48.history))throw new Error('Una decisión guardada por una versión antigua bloquea la partida');
 
-console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,closeGamesOnly:true,mobileDecisionLayout:true,decisionCompletesMatch:true,legacyDecisionRecovery:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,networkFirstCache:true,version:'v0.48.11',ok:true},null,2));
+console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,closeGamesOnly:true,mobileDecisionLayout:true,decisionCompletesMatch:true,legacyDecisionRecovery:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,networkFirstCache:true,version:'v0.48.12',ok:true},null,2));

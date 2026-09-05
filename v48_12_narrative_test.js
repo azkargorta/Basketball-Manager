@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm');
+globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
+globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};console.warn=()=>{};
+vm.runInThisContext(fs.readFileSync('js/engine.js','utf8'),{filename:'engine.js'});
+vm.runInThisContext(fs.readFileSync('js/data.js','utf8'),{filename:'data.js'});
+let source=fs.readFileSync('js/app.js','utf8');
+source=source.replace(/if\(app\)render\(\);\n\}\)\(typeof globalThis/,'g.BBGM_TEST_NARRATIVE={recordSeasonNarrativeV46,officialNarrativeMatchesV4812};if(app)render();\n})(typeof globalThis');
+vm.runInThisContext(source,{filename:'app.js'});
+const B=globalThis.BBGM,world=B.createWorld(),user=world.clubs[0];
+const calendar=[];
+for(let i=0;i<5;i++)calendar.push({id:`SUP-${i}`,competitionId:'SUPERCOPA',date:`2026-09-${10+i}`,status:'PLAYED',homeClubId:user.id,awayClubId:world.clubs[i+1].id,homeScore:70,awayScore:80});
+for(let i=0;i<3;i++)calendar.push({id:`ACB-${i}`,competitionId:'ACB',date:`2026-10-0${i+1}`,status:'PLAYED',homeClubId:user.id,awayClubId:world.clubs[i+8].id,homeScore:70,awayScore:80});
+const state={season:'2026/27',currentDate:'2026-10-06',userClubId:user.id,world,calendar,history:calendar.map(m=>({matchId:m.id})),inbox:[],marketNews:[],board:{confidence:72,objectives:[]},ui:{},careerV46:{story:[],lastStoryGame:0}};
+globalThis.BBGM_APP_TEST.setState(state);globalThis.BBGM_TEST_NARRATIVE.recordSeasonNarrativeV46(calendar[7],{});
+if(state.careerV46.story.length)throw new Error('Una muestra de tres jornadas no puede generar un aviso de presión');
+console.log(JSON.stringify({earlyOfficialGames:globalThis.BBGM_TEST_NARRATIVE.officialNarrativeMatchesV4812().length,pressureSuppressed:true,ok:true},null,2));

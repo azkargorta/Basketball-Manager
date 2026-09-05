@@ -10,5 +10,5 @@ for(const fn of ['ensureCareerV21','scheduleDeferredV21','processDeferredConsequ
 for(const marker of ['scheduleDecisionFollowUpV21(ev,ch)','processDeferredConsequencesV21();','data-career-accept','data-career-reject']){
   if(!app.includes(marker))throw new Error(`No está conectada la integración: ${marker}`);
 }
-if(!version.includes("label:'v0.46.1 Beta'")||!html.includes('js/app.js?v=v0461')||!sw.includes('basketball-gm-beta-v0461'))throw new Error('Versión o caché de carrera incorrectas');
-console.log(JSON.stringify({deferredConsequences:true,seasonEvaluation:true,careerOffers:true,clubChange:true,version:'v0.46.1',ok:true},null,2));
+if(!version.includes("label:'v0.48 Beta'")||!html.includes('js/app.js?v=v048')||!sw.includes('basketball-gm-beta-v048'))throw new Error('Versión o caché de carrera incorrectas');
+console.log(JSON.stringify({deferredConsequences:true,seasonEvaluation:true,careerOffers:true,clubChange:true,version:'v0.48',ok:true},null,2));

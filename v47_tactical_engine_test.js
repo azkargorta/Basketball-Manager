@@ -7,6 +7,6 @@ const checks=[
  ['rebound effect',eng.includes('offensiveReboundEmphasis-50)*.0012')],
  ['coach match effect',app.includes('applyStaffMatchEffectsV47')],
  ['medical effect',app.includes('injuryRiskV47')],
- ['version/cache',v.includes("label:'v0.47 Beta'")&&h.includes('app.js?v=v047')&&sw.includes('basketball-gm-beta-v047')]
+ ['version/cache',v.includes("label:'v0.48 Beta'")&&h.includes('app.js?v=v048')&&sw.includes('basketball-gm-beta-v048')]
 ];
 const failed=checks.filter(([,ok])=>!ok).map(([x])=>x);if(failed.length)throw new Error(failed.join(', '));console.log(JSON.stringify({checks:checks.map(([x])=>x),ok:true},null,2));

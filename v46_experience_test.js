@@ -10,7 +10,7 @@ const checks=[
   ['locker dynamics',app.includes('lockerDynamicsV46')&&app.includes('Dinámica del vestuario')],
   ['season narrative',app.includes('recordSeasonNarrativeV46')&&app.includes('El vestuario cree en el proyecto')],
   ['visual layer',html.includes('css/ui-v046.css?v=v046')&&css.includes('v46-tutorial-grid')],
-  ['version/cache',version.includes("label:'v0.46.1 Beta'")&&version.includes('basketball-gm-beta-v0461')]
+  ['version/cache',version.includes("label:'v0.48 Beta'")&&version.includes('basketball-gm-beta-v048')]
 ];
 const failed=checks.filter(([,ok])=>!ok).map(([name])=>name);
 if(failed.length)throw new Error(`Faltan mejoras v0.46: ${failed.join(', ')}`);

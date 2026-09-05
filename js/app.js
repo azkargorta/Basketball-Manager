@@ -23,6 +23,23 @@ function openSaveDB(){
 }
 async function dbPut(value){const db=await openSaveDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(value,DB_SAVE_ID);tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error)});}
 async function dbGet(){const db=await openSaveDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readonly');const req=tx.objectStore(DB_STORE).get(DB_SAVE_ID);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});}
+function saveEmergencySnapshot(){
+  if(!state)return false;
+  try{
+    state.ui=state.ui||{};
+    state.ui.lastView=currentView;
+    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+    localStorage.setItem(SAVE_KEY+'_marker',JSON.stringify({season:state.season,date:state.currentDate,clubId:state.userClubId,club:state.world?.clubs?.find(c=>c.id===state.userClubId)?.name||'',savedAt:Date.now(),version:state.version}));
+    return true;
+  }catch(e){console.warn('Emergency save failed',e);return false}
+}
+function savedGameSummary(){
+  try{const raw=localStorage.getItem(SAVE_KEY+'_marker');return raw?JSON.parse(raw):null}catch(_e){return null}
+}
+if(typeof window!=='undefined'){
+  window.addEventListener('pagehide',saveEmergencySnapshot);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveEmergencySnapshot()});
+}
 
 let state=null;
 let currentView='home';
@@ -1221,9 +1238,11 @@ function newGame(selectedClubId=1){
 async function saveLocal(showToast=true){
   if(!state)return false;
   try{
+    state.ui=state.ui||{};
+    state.ui.lastView=currentView;
     await dbPut(state);
-    // Pequeña marca de existencia; el save grande vive en IndexedDB.
-    try{localStorage.setItem(SAVE_KEY+'_marker',JSON.stringify({season:state.season,date:state.currentDate,version:state.version}))}catch(_e){}
+    // La marca permite identificar la carrera y el snapshot de emergencia protege cierres del móvil.
+    try{localStorage.setItem(SAVE_KEY+'_marker',JSON.stringify({season:state.season,date:state.currentDate,clubId:state.userClubId,club:userClub()?.name||'',savedAt:Date.now(),version:state.version}))}catch(_e){}
     if(showToast)toast('Partida guardada');return true;
   }catch(e){
     console.warn('IndexedDB save failed',e);
@@ -1240,7 +1259,7 @@ async function loadLocal(){
       if(raw)obj=JSON.parse(raw);
     }
     if(!obj)return false;
-    upgradeState(obj);await saveLocal(false);currentView='home';render();return true;
+    upgradeState(obj);await saveLocal(false);const validViews=['home','squad','market','academy','schedule','standings','stats','coach','sponsors','calendar','inbox','planning','locker','preseason','more','diagnostics'];currentView=validViews.includes(obj.ui?.lastView)?obj.ui.lastView:'home';render();return true;
   }catch(e){console.warn(e);return false}
 }
 
@@ -1344,13 +1363,24 @@ function matchDecisionScenarioV48(m){
   if(key===1)return {type:'LAST_DEFENSE',title:'Última defensa del partido',text:'El rival prepara la última posesión con el marcador apretado. Elige cómo proteger la ventaja.',choices:[{id:'MAN',label:'Defensa individual',detail:'Presiona al creador y protege mejor el tiro exterior.'},{id:'ZONE',label:'Defensa en zona',detail:'Protege la pintura, pero concede más opciones de pase.'},{id:'FOUL',label:'Hacer falta táctica',detail:'Evita el triple, pero envía al rival a los tiros libres.'}]};
   return {type:'LAST_SHOT',title:'Decisión para la última posesión',text:'Tienes una última posesión para cerrar el partido. Elige el tipo de lanzamiento.',choices:[{id:'THREE',label:'Buscar el triple',detail:'Puedes ganar el partido, pero el porcentaje de acierto es menor.'},{id:'TWO',label:'Atacar para dos',detail:'Opción más segura, aunque quizá no sea suficiente para ganar.'},{id:'STAR',label:'Jugar para la estrella',detail:'Concentra la responsabilidad en tu mejor jugador.'}]};
 }
+function matchDecisionClockV48(type){return type==='STAR_FOULS'?'3:00':type==='LAST_DEFENSE'?'0:18':'0:08'}
+function matchDecisionLiveScoreV48(m){
+  const home=club(m.homeClubId),away=club(m.awayClubId),rng=new BBGM.RNG(Math.abs(hashCode(state.season+'-live-score-'+m.id)));
+  const h=58+Math.floor(rng.next()*24)+Math.round((BBGM.teamOverall(home)-BBGM.teamOverall(away))*.18),a=58+Math.floor(rng.next()*24);
+  return {home:Math.max(0,h),away:Math.max(0,a)};
+}
+function showMatchDecisionResultV48(m,res,decision){
+  const home=club(m.homeClubId),away=club(m.awayClubId),winner=res.homeScore===res.awayScore?'Empate':res.homeScore>res.awayScore?home.shortName:away.shortName;
+  const back=modal('<div class="v48-match-result"><div class="modal-head"><div><div class="eyebrow">Resultado de la decisión</div><h2>'+decision.title+'</h2></div><button class="btn" data-close>Cerrar</button></div><div class="decision-result-score"><span>'+home.shortName+'</span><strong>'+res.homeScore+' - '+res.awayScore+'</strong><span>'+away.shortName+'</span></div><div class="decision-result-card"><b>'+decision.choiceLabel+'</b><p>'+decision.summary+'</p><p class="muted">La jugada se resolvió con '+decision.clock+' restantes. Resultado final: '+(winner==='Empate'?'empate':winner+' gana')+'.</p></div><div class="modal-actions"><button class="btn primary" data-close-bottom>Continuar</button></div></div>');
+  back.querySelector('[data-close]').onclick=()=>back.remove();back.querySelector('[data-close-bottom]').onclick=()=>back.remove();
+}
 function maybeOpenMatchDecisionV48(m){
   ensureMatchDecisionStateV48();if(!isDecisiveMatchV48(m))return false;
   const d=state.matchDecisionV48;if(d.pending?.matchId===m.id)return false;
   if(d.history.some(x=>x.matchId===m.id))return false;
-  const ev=matchDecisionScenarioV48(m),back=modal(`<div class="v48-match-decision"><div class="modal-head"><div><div class="eyebrow">Decision Maker · Partido decisivo</div><h2>${ev.title}</h2></div><button class="btn" data-close>Decidir después</button></div><p class="decision-situation-text">${ev.text}</p><div class="v48-decision-choices">${ev.choices.map(c=>`<button class="v48-decision-choice" data-match-choice="${c.id}"><b>${c.label}</b><span>${c.detail}</span></button>`).join('')}</div><p class="tiny muted">La respuesta más favorable depende del contexto, los jugadores y una parte de azar. El resultado se aplicará al marcador.</p></div>`);
+  const ev=matchDecisionScenarioV48(m),live=matchDecisionLiveScoreV48(m),back=modal(`<div class="v48-match-decision"><div class="modal-head"><div><div class="eyebrow">Decision Maker · Partido decisivo</div><h2>${ev.title}</h2></div><button class="btn" data-close>Decidir después</button></div><div class="decision-live-panel"><b>${club(m.homeClubId).shortName} ${live.home} - ${live.away} ${club(m.awayClubId).shortName}</b><span>Quedan ${matchDecisionClockV48(ev.type)}</span></div><p class="decision-situation-text">${ev.text}</p><div class="v48-decision-choices">${ev.choices.map(c=>`<button class="v48-decision-choice" data-match-choice="${c.id}"><b>${c.label}</b><span>${c.detail}</span></button>`).join('')}</div><p class="tiny muted">La respuesta más favorable depende del contexto, los jugadores y una parte de azar. El resultado se aplicará al marcador.</p></div>`);
   back.querySelector('[data-close]').onclick=()=>back.remove();
-  back.querySelectorAll('[data-match-choice]').forEach(b=>b.onclick=()=>{d.pending={matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,title:ev.title};d.history.push({matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,date:state.currentDate});saveLocal(false);back.remove();simulateToNextUserMatch()});
+  back.querySelectorAll('[data-match-choice]').forEach(b=>b.onclick=()=>{const choice=ev.choices.find(c=>c.id===b.dataset.matchChoice);d.lastResult=null;d.pending={matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,choiceLabel:choice?.label||b.dataset.matchChoice,title:ev.title,clock:matchDecisionClockV48(ev.type)};d.history.push({matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,date:state.currentDate,clock:matchDecisionClockV48(ev.type)});saveLocal(false);back.remove();simulateToNextUserMatch();if(d.lastResult)showMatchDecisionResultV48(m,d.lastResult,d.lastResult.matchDecision)});
   return true;
 }
 function applyMatchDecisionV48(m,res){
@@ -1361,7 +1391,7 @@ function applyMatchDecisionV48(m,res){
   if(d.type==='STAR_FOULS'){if(d.choice==='KEEP'&&success){add(2);summary=`${top?fullName(top):'Tu estrella'} respondió y anotó la jugada decisiva.`}else if(d.choice==='KEEP'){add(0,2);summary=`${top?fullName(top):'Tu estrella'} cometió la quinta falta y el rival aprovechó el cambio.`}else if(success){summary='La segunda unidad defendió el resultado y el descanso protegió a tu estrella.'}else{add(2,0);summary='Faltó talento en la última posesión y el rival tomó la iniciativa.'}}
   else if(d.type==='LAST_DEFENSE'){if(d.choice==='MAN'&&success){add(0,-2);summary='La defensa individual negó la línea de pase y cerró el partido.'}else if(d.choice==='ZONE'&&success){add(0,-2);summary='La zona protegió la pintura y forzó un tiro incómodo.'}else if(d.choice==='FOUL'&&success){add(0,-1);summary='La falta táctica evitó el triple y el rival solo pudo sumar desde el tiro libre.'}else{add(0,3);summary='El rival encontró la respuesta y convirtió la última posesión.'}}
   else if(d.type==='LAST_SHOT'){if((d.choice==='THREE'&&success)||((d.choice==='TWO'||d.choice==='STAR')&&success)){add(d.choice==='THREE'?3:2);summary=d.choice==='THREE'?'El triple entra y cambia el desenlace.':d.choice==='STAR'?'La estrella asume la responsabilidad y anota.':'El ataque al aro encuentra la canasta.'}else{summary='La última posesión no termina en canasta y el marcador se mantiene.'}}
-  d.pending=null;d.history[d.history.length-1].summary=summary;res.matchDecision={title:d.title,choice:d.choice,summary};saveLocal(false);
+  const decisionResult={title:d.title,choice:d.choice,choiceLabel:d.choiceLabel||d.choice,summary,clock:d.clock||'0:08'};d.pending=null;d.history[d.history.length-1].summary=summary;d.history[d.history.length-1].result=decisionResult;res.matchDecision=decisionResult;d.lastResult=res;saveLocal(false);
 }
 
 function simulateToNextUserMatch(){
@@ -1629,7 +1659,8 @@ function render(){
 }
 
 function renderStart(){
-  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">${APP_VERSION.label} · funciona offline</div><h1>Basketball GM</h1><p>Simulador de dirección deportiva con plantillas reales 2026/27, mercado, scouting, cantera, economía e historial de carrera.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note">Puedes continuar partidas anteriores. Para aplicar la normalización completa de posiciones, alturas y perfiles del Data Pack, crea una partida nueva en ${APP_VERSION.label}.</div></div></div>`;
+  const saved=savedGameSummary();const savedText=saved?.club?`Último guardado: ${saved.club} · ${saved.season||'carrera activa'} · ${saved.date||''}`:'La partida se guarda automáticamente al avanzar y al cerrar la app.';
+  app.innerHTML=`<div class="start-screen"><div class="start-card"><div class="eyebrow">${APP_VERSION.label} · funciona offline</div><h1>Basketball GM</h1><p>Simulador de dirección deportiva con plantillas reales 2026/27, mercado, scouting, cantera, economía e historial de carrera.</p><div class="start-actions"><button class="btn primary" id="newGame">Nueva partida</button><button class="btn" id="continue">Continuar partida guardada</button><button class="btn" id="importBtn">Importar partida</button><input class="file-input" type="file" id="importFile" accept="application/json"></div><div class="note"><b>${savedText}</b><br>Puedes continuar exactamente desde el último punto guardado. Para aplicar la normalización completa de posiciones, alturas y perfiles del Data Pack, crea una partida nueva en ${APP_VERSION.label}.</div></div></div>`;
   document.getElementById('newGame').onclick=()=>{const clubs=BBGM.createWorld().clubs.filter(c=>c.leagueLevel!=='NBA');const leagues=[...new Set(clubs.map(c=>c.leagueName))];const ov=modal(`<div class="modal-head"><div><div class="eyebrow">Nueva carrera</div><h2>Elige tu primer proyecto</h2></div><button class="btn" data-close>Cerrar</button></div><p class="muted">Selecciona una liga y un equipo; también puedes empezar de forma aleatoria.</p><div class="form-grid"><label>Liga<select id="careerLeague">${leagues.map(x=>`<option>${x}</option>`).join('')}</select></label><label>Equipo<select id="careerClub"></select></label></div><div class="modal-actions"><button class="btn" id="careerRandom">Proyecto aleatorio</button><button class="btn primary" id="careerStart">Comenzar carrera</button></div>`);const league=ov.querySelector('#careerLeague'),clubSel=ov.querySelector('#careerClub');const fill=()=>{clubSel.innerHTML=clubs.filter(c=>c.leagueName===league.value).map(c=>`<option value="${c.id}">${c.name}</option>`).join('')};fill();league.onchange=fill;ov.querySelector('[data-close]').onclick=()=>ov.remove();ov.querySelector('#careerRandom').onclick=()=>{const club=clubs[Math.floor(Math.random()*clubs.length)];ov.remove();newGame(club.id)};ov.querySelector('#careerStart').onclick=()=>{ov.remove();newGame(Number(clubSel.value))}};
   document.getElementById('continue').onclick=async()=>{if(!(await loadLocal()))alert('No hay una partida guardada en este navegador.')};
   document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();

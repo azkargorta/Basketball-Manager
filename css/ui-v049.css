@@ -1,0 +1,5 @@
+/* v0.48.1 - correcciones de acciones y avisos. */
+#v45NextStep{appearance:none;font:inherit;color:var(--text);text-align:left;cursor:pointer;width:100%}
+#v45NextStep:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+.v46-story-callout{display:flex;align-items:center;justify-content:space-between;gap:14px}.v46-story-callout>div{min-width:0}.v46-story-callout .btn{flex:0 0 auto}
+@media(max-width:560px){.v46-story-callout{align-items:flex-start;flex-direction:column}.v46-story-callout .btn{width:100%}}

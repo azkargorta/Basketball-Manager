@@ -1641,6 +1641,10 @@ function ensureV46State(){
   state.ui.tutorialV46=!!state.ui.tutorialV46;
   state.careerV46=state.careerV46||{};
   state.careerV46.story=Array.isArray(state.careerV46.story)?state.careerV46.story:[];
+  // Las versiones anteriores podían avisar de "presión" tras amistosos, Supercopa o
+  // muy pocos partidos. No mantenemos ese aviso si aún no hay base competitiva.
+  const officialCount=officialNarrativeMatchesV4812().length,confidence=Number(state.board?.confidence??72);
+  if(officialCount<8||confidence>=65)state.careerV46.story=state.careerV46.story.filter(s=>!(s.kind==='PRESSURE'||(s.title==='La presión empieza a aumentar'&&(officialCount<8||confidence>=65))));
   state.careerV46.lastStoryGame=Number.isFinite(state.careerV46.lastStoryGame)?state.careerV46.lastStoryGame:0;
   state.lockerRoom=state.lockerRoom||{};
   state.lockerRoom.groups=Array.isArray(state.lockerRoom.groups)?state.lockerRoom.groups:[];
@@ -1681,12 +1685,24 @@ function openV46Tutorial(){
   const finish=()=>{state.ui.tutorialV46=true;saveLocal(false);back.remove()};back.querySelector('[data-close]').onclick=finish;back.querySelector('#finishV46Tutorial').onclick=finish;
 }
 function maybeShowV46Tutorial(){if(!state||state.ui.tutorialV46||document.querySelector('.v46-tutorial-modal'))return;openV46Tutorial()}
+function officialNarrativeMatchesV4812(){
+  const domestic=domesticCompetitionForClub(userClub())?.id;
+  const relevant=new Set([domestic,'EL'].filter(Boolean));
+  return (state.calendar||[]).filter(m=>m.status==='PLAYED'&&relevant.has(m.competitionId)&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function narrativeWinV4812(m){return m.homeClubId===state.userClubId?m.homeScore>m.awayScore:m.awayScore>m.homeScore}
 function recordSeasonNarrativeV46(match,res){
-  ensureV46State();const played=userGamesPlayedV20(),home=match.homeClubId===state.userClubId,win=home?match.homeScore>match.awayScore:match.awayScore>match.homeScore;
-  if(!played||played===state.careerV46.lastStoryGame||played%5!==0)return;state.careerV46.lastStoryGame=played;
-  const recent=state.history.slice(-5),wins=recent.filter(h=>{const m=state.calendar.find(x=>x.id===h.matchId);return m&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)&&((m.homeClubId===state.userClubId&&m.homeScore>m.awayScore)||(m.awayClubId===state.userClubId&&m.awayScore>m.homeScore))}).length;
-  const title=wins>=4?'El vestuario cree en el proyecto':wins<=1?'La presión empieza a aumentar':'El equipo busca estabilidad';const text=wins>=4?`${userClub().name} encadena ${wins} victorias en sus últimos partidos. La directiva valora el impulso y el capitán gana influencia.`:wins<=1?`${userClub().name} solo ha ganado ${wins} de sus últimos cinco partidos. Conviene revisar la rotación, la moral y el plan de mercado.`:`El equipo mantiene un rendimiento irregular. El próximo tramo puede cambiar la percepción de la directiva.`;
-  state.careerV46.story.unshift({date:state.currentDate,title,text,read:false});state.careerV46.story=state.careerV46.story.slice(0,12);worldNewsPushV20('STORY',text,{clubId:state.userClubId});
+  ensureV46State();const official=officialNarrativeMatchesV4812(),played=official.length;
+  // No convertir tres jornadas ni la Supercopa en una crisis de temporada.
+  if(played<8||played===state.careerV46.lastStoryGame||played%5!==0)return;state.careerV46.lastStoryGame=played;
+  const recent=official.slice(-5),wins=recent.filter(narrativeWinV4812).length,confidence=Math.round(state.board?.confidence??72);
+  const leagueObjective=projectObjectives(userClub()).find(o=>o.id==='LEAGUE'),leagueState=leagueObjective?boardObjectiveState(leagueObjective):{ok:true,text:''};
+  const underRealPressure=confidence<60||(!leagueState.ok&&played>=10&&wins<=1);
+  let title,text,kind='FORM';
+  if(wins>=4){title='El vestuario cree en el proyecto';text=`${userClub().name} ha ganado ${wins} de sus últimos cinco partidos oficiales. La directiva valora el impulso y el capitán gana influencia.`;kind='POSITIVE'}
+  else if(underRealPressure){title='La presión empieza a aumentar';text=`${userClub().name} solo ha ganado ${wins} de sus últimos cinco partidos oficiales y la confianza de la directiva está en ${confidence}/100. ${leagueState.text||'Los objetivos de la temporada empiezan a alejarse.'}`;kind='PRESSURE'}
+  else{title='El equipo busca estabilidad';text=`${userClub().name} ha ganado ${wins} de sus últimos cinco partidos oficiales. La temporada aún está abierta y la directiva mantiene su confianza (${confidence}/100).`;}
+  state.careerV46.story.unshift({date:state.currentDate,title,text,kind,read:false});state.careerV46.story=state.careerV46.story.slice(0,12);worldNewsPushV20('STORY',text,{clubId:state.userClubId});
 }
 
 function render(){

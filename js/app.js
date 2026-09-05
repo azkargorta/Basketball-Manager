@@ -1211,7 +1211,7 @@ function newGame(selectedClubId=1){
     world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[],projectClubId:selectedClubId,objectiveModelVersion:4},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(selectedClubId,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
   };
   ensureAcademy();
-  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();
+  ensureV12State();ensureV13State();ensureV14State();ensureV15State();ensureV16State();ensureV17State();ensureV19State();ensureV20State();ensureV46State();
   ensureClubProjects();
   state.board.objectives=projectObjectives(userClub());
   state.board.projectClubId=state.userClubId;
@@ -1232,7 +1232,7 @@ function newGame(selectedClubId=1){
   addInbox('ACADEMY','Equipo B disponible',`La cantera comienza con ${state.academy.players.length} jóvenes. Puedes revisar potencial, estadísticas, promociones y cesiones.`);
   const expiring=userClub().roster.filter(p=>p.contractYears===1).length;
   if(expiring)addInbox('CONTRACT',`${expiring} contrato${expiring>1?'s':''} por revisar`,'Varios jugadores terminan contrato al final de la temporada. Revisa la pestaña Contratos del Mercado.');
-  saveLocal(false);currentView='home';render();setTimeout(()=>openV46Tutorial(),0);
+  saveLocal(false);currentView='home';render();openV46Tutorial();
 }
 
 async function saveLocal(showToast=true){
@@ -1732,7 +1732,7 @@ function renderHome(v){
   <div class="grid two" style="margin-top:16px"><div class="card"><h3>ACB</h3>${standingsMini('ACB',8)}</div><div class="card"><h3>Patrocinador</h3>${state.sponsorship?.active?`<div class="sponsor-summary"><b>${state.sponsorship.active.name}</b><span>${state.sponsorship.active.type}</span><strong>${fmtMoney(state.sponsorship.active.fixed)} fijo</strong></div><button class="btn" id="sponsorHome">Ver variables</button>`:`<p class="muted">Tienes propuestas de patrocinio pendientes.</p><button class="btn good" id="sponsorHome">Elegir patrocinador</button>`}</div></div>
   <div class="card" style="margin-top:16px"><div class="section-inline"><div><div class="eyebrow">Quinteto previsto por el entrenador</div><h3>Quinteto titular</h3></div><span class="pill">Haz clic en un jugador</span></div>${courtHtml(uc)}</div>
   ${state.marketNews.length?`<div class="card" style="margin-top:16px"><h3>Noticias de mercado</h3>${state.marketNews.slice(0,5).map(n=>`<div class="news-line"><span class="muted">${n.date}</span><span>${n.text}</span></div>`).join('')}</div>`:''}`;
-  v.insertAdjacentHTML('afterbegin',`<div class="v49-home-top"><button type="button" id="v45NextStep" class="v49-next ${pending?'urgent':''}"><span class="eyebrow">${pending?'DECISIÓN PENDIENTE':'SIGUIENTE PASO'}</span><b>${pending?'Resolver ahora':'Avanzar la carrera'}</b><small>${pending?'Debes elegir antes de seguir':'Continúa desde este acceso rápido'}</small><strong>${pending?'!':'→'}</strong></button><div class="v49-top-metrics"><div class="v49-metric"><span>DIRECTIVA</span><b>${Math.round(state.board?.confidence??70)}/100</b><small>Confianza</small></div><div class="v49-metric"><span>PRÓXIMO PARTIDO</span><b>${nm?club(nm.homeClubId===state.userClubId?nm.awayClubId:nm.homeClubId)?.shortName||'Rival':'—'}</b><small>${nm?nm.date:'Sin partido'}</small></div></div></div>`);
+  v.insertAdjacentHTML('afterbegin',`<div class="v49-home-top v49-home-metrics-only"><div class="v49-top-metrics"><div class="v49-metric"><span>DIRECTIVA</span><b>${Math.round(state.board?.confidence??70)}/100</b><small>Confianza</small></div><div class="v49-metric"><span>PRÓXIMO PARTIDO</span><b>${nm?club(nm.homeClubId===state.userClubId?nm.awayClubId:nm.homeClubId)?.shortName||'Rival':'—'}</b><small>${nm?nm.date:'Sin partido'}</small></div></div></div>`);
   v.insertAdjacentHTML('beforeend',v20HomeNewsHtml());
   v.insertAdjacentHTML('beforeend',`<div style="margin-top:16px">${weeklySummaryHtml()}</div>`);v.insertAdjacentHTML('beforeend',dashboardExtraHtml());
   const lh=document.getElementById('openLockerHome');if(lh)lh.onclick=()=>{currentView='locker';render()};const ph=document.getElementById('openPlanningHome');if(ph)ph.onclick=()=>{currentView='planning';render()};

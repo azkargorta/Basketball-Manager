@@ -1548,16 +1548,17 @@ function enhanceV46View(){
   if(currentView==='squad'){
     const save=document.getElementById('saveStyle'),card=save?.closest('.card');if(card&&!card.querySelector('#v46TacticalImpact'))card.insertAdjacentHTML('beforeend',tacticalGuidanceV46(userClub()));
   }
-  if(currentView==='more'){const host=document.querySelector('.more-sections');if(host&&!host.querySelector('.v46-staff-impact'))host.insertAdjacentHTML('afterbegin',staffImpactV46())}
+  if(currentView==='more'){const host=document.querySelector('.more-sections');if(host&&!host.querySelector('.v46-staff-impact'))host.insertAdjacentHTML('afterbegin',staffImpactV46());if(host&&!host.querySelector('.v46-help-card')){host.insertAdjacentHTML('afterbegin',`<div class="card v46-help-card"><div class="eyebrow">Ayuda</div><h3>¿Es tu primera carrera?</h3><p class="muted">Repasa en un minuto qué revisar antes de simular y cómo afectan tus decisiones.</p><button class="btn primary" id="openV46Tutorial">Abrir tutorial</button></div>`);document.getElementById('openV46Tutorial').onclick=openV46Tutorial}}
   if(currentView==='locker'){const host=document.querySelector('#view');if(host&&!host.querySelector('.v46-locker-dynamics'))host.insertAdjacentHTML('beforeend',lockerDynamicsV46())}
   if(currentView==='home'&&state.careerV46.story.length){const host=document.querySelector('#view');if(host&&!host.querySelector('.v46-story-callout')){const s=state.careerV46.story[0];host.insertAdjacentHTML('afterbegin',`<div class="v46-story-callout"><h4>${s.title}</h4><p>${s.text}</p></div>`)}}
 }
-function maybeShowV46Tutorial(){
-  if(!state||state.ui.tutorialV46||document.querySelector('.v46-tutorial-modal'))return;
+function openV46Tutorial(){
+  if(!state||document.querySelector('.v46-tutorial-modal'))return;
   const back=modal(`<div class="v46-tutorial-modal"><div class="modal-head"><div><div class="eyebrow">Primeros pasos</div><h2>Tu carrera empieza aquí</h2></div><button class="btn" data-close>Ahora no</button></div><p class="muted">Estas son las cuatro cosas que conviene revisar antes de simular.</p><div class="v46-tutorial-grid"><article><b>1 · Inicio</b><p>Resuelve primero las decisiones pendientes y revisa los objetivos de la directiva.</p></article><article><b>2 · Plantilla</b><p>Configura roles, minutos y estilo; el entrenador y el staff influyen en los resultados.</p></article><article><b>3 · Mercado</b><p>Busca jugadores, observa sus atributos con scouting y controla el margen salarial.</p></article><article><b>4 · Carrera</b><p>Los resultados, el vestuario y las finanzas afectan a tu reputación y a futuras ofertas.</p></article></div><div class="modal-actions"><button class="btn primary" id="finishV46Tutorial">Entendido, empezar</button></div></div>`);
   back.classList.add('v46-tutorial-overlay');
   const finish=()=>{state.ui.tutorialV46=true;saveLocal(false);back.remove()};back.querySelector('[data-close]').onclick=finish;back.querySelector('#finishV46Tutorial').onclick=finish;
 }
+function maybeShowV46Tutorial(){if(!state||state.ui.tutorialV46||document.querySelector('.v46-tutorial-modal'))return;openV46Tutorial()}
 function recordSeasonNarrativeV46(match,res){
   ensureV46State();const played=userGamesPlayedV20(),home=match.homeClubId===state.userClubId,win=home?match.homeScore>match.awayScore:match.awayScore>match.homeScore;
   if(!played||played===state.careerV46.lastStoryGame||played%5!==0)return;state.careerV46.lastStoryGame=played;

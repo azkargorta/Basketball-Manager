@@ -3,7 +3,8 @@ const fs = require('fs');
 const read = file => fs.readFileSync(`${__dirname}/${file}`, 'utf8');
 const app = read('js/app.js');
 const html = read('index.html');
-const css = `${read('css/ui-v033.css')}\n${read('css/ui-v034.css')}\n${read('css/ui-v035.css')}`;
+const visualLayers = ['ui-v033.css','ui-v034.css','ui-v035.css','ui-v045.css','ui-v046.css','ui-v047.css','ui-v048.css','ui-v049.css'];
+const css = visualLayers.map(file=>read(`css/${file}`)).join('\n');
 const sw = read('sw.js');
 
 const bottomMarkup = app.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
@@ -18,8 +19,8 @@ for (const view of ['academy', 'standings', 'stats']) {
 }
 
 const lastStyle = [...html.matchAll(/<link\s+rel="stylesheet"\s+href="([^"]+)"/g)].at(-1)?.[1] || '';
-if (!lastStyle.startsWith('css/ui-v035.css')) throw new Error('ui-v035.css debe ser la última capa visual');
-if (!sw.includes("'./css/ui-v033.css'") || !sw.includes("'./css/ui-v034.css'") || !sw.includes("'./css/ui-v035.css'")) throw new Error('Las capas visuales no están disponibles offline');
+if (!lastStyle.startsWith('css/ui-v049.css')) throw new Error('ui-v049.css debe ser la última capa visual');
+for (const file of visualLayers) if (!sw.includes(`'./css/${file}'`)) throw new Error(`${file} no está disponible offline`);
 
 const required = [
   'grid-template-columns: repeat(5, minmax(0, 1fr))',

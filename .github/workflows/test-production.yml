@@ -29,3 +29,4 @@ jobs:
           node market_ai_test.js
           node ui_mobile_test.js
           node notification_actions_test.js
+          node v48_7_regression_test.js

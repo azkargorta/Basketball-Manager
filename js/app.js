@@ -195,7 +195,7 @@ function createInjury(p,c,date,seed){
   p.currentInjury=inj;p.injuryHistory.push({...inj});state.medical.injuryHistory.unshift({playerId:p.id,clubId:c?.id||null,...inj});state.medical.injuryHistory=state.medical.injuryHistory.slice(0,120);
   if(c?.id===state.userClubId)addInbox('INJURY',`${fullName(p)}: ${type.name}`,`El médico estima ${inj.diagnosisRange[0]}-${inj.diagnosisRange[1]} días de baja. Puedes elegir tratamiento desde Más → Departamento médico.`,{playerId:p.id});return inj;
 }
-function maybeGenerateMatchInjuries(c,stats,date){const rng=new BBGM.RNG(hashCode(`${date}-${c.id}-${stats.reduce((n,x)=>n+x.points,0)}-medical`));for(const st of stats){if((st.minutes||0)<5)continue;const p=c.roster.find(x=>x.id===st.playerId);if(!p)continue;if(p.currentInjury&&p.currentInjury.status!=='RECOVERED'){if(p.currentInjury.management==='PLAY'&&rng.next()<(p.currentInjury.recurrenceRisk||20)/100*.16){p.currentInjury.estimatedEndDate=addDays(p.currentInjury.estimatedEndDate,5+Math.floor(rng.next()*8));p.currentInjury.severity=Math.min(5,(p.currentInjury.severity||2)+.7);if(c.id===state.userClubId)addInbox('INJURY',`${fullName(p)} agrava sus molestias`,`Jugar con molestias ha provocado una recaída. La recuperación se retrasa hasta ${p.currentInjury.estimatedEndDate}.`,{playerId:p.id})}continue}if(rng.next()<injuryRisk(p,st.minutes))createInjury(p,c,date,hashCode(`${p.id}-${date}-inj`))}}
+function maybeGenerateMatchInjuries(c,stats,date){const rng=new BBGM.RNG(hashCode(`${date}-${c.id}-${stats.reduce((n,x)=>n+x.points,0)}-medical`));for(const st of stats){if((st.minutes||0)<5)continue;const p=c.roster.find(x=>x.id===st.playerId);if(!p)continue;if(p.currentInjury&&p.currentInjury.status!=='RECOVERED'){if(p.currentInjury.management==='PLAY'&&rng.next()<(p.currentInjury.recurrenceRisk||20)/100*.16){p.currentInjury.estimatedEndDate=addDays(p.currentInjury.estimatedEndDate,5+Math.floor(rng.next()*8));p.currentInjury.severity=Math.min(5,(p.currentInjury.severity||2)+.7);if(c.id===state.userClubId)addInbox('INJURY',`${fullName(p)} agrava sus molestias`,`Jugar con molestias ha provocado una recaída. La recuperación se retrasa hasta ${p.currentInjury.estimatedEndDate}.`,{playerId:p.id})}continue}if(rng.next()<injuryRiskV47(p,st.minutes,c))createInjury(p,c,date,hashCode(`${p.id}-${date}-inj`))}}
 function processMedicalTo(target){ensureV13State();for(const c of state.world.clubs)for(const p of c.roster){const inj=p.currentInjury;if(!inj||inj.status==='RECOVERED')continue;let end=inj.estimatedEndDate;if(inj.management==='LIMITED')end=addDays(end,2);if(inj.management==='PLAY')end=addDays(end,4);if(target>=end){inj.status='RECOVERED';p.state.fitness=BBGM.clamp((p.state.fitness||88)+5,70,100);p.state.fatigue=BBGM.clamp((p.state.fatigue||20)-8,0,75);if(c.id===state.userClubId)addInbox('MEDICAL',`${fullName(p)} recibe el alta`,`${p.currentInjury.name}: el jugador vuelve a estar disponible.`);p.currentInjury={...inj,status:'RECOVERED',recoveredDate:target}}}state.medical.lastProcessedDate=target}
 function setInjuryManagement(playerId,mode){const p=userClub().roster.find(x=>x.id===playerId);if(!p?.currentInjury||p.currentInjury.status==='RECOVERED')return;p.currentInjury.management=mode;if(mode==='REST'){p.state.morale=BBGM.clamp((p.state.morale||70)-.3,0,100)}if(mode==='PLAY'){p.currentInjury.recurrenceRisk=BBGM.clamp(p.currentInjury.recurrenceRisk+12,0,80);p.state.morale=BBGM.clamp((p.state.morale||70)+1,0,100)}saveLocal(false);render();toast(mode==='REST'?'Reposo completo':mode==='LIMITED'?'Minutos limitados':'Disponible con molestias')}
 function activeInjuries(c=userClub()){return c.roster.filter(p=>p.currentInjury&&p.currentInjury.status!=='RECOVERED')}
@@ -1258,10 +1258,23 @@ function importSave(file){
 function nextUserMatch(){return state.calendar.find(m=>m.status==='SCHEDULED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId))}
 function gamesBeforeOrAt(date){return state.calendar.filter(m=>m.status==='SCHEDULED'&&m.date<=date)}
 
+
+/* v0.47: efectos jugables de táctica y staff. */
+function staffMatchClubV47(m){return m.homeClubId===state.userClubId?club(m.homeClubId):m.awayClubId===state.userClubId?club(m.awayClubId):null}
+function applyStaffMatchEffectsV47(m,res){
+  const c=staffMatchClubV47(m);if(!c)return;
+  const coach=c.coach||{},management=Number(coach.manManagement||65),development=Number(coach.development||65);
+  const moraleDelta=BBGM.clamp((management-65)*.018,-.45,.55),confidenceDelta=BBGM.clamp((management-65)*.012,-.3,.35);
+  const stats=m.homeClubId===state.userClubId?res.homeStats:res.awayStats;
+  for(const st of stats||[]){const p=c.roster.find(x=>x.id===st.playerId);if(!p)continue;p.state.morale=BBGM.clamp((p.state.morale||70)+moraleDelta,0,100);p.state.confidence=BBGM.clamp((p.state.confidence||70)+confidenceDelta,0,100);if((p.age||99)<=23)p.state.developmentTrust=BBGM.clamp((p.state.developmentTrust||70)+(development-65)*.018,-0,100)}
+  res.staffImpact={coachManagement:Math.round(management),development:Math.round(development),medicalPrevention:Math.round(state.medical?.doctor?.prevention||0),tactical:true};
+}
+function injuryRiskV47(p,mins,c){const base=injuryRisk(p,mins),doctor=c?.id===state.userClubId?Number(state.medical?.doctor?.prevention||70):70,coach=c?.coach?Number(c.coach.manManagement||65):65;return BBGM.clamp(base*(1-BBGM.clamp((doctor-65)*.0035+(coach-65)*.0015,-.18,.28)),.0005,.018)}
+
 function simulateOne(m,show=false){
   const home=club(m.homeClubId),away=club(m.awayClubId);
   const seed=Number(String(Date.now()).slice(-9))+m.round+m.homeClubId*37+m.awayClubId*11;
-  const res=BBGM.simulateMatch(home,away,seed);
+  const res=BBGM.simulateMatch(home,away,seed);applyStaffMatchEffectsV47(m,res);
   m.status='PLAYED';m.homeScore=res.homeScore;m.awayScore=res.awayScore;m.overtimePeriods=res.overtimePeriods;m.result=res;
   updateStandings(m);
   updatePlayerState(home,res.homeStats,res.homeScore>res.awayScore);

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#10141c" />
   <title>Basketball Manager</title>
   <script src="js/version.js"></script>
-  <link rel="manifest" href="manifest.webmanifest?v=v0489" />
+  <link rel="manifest" href="manifest.webmanifest?v=v04810" />
   <link rel="apple-touch-icon" sizes="192x192" href="icons/app-icon-192.png?v=v038" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/app-icon-192.png?v=v038" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -23,8 +23,8 @@
   <link rel="stylesheet" href="css/ui-v045.css?v=v045" />
   <link rel="stylesheet" href="css/ui-v046.css?v=v047" />
   <link rel="stylesheet" href="css/ui-v047.css?v=v048" />
-  <link rel="stylesheet" href="css/ui-v048.css?v=v0489" />
-  <link rel="stylesheet" href="css/ui-v049.css?v=v0489" />
+  <link rel="stylesheet" href="css/ui-v048.css?v=v04810" />
+  <link rel="stylesheet" href="css/ui-v049.css?v=v04810" />
 </head>
 <body>
   <div id="app"></div>
@@ -60,13 +60,13 @@
   <script src="js/real-rosters-manual-merge.js?v=20260903u"></script>
   <script src="js/data-pack-real-2026-27.js?v=20260903u"></script>
   <script src="js/real-ratings-review-acb-euroleague-2026-27.js?v=20260903a"></script>
-  <script src="js/app.js?v=v0489"></script>
+  <script src="js/app.js?v=v04810"></script>
   <script src="js/v022.js"></script>
   <script src="js/v024.js"></script>
   <script src="js/v025.js?v=20260902a"></script>
   <script src="js/v026.js?v=20260902a"></script>
   <script src="js/v027.js?v=20260903c"></script>
-  <script src="js/pwa.js?v=v0489"></script>
+  <script src="js/pwa.js?v=v04810"></script>
   <script>
     window.addEventListener('load', () => {
       if (!('serviceWorker' in navigator)) return;
@@ -76,7 +76,7 @@
         reloading = true;
         location.reload();
       });
-      setTimeout(() => navigator.serviceWorker.register('./sw.js?v=v0489', { updateViaCache: 'none' })
+      setTimeout(() => navigator.serviceWorker.register('./sw.js?v=v04810', { updateViaCache: 'none' })
         .then(registration => registration.update())
         .catch(err => console.warn('SW update:', err)), 0);
     });

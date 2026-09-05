@@ -1,5 +1,5 @@
 importScripts('./js/version.js');
-const CACHE_NAME = self.BBGM_VERSION?.cacheName || 'basketball-gm-beta-v04810';
+const CACHE_NAME = self.BBGM_VERSION?.cacheName || 'basketball-gm-beta-v04811';
 const CORE = [
   './',
   './index.html',

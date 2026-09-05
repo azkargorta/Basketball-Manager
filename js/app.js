@@ -1292,7 +1292,7 @@ function injuryRiskV47(p,mins,c){const base=injuryRisk(p,mins),doctor=c?.id===st
 
 function simulateOne(m,show=false){
   const home=club(m.homeClubId),away=club(m.awayClubId);
-  const seed=Number(String(Date.now()).slice(-9))+m.round+m.homeClubId*37+m.awayClubId*11;
+  const seed=matchSimulationSeedV4811(m);
   const res=BBGM.simulateMatch(home,away,seed);applyStaffMatchEffectsV47(m,res);applyMatchDecisionV48(m,res);
   m.status='PLAYED';m.homeScore=res.homeScore;m.awayScore=res.awayScore;m.overtimePeriods=res.overtimePeriods;m.result=res;
   updateStandings(m);
@@ -1364,10 +1364,31 @@ function matchDecisionScenarioV48(m){
   return {type:'LAST_SHOT',title:'Decisión para la última posesión',text:'Tienes una última posesión para cerrar el partido. Elige el tipo de lanzamiento.',choices:[{id:'THREE',label:'Buscar el triple',detail:'Puedes ganar el partido, pero el porcentaje de acierto es menor.'},{id:'TWO',label:'Atacar para dos',detail:'Opción más segura, aunque quizá no sea suficiente para ganar.'},{id:'STAR',label:'Jugar para la estrella',detail:'Concentra la responsabilidad en tu mejor jugador.'}]};
 }
 function matchDecisionClockV48(type){return type==='STAR_FOULS'?'3:00':type==='LAST_DEFENSE'?'0:18':'0:08'}
-function matchDecisionLiveScoreV48(m){
-  const home=club(m.homeClubId),away=club(m.awayClubId),rng=new BBGM.RNG(Math.abs(hashCode(state.season+'-live-score-'+m.id)));
-  const h=58+Math.floor(rng.next()*24)+Math.round((cScore(home)-cScore(away))*.18),a=58+Math.floor(rng.next()*24);
-  return {home:Math.max(0,h),away:Math.max(0,a)};
+function matchSimulationSeedV4811(m){
+  if(Number.isFinite(m.simulationSeed))return m.simulationSeed;
+  // El mismo partido debe tener el mismo guion antes y después de abrir una decisión.
+  m.simulationSeed=Math.abs(hashCode(`${state.season}-${m.id}-${m.date}-${m.homeClubId}-${m.awayClubId}-match-v4811`));
+  return m.simulationSeed;
+}
+function projectedMatchResultV4811(m){
+  return BBGM.simulateMatch(club(m.homeClubId),club(m.awayClubId),matchSimulationSeedV4811(m));
+}
+function matchDecisionLiveScoreV48(m,type='LAST_SHOT',projected=null){
+  // El marcador mostrado es el marcador real justo antes de la jugada final.
+  // Nunca se genera por separado del partido que después se va a cerrar.
+  const rng=new BBGM.RNG(Math.abs(hashCode(`${state.season}-${m.id}-live-v4811`)));
+  const base=projected?Math.round((projected.homeScore+projected.awayScore)/2):72+Math.floor(rng.next()*9);
+  const userHome=m.homeClubId===state.userClubId;
+  let user=base,opponent=base;
+  if(type==='LAST_SHOT'){
+    // La última posesión solo se plantea si una canasta puede cambiar el ganador.
+    opponent=base+1+(rng.next()<.38?1:0);
+  }else if(type==='LAST_DEFENSE'){
+    user=base+1+Math.floor(rng.next()*2);
+  }else{
+    user=base+1; // Con tres minutos, proteger a la estrella debe poder decidir el resultado.
+  }
+  return userHome?{home:user,away:opponent}:{home:opponent,away:user};
 }
 function isCloseMatchDecisionV4810(live){return !!live&&Number.isFinite(live.home)&&Number.isFinite(live.away)&&Math.abs(live.home-live.away)<=6}
 function showMatchDecisionResultV48(m,res,decision){
@@ -1379,13 +1400,20 @@ function maybeOpenMatchDecisionV48(m){
   ensureMatchDecisionStateV48();if(!isDecisiveMatchV48(m))return false;
   const d=state.matchDecisionV48;if(d.pending?.matchId===m.id)return false;
   if(d.history.some(x=>x.matchId===m.id))return false;
-  const ev=matchDecisionScenarioV48(m),live=matchDecisionLiveScoreV48(m);if(!isCloseMatchDecisionV4810(live))return false;
+  const projected=projectedMatchResultV4811(m);
+  // Si la simulación del partido apunta a una victoria/derrota clara, no hay falso drama.
+  if(!isCloseMatchDecisionV4810({home:projected.homeScore,away:projected.awayScore}))return false;
+  const ev=matchDecisionScenarioV48(m),live=matchDecisionLiveScoreV48(m,ev.type,projected);
   const back=modal(`<div class="v48-match-decision"><div class="v48-decision-heading"><div><div class="eyebrow">Momento decisivo</div><h2>${ev.title}</h2></div><span class="pill urgent">Decisión obligatoria</span></div><div class="decision-live-panel" role="status"><div><small>Marcador actual</small><b>${club(m.homeClubId).shortName} ${live.home} - ${live.away} ${club(m.awayClubId).shortName}</b></div><div><small>Tiempo restante</small><strong>${matchDecisionClockV48(ev.type)}</strong></div></div><p class="decision-situation-text">${ev.text}</p><div class="v48-decision-choices">${ev.choices.map(c=>`<button class="v48-decision-choice" data-match-choice="${c.id}"><b>${c.label}</b><span>${c.detail}</span></button>`).join('')}</div><p class="decision-random-note">El resultado depende del contexto, los jugadores y una parte de azar.</p></div>`);
-  back.querySelectorAll('[data-match-choice]').forEach(b=>b.onclick=()=>{const choice=ev.choices.find(c=>c.id===b.dataset.matchChoice);d.lastResult=null;d.pending={matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,choiceLabel:choice?.label||b.dataset.matchChoice,title:ev.title,clock:matchDecisionClockV48(ev.type)};d.history.push({matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,date:state.currentDate,clock:matchDecisionClockV48(ev.type)});saveLocal(false);back.remove();playNextUserMatchV489();if(d.lastResult)showMatchDecisionResultV48(m,d.lastResult,d.lastResult.matchDecision)});
+  back.querySelectorAll('[data-match-choice]').forEach(b=>b.onclick=()=>{const choice=ev.choices.find(c=>c.id===b.dataset.matchChoice);d.lastResult=null;d.pending={matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,choiceLabel:choice?.label||b.dataset.matchChoice,title:ev.title,clock:matchDecisionClockV48(ev.type),live,simulationSeed:matchSimulationSeedV4811(m)};d.history.push({matchId:m.id,type:ev.type,choice:b.dataset.matchChoice,date:state.currentDate,clock:matchDecisionClockV48(ev.type),live});saveLocal(false);back.remove();playNextUserMatchV489();if(d.lastResult)showMatchDecisionResultV48(m,d.lastResult,d.lastResult.matchDecision)});
   return true;
 }
 function applyMatchDecisionV48(m,res){
   ensureMatchDecisionStateV48();const manager=state.matchDecisionV48,d=manager.pending;if(!d||d.matchId!==m.id)return;
+  // Cerramos el partido desde el marcador que el usuario ha visto, no desde otro marcador aleatorio.
+  if(Number.isFinite(d.live?.home)&&Number.isFinite(d.live?.away)){
+    res.homeScore=d.live.home;res.awayScore=d.live.away;
+  }
   const userHome=m.homeClubId===state.userClubId,uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],coach=uc.coach||{},quality=BBGM.clamp(((top?BBGM.overall(top):70)-70)*.008+((coach.manManagement||65)-65)*.004, -.12,.16),rng=new BBGM.RNG(Math.abs(hashCode(`${state.season}-${m.id}-decision-result-v48`))),success=rng.next()<BBGM.clamp(.52+quality,-.02,.92);
   const add=(points,opponent=0)=>{if(userHome){res.homeScore+=points;res.awayScore+=opponent}else{res.awayScore+=points;res.homeScore+=opponent}};
   let summary='';

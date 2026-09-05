@@ -9,8 +9,9 @@ if(app.includes('BBGM.teamOverall('))throw new Error('Decision Maker sigue llama
 if(!app.includes('(cScore(home)-cScore(away))'))throw new Error('El marcador previo no usa el nivel real de los equipos');
 if(!app.includes('date:addDays(startDate,4+i*5)'))throw new Error('Los amistosos pueden solaparse con el primer partido oficial');
 if(!app.includes('const progressionDate=state.currentDate>nm.date?state.currentDate:nm.date'))throw new Error('Una partida antigua puede retroceder de fecha al jugar un partido pendiente');
-if(!version.includes("label:'v0.48.8 Beta'")||!html.includes('js/app.js?v=v0488')||!sw.includes('basketball-gm-beta-v0488'))throw new Error('Versión o caché incorrectas');
-if(!html.includes("serviceWorker.register('./sw.js?v=v0488', { updateViaCache: 'none' })"))throw new Error('La app instalada no fuerza la activación de la caché v0.48.8');
+if(!version.includes("label:'v0.48.9 Beta'")||!html.includes('js/app.js?v=v0489')||!sw.includes('basketball-gm-beta-v0489'))throw new Error('Versión o caché incorrectas');
+if(!html.includes("serviceWorker.register('./sw.js?v=v0489', { updateViaCache: 'none' })")||!html.includes("addEventListener('controllerchange'"))throw new Error('La app instalada no activa y recarga la caché v0.48.9');
+if(sw.includes('ignoreSearch:true')||!sw.includes('fetch(event.request)'))throw new Error('El service worker todavía puede mezclar archivos de distintas versiones');
 
 globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
@@ -34,5 +35,9 @@ const result={homeScore:70,awayScore:71};
 A.applyMatchDecisionV48(opener,result);
 if(A.getState().matchDecisionV48.pending!==null)throw new Error('La decisión sigue pendiente después de resolverla');
 if(!result.matchDecision?.summary||!A.getState().matchDecisionV48.history[0].summary)throw new Error('El desenlace narrativo no queda guardado');
+A.getState().matchDecisionV48={pending:{matchId:opener.id,type:'LAST_SHOT',choice:'TWO',choiceLabel:'Atacar para dos',title:'Última posesión',clock:'0:08'}};
+const recoveredResult={homeScore:68,awayScore:68};
+A.applyMatchDecisionV48(opener,recoveredResult);
+if(A.getState().matchDecisionV48.pending!==null||!Array.isArray(A.getState().matchDecisionV48.history))throw new Error('Una decisión guardada por una versión antigua bloquea la partida');
 
-console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,decisionCompletesMatch:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,version:'v0.48.8',ok:true},null,2));
+console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,decisionCompletesMatch:true,legacyDecisionRecovery:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,networkFirstCache:true,version:'v0.48.9',ok:true},null,2));

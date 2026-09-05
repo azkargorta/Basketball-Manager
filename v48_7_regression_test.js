@@ -9,8 +9,8 @@ if(app.includes('BBGM.teamOverall('))throw new Error('Decision Maker sigue llama
 if(!app.includes('(cScore(home)-cScore(away))'))throw new Error('El marcador previo no usa el nivel real de los equipos');
 if(!app.includes('date:addDays(startDate,4+i*5)'))throw new Error('Los amistosos pueden solaparse con el primer partido oficial');
 if(!app.includes('const progressionDate=state.currentDate>nm.date?state.currentDate:nm.date'))throw new Error('Una partida antigua puede retroceder de fecha al jugar un partido pendiente');
-if(!version.includes("label:'v0.48.7 Beta'")||!html.includes('js/app.js?v=v0487')||!sw.includes('basketball-gm-beta-v0487'))throw new Error('Versión o caché incorrectas');
-if(!html.includes("serviceWorker.register('./sw.js?v=v0487', { updateViaCache: 'none' })"))throw new Error('La app instalada no fuerza la activación de la caché v0.48.7');
+if(!version.includes("label:'v0.48.8 Beta'")||!html.includes('js/app.js?v=v0488')||!sw.includes('basketball-gm-beta-v0488'))throw new Error('Versión o caché incorrectas');
+if(!html.includes("serviceWorker.register('./sw.js?v=v0488', { updateViaCache: 'none' })"))throw new Error('La app instalada no fuerza la activación de la caché v0.48.8');
 
 globalThis.document={getElementById:()=>null,querySelector:()=>null,querySelectorAll:()=>[]};
 globalThis.localStorage={getItem:()=>null,setItem:()=>{},removeItem:()=>{}};
@@ -29,5 +29,10 @@ if(JSON.stringify(dates)!==JSON.stringify(['2026-09-05','2026-09-10','2026-09-15
 const opener={id:'SUPERCOPA-SF-1',homeClubId:1,awayClubId:2};
 const live=A.matchDecisionLiveScoreV48(opener);
 if(!Number.isFinite(live.home)||!Number.isFinite(live.away))throw new Error('El Decision Maker no puede calcular el marcador previo');
+A.getState().matchDecisionV48={pending:{matchId:opener.id,type:'LAST_SHOT',choice:'THREE',choiceLabel:'Buscar el triple',title:'Última posesión',clock:'0:08'},history:[{matchId:opener.id,type:'LAST_SHOT',choice:'THREE'}]};
+const result={homeScore:70,awayScore:71};
+A.applyMatchDecisionV48(opener,result);
+if(A.getState().matchDecisionV48.pending!==null)throw new Error('La decisión sigue pendiente después de resolverla');
+if(!result.matchDecision?.summary||!A.getState().matchDecisionV48.history[0].summary)throw new Error('El desenlace narrativo no queda guardado');
 
-console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,version:'v0.48.7',ok:true},null,2));
+console.log(JSON.stringify({decisionScoreUsesExistingTeamRating:true,decisionCompletesMatch:true,friendliesBeforeOfficialOpener:true,legacyDateDoesNotGoBackwards:true,version:'v0.48.8',ok:true},null,2));

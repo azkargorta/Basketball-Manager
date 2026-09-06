@@ -1,9 +1,9 @@
 (function(g){
 'use strict';
 const version=Object.freeze({
-  code:'0.48.14-beta',
-  label:'v0.48.14 Beta',
-  cacheName:'basketball-gm-beta-v04814',
+  code:'0.48.15-beta',
+  label:'v0.48.15 Beta',
+  cacheName:'basketball-gm-beta-v04815',
   saveFormat:'basketball-manager-v046',
   dataPackVersion:'2026-09-03b'
 });

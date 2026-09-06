@@ -306,7 +306,7 @@ function ensureV14State(){
 function maybeGeneratePersonalityEvent(){
   ensureV14State();const played=(state.calendar||[]).filter(m=>m.status==='PLAYED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).length;if(!played||played%5!==0||state.lockerRoom.lastPersonalityGame===played)return;state.lockerRoom.lastPersonalityGame=played;
   const r=userClub().roster,rng=new BBGM.RNG(hashCode(`${state.season}-${played}-personality-v14`));let candidates=[];
-  for(const p of r){const d=playerDesire(p,userClub());let priority=d.code==='EXIT'?100:d.code==='HOME'?85:d.code==='AMBITION'?78:d.code==='ROLE'?72:d.code==='STAY'?55:0;priority+=rng.next()*15;if(priority>20)candidates.push({p,d,priority})}
+  for(const p of r){const d=playerDesire(p,userClub());let priority=d.code==='EXIT'?100:d.code==='HOME'?85:d.code==='AMBITION'?78:d.code==='ROLE'?72:d.code==='STAY'?55:0;priority+=careerRngV4813('personality-'+played+'-'+p.id).next()*15;if(priority>20)candidates.push({p,d,priority})}
   candidates.sort((a,b)=>b.priority-a.priority);const pick=candidates[0];
   if(pick&&pick.d.code==='HOME')addInbox('DECISION',`${fullName(pick.p)} no termina de adaptarse`,`${fullName(pick.p)} reconoce que echa de menos ${nationalityLabel[pick.p.nationality]||pick.p.nationality}. Su adaptación al entorno está siendo complicada.`,{playerId:pick.p.id,choices:[{label:'Darle apoyo y tiempo',effect:'PERS_SUPPORT_ADAPT'},{label:'Abrir la puerta a una salida',effect:'PERS_HOME_EXIT'},{label:'Exigir concentración profesional',effect:'PERS_HARDLINE'}]});
   else if(pick&&pick.d.code==='AMBITION')addInbox('DECISION',`${fullName(pick.p)} cuestiona la ambición del proyecto`,`El jugador quiere garantías de que el club seguirá construyendo una plantilla capaz de competir por títulos.`,{playerId:pick.p.id,choices:[{label:'Prometer un proyecto ambicioso',effect:'PERS_PROMISE_WIN'},{label:'No hacer promesas',effect:'PERS_NO_PROMISE'},{label:'Escuchar ofertas',effect:'PERS_EXIT_MARKET'}]});
@@ -377,6 +377,13 @@ function ensureV17State(){
   scheduleMonth=state.scheduleUi.month||scheduleMonth||(state.currentDate||'2026-09-01').slice(0,7);
   inboxFilter=state.notificationPrefs.filter||inboxFilter||'ALL';
 }
+function careerSeedV4813(){
+  if(!state)return 1;
+  if(Number.isFinite(state.careerSeed))return state.careerSeed;
+  state.careerSeed=Math.abs(hashCode(`${Date.now()}-${Math.random()}-${state.season||''}-${state.userClubId||''}-career`));
+  return state.careerSeed;
+}
+function careerRngV4813(scope){return new BBGM.RNG(Math.abs(hashCode(`${careerSeedV4813()}-${state.season}-${scope}`)))}
 function v17DateLabel(d){try{return new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'short'}).format(new Date(d+'T12:00:00'))}catch(_e){return d}}
 function fitScoreV17(p,c=userClub()){
   const coach=c.coach||{},o=BBGM.overall(p),a=p.attributes||{};
@@ -392,12 +399,12 @@ function playerV17SummaryHtml(p,ownerClub){
   return `<div class="profile-summary-grid"><div><small>Encaje Baskonia</small><b>${fit.label}</b><span>${fit.value}/100</span></div><div><small>Valor estimado</small><b>${fmtMoney(mv)}</b><span>${p.age} años</span></div><div><small>Temporada</small><b>${st?`${st.ppg.toFixed(1)} PTS`:'Sin datos'}</b><span>${st?`${st.rpg.toFixed(1)} REB · ${st.apg.toFixed(1)} AST`:'—'}</span></div><div><small>Perfil</small><b>${pArchetypeV20(p)}</b><span>${isOwn?roleLabel[p.role]:(ownerClub?.shortName||'Libre')} · ${p.contractYears?`${p.contractYears} año(s)`:'Agente libre'}</span></div></div>`
 }
 function createPreseasonFriendlies(season=state.season,startDate=state.currentDate){
-  const rng=new BBGM.RNG(hashCode(`${season}-preseason-v17`)),cands=state.world.clubs.filter(c=>c.id!==state.userClubId&&c.leagueLevel!=='NBA'&&!['Real Madrid','Barcelona','Panathinaikos','Olympiacos'].includes(c.name)).filter(c=>c.baseRating>=70&&c.baseRating<=82);
+  const rng=careerRngV4813(`${season}-preseason-v17`),cands=state.world.clubs.filter(c=>c.id!==state.userClubId&&c.leagueLevel!=='NBA'&&!['Real Madrid','Barcelona','Panathinaikos','Olympiacos'].includes(c.name)).filter(c=>c.baseRating>=70&&c.baseRating<=82);
   const used=new Set(),arr=[];for(let i=0;i<3;i++){let c=null;for(let t=0;t<30;t++){const x=rng.pick(cands);if(x&&!used.has(x.id)){c=x;break}}if(!c)c=rng.pick(cands);used.add(c.id);arr.push({id:`PRE-${season}-${i+1}`,date:addDays(startDate,4+i*5),opponentId:c.id,status:'SCHEDULED',home:i%2===0,result:null})}return arr
 }
 function activatePreseason(startDate=state.currentDate){ensureV17State();state.preseason={active:true,weeksRemaining:3,focus:state.preseason?.focus||'BALANCED',friendlies:createPreseasonFriendlies(state.season,startDate),season:state.season};addInbox('SEASON','Comienza la pretemporada','Tienes tres semanas para ajustar roles, entrenamiento, patrocinio y plantilla antes de la competición oficial.');}
 function applyPreseasonFocus(){const f=state.preseason.focus||'BALANCED';for(const p of userClub().roster){if(f==='PHYSICAL'){p.state.fitness=BBGM.clamp((p.state.fitness||90)+2,0,100);p.state.fatigue=BBGM.clamp((p.state.fatigue||10)+1,0,75);p.attributes.stamina=BBGM.clamp(p.attributes.stamina+.05,1,100)}else if(f==='SHOOTING'){p.state.confidence=BBGM.clamp((p.state.confidence||70)+1.2,0,100);p.attributes.threePoint=BBGM.clamp(p.attributes.threePoint+.035,1,100)}else if(f==='DEFENSE'){p.attributes.helpDefense=BBGM.clamp(p.attributes.helpDefense+.035,1,100);p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||70)+1.2,0,100)}else if(f==='CHEMISTRY'){p.state.morale=BBGM.clamp((p.state.morale||70)+1.1,0,100);p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||70)+1.8,0,100)}else{p.state.fitness=BBGM.clamp((p.state.fitness||90)+1,0,100);p.state.teamAdaptation=BBGM.clamp((p.state.teamAdaptation||70)+.8,0,100)}}}
-function simulatePreseasonFriendly(fr){const uc=userClub(),opp=club(fr.opponentId),home=fr.home?uc:opp,away=fr.home?opp:uc,res=BBGM.simulateMatch(home,away,hashCode(`${fr.id}-${state.season}`));fr.status='PLAYED';fr.result=res;fr.homeScore=res.homeScore;fr.awayScore=res.awayScore;const userStats=fr.home?res.homeStats:res.awayStats;updatePlayerState(uc,userStats,fr.home?res.homeScore>res.awayScore:res.awayScore>res.homeScore);maybeGenerateMatchInjuries(uc,userStats,fr.date);return res}
+function simulatePreseasonFriendly(fr){const uc=userClub(),opp=club(fr.opponentId),home=fr.home?uc:opp,away=fr.home?opp:uc,res=BBGM.simulateMatch(home,away,hashCode(`${careerSeedV4813()}-${fr.id}-${state.season}`));fr.status='PLAYED';fr.result=res;fr.homeScore=res.homeScore;fr.awayScore=res.awayScore;const userStats=fr.home?res.homeStats:res.awayStats;updatePlayerState(uc,userStats,fr.home?res.homeScore>res.awayScore:res.awayScore>res.homeScore);maybeGenerateMatchInjuries(uc,userStats,fr.date);return res}
 function advancePreseasonWeek(){ensureV17State();if(interruptForPendingDecision())return;if(!state.preseason?.active)return;const fr=state.preseason.friendlies.find(x=>x.status==='SCHEDULED');if(fr){simulatePreseasonFriendly(fr);state.currentDate=fr.date;addInbox('RESULT',`Amistoso: ${userClub().shortName} ${fr.home?fr.homeScore:fr.awayScore}-${fr.home?fr.awayScore:fr.homeScore} ${club(fr.opponentId).shortName}`,`Pretemporada · ${fr.date}`,{preseasonMatchId:fr.id})}applyPreseasonFocus();processScouting(state.currentDate);processMedicalTo(state.currentDate);state.preseason.weeksRemaining--;maybeRecordWeeklySummary(true);if(state.preseason.weeksRemaining<=0){state.preseason.active=false;state.currentDate=addDays(state.currentDate,2);state.preseasonReviews.unshift({season:state.season,focus:state.preseason.focus,results:state.preseason.friendlies.map(x=>({opponentId:x.opponentId,homeScore:x.homeScore,awayScore:x.awayScore,home:x.home}))});addInbox('SEASON','Pretemporada completada','La plantilla queda lista para la competición oficial. Revisa los últimos roles y el estado físico antes del primer partido.');toast('Pretemporada completada')}else toast(`Quedan ${state.preseason.weeksRemaining} semanas de pretemporada`);saveLocal(false);render()}
 function preseasonFocusLabel(f){return {BALANCED:'Equilibrio',PHYSICAL:'Físico',SHOOTING:'Tiro',DEFENSE:'Defensa',CHEMISTRY:'Cohesión'}[f]||f}
 function renderPreseason(v){ensureV17State();const ps=state.preseason,exp=userClub().roster.filter(p=>p.contractYears===1),unhappy=userClub().roster.filter(p=>(p.state.morale||70)<52),avgFit=userClub().roster.reduce((n,p)=>n+(p.state.fitness||90),0)/Math.max(1,userClub().roster.length);v.innerHTML=`<div class="section-title"><div><div class="eyebrow">Preparación</div><h1>Pretemporada</h1><p>Ajusta plantilla y carga de trabajo antes de la competición oficial.</p></div><button class="btn primary" id="advancePre">${ps.active?`Avanzar semana (${ps.weeksRemaining})`:'Pretemporada completada'}</button></div><div class="grid four"><div class="card"><div class="eyebrow">Estado físico</div><div class="big-metric">${avgFit.toFixed(0)}<small>/100</small></div></div><div class="card"><div class="eyebrow">Contratos por revisar</div><div class="big-metric">${exp.length}</div></div><div class="card"><div class="eyebrow">Moral baja</div><div class="big-metric">${unhappy.length}</div></div><div class="card"><div class="eyebrow">Patrocinador</div><h3>${state.sponsorship?.active?.name||'Pendiente'}</h3></div></div><div class="grid two" style="margin-top:16px"><div class="card"><h3>Foco de pretemporada</h3><div class="preseason-focus">${['BALANCED','PHYSICAL','SHOOTING','DEFENSE','CHEMISTRY'].map(f=>`<button class="btn ${ps.focus===f?'good':''}" data-prefocus="${f}">${preseasonFocusLabel(f)}</button>`).join('')}</div><p class="muted tiny" style="margin-top:12px">El foco afecta ligeramente a forma, adaptación y desarrollo. No sustituye al entrenamiento individual.</p><div class="action-row"><button class="btn" id="preRoles">Revisar roles</button><button class="btn" id="prePlanning">Planificación</button><button class="btn" id="preSponsors">Patrocinadores</button></div></div><div class="card"><h3>Amistosos</h3>${(ps.friendlies||[]).map(fr=>`<div class="friendly-row"><span>${v17DateLabel(fr.date)} · ${fr.home?'vs':'@'} ${club(fr.opponentId)?.name}</span><b>${fr.status==='PLAYED'?`${fr.home?fr.homeScore:fr.awayScore}-${fr.home?fr.awayScore:fr.homeScore}`:'Pendiente'}</b></div>`).join('')||'<p class="muted">Sin amistosos programados.</p>'}</div></div>`;const a=v.querySelector('#advancePre');if(a)a.onclick=advancePreseasonWeek;v.querySelectorAll('[data-prefocus]').forEach(b=>b.onclick=()=>{state.preseason.focus=b.dataset.prefocus;saveLocal(false);render()});v.querySelector('#preRoles').onclick=()=>{currentView='squad';render()};v.querySelector('#prePlanning').onclick=()=>{currentView='planning';render()};v.querySelector('#preSponsors').onclick=()=>{currentView='sponsors';render()}}
@@ -757,11 +764,12 @@ function tickCoachMinuteRequests(c){
 }
 
 function seasonStartYear(){return +String(state?.season||'2026/27').slice(0,4)}
-function initialSupercopaMatches(year){
+function initialSupercopaMatches(year,seed=1){
   if(year!==2026)return [];
+  const teams=[6,1,4,3],rng=new BBGM.RNG((Number(seed)||1)>>>0);for(let i=teams.length-1;i>0;i--){const j=Math.floor(rng.next()*(i+1));[teams[i],teams[j]]=[teams[j],teams[i]]}
   return [
-    {id:'SUPERCOPA-2026-SF1',competitionId:'SUPERCOPA',round:'Semifinal',stage:'SF',bracketIndex:0,date:'2026-09-19',homeClubId:6,awayClubId:1,status:'SCHEDULED'},
-    {id:'SUPERCOPA-2026-SF2',competitionId:'SUPERCOPA',round:'Semifinal',stage:'SF',bracketIndex:1,date:'2026-09-19',homeClubId:4,awayClubId:3,status:'SCHEDULED'}
+    {id:'SUPERCOPA-2026-SF1-'+teams[0]+'-'+teams[1],competitionId:'SUPERCOPA',round:'Semifinal',stage:'SF',bracketIndex:0,date:'2026-09-19',homeClubId:teams[0],awayClubId:teams[1],status:'SCHEDULED'},
+    {id:'SUPERCOPA-2026-SF2-'+teams[2]+'-'+teams[3],competitionId:'SUPERCOPA',round:'Semifinal',stage:'SF',bracketIndex:1,date:'2026-09-19',homeClubId:teams[2],awayClubId:teams[3],status:'SCHEDULED'}
   ];
 }
 function addMatch(compId,round,date,home,away,extra={}){
@@ -842,11 +850,11 @@ function progressWorldUntilUserMatch(){let guard=0;while(!nextUserMatch()&&guard
 function maybeGenerateDecisionEvent(){
   const played=(state.calendar||[]).filter(m=>m.status==='PLAYED'&&(m.homeClubId===state.userClubId||m.awayClubId===state.userClubId)).length;
   if(!played||played%5!==0||state.lastDecisionGame===played)return;state.lastDecisionGame=played;
-  const rng=new BBGM.RNG(hashCode(`${state.season}-${played}-decision-v11`)),roster=userClub().roster.slice();
+  const rng=careerRngV4813(`decision-details-${played}`),roster=userClub().roster.slice();
   ensureV15State();if(played%12===0&&state.economy.lastDecisionGame!==played){state.economy.lastDecisionGame=played;addInbox('DECISION','Revisión presupuestaria de la directiva','La directiva te permite reajustar una parte de los recursos para el siguiente tramo de temporada.',{choices:[{label:'Dar más margen salarial',effect:'FIN_WAGES'},{label:'Invertir en scouting',effect:'FIN_SCOUT'},{label:'Proteger la caja',effect:'FIN_STABLE'}]});return}
   const lowSat=roster.slice().sort((a,b)=>(a.state.roleSatisfaction||70)-(b.state.roleSatisfaction||70))[0];
   const tired=roster.slice().sort((a,b)=>(b.state.fatigue||0)-(a.state.fatigue||0))[0];
-  const roll=rng.next();
+  const roll=careerRngV4813('decision-'+played).next();
   if(roll<.34&&lowSat){
     addInbox('DECISION',`${fullName(lowSat)} pide más protagonismo`,`El jugador está preocupado por su rol y sus minutos. Puedes implicarte, delegar la conversación en el capitán, mantener el reparto actual o abrirle la puerta del mercado.`,{playerId:lowSat.id,choices:[{label:'Hablar con el entrenador',effect:'TALK_COACH_MORE'},{label:'Delegar en el capitán',effect:'PLAYER_CAPTAIN'},{label:'Mantener el reparto',effect:'HOLD_ROLE'},{label:'Escuchar ofertas',effect:'LIST_PLAYER'}]});
   }else if(roll<.57&&tired){
@@ -1203,9 +1211,11 @@ function upgradeState(s){
 
 function newGame(selectedClubId=1){
   const world=BBGM.createWorld();
-  const calendar=BBGM.buildCalendar(world.competitions.filter(c=>c.standings),'2026-09-25');
-  calendar.push(...initialSupercopaMatches(2026));calendar.sort((a,b)=>a.date.localeCompare(b.date));
+  const careerSeed=Math.floor(Date.now()+Math.random()*2147483647);
+  const calendar=BBGM.buildCalendar(world.competitions.filter(c=>c.standings),'2026-09-25',careerSeed);
+  calendar.push(...initialSupercopaMatches(2026,careerSeed));calendar.sort((a,b)=>a.date.localeCompare(b.date));
   state={
+    careerSeed,
     version:APP_VERSION.code,saveName:`Carrera ${world.clubs.find(c=>c.id===selectedClubId)?.name||'Basketball GM'}`,season:'2026/27',currentDate:'2026-09-01',userClubId:selectedClubId,nextEventId:100,
     manager:{name:'Director deportivo',reputation:52,negotiation:50,scouting:50,planning:55,staffManagement:50,development:55},
     world,calendar,standings:{},history:[],marketNews:[],autosave:true,inbox:[],special:{series:{},champions:{},copaCreated:false,acbPoCreated:false,elPostCreated:false},board:{confidence:72,objectives:[],projectClubId:selectedClubId,objectiveModelVersion:4},coachManagement:{relationship:72},sponsorship:{active:null,offers:[],evaluatedSeason:null,lastBonus:0},offseason:{active:false,weeksRemaining:0},scouting:{staff:world.scoutStaff.map(x=>({...x})),assignments:[],knowledge:{},nextAssignmentId:1},academy:{players:BBGM.createYouthClass(selectedClubId,7,26092026),loans:[],bStats:{},lastBDate:'2026-09-01',lastDevelopmentMonth:'2026-09',nextLoanId:1},watchlist:[],marketDynamics:{rumors:[],agentOffers:[],lastPulseGame:0},planning:{priorityPosition:null},lockerRoom:{captainId:null,lastIncidentGame:0},medical:{doctor:{name:'Dr. Iñaki Salazar',diagnosis:82,recovery:80,prevention:77,salary:380000},injuryHistory:[],lastProcessedDate:'2026-09-01'},nba:{draftHistory:[],rights:{},lastDraftSeason:null,returns:[]},nationalTeams:{callups:[],history:[],lastSeason:null},playerCareerHistory:{},playerDevelopmentHistory:{}
@@ -1358,7 +1368,7 @@ function isDecisiveMatchV48(m){
   return /(final|semifinal|cuartos|quarter|playoff|play-in|promoc|copa)/.test(text);
 }
 function matchDecisionScenarioV48(m){
-  const uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],key=Math.abs(hashCode(`${state.season}-${m.id}-decision-v48`))%3;
+  const uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],key=Math.abs(hashCode(`${careerSeedV4813()}-${state.season}-${m.id}-decision-v48`))%3;
   if(key===0)return {type:'STAR_FOULS',playerId:top?.id,title:'Tu estrella llega al tramo decisivo con cuatro faltas',text:`${top?fullName(top):'Tu jugador más importante'} tiene cuatro faltas y quedan los minutos decisivos. ¿Asumes el riesgo?`,choices:[{id:'KEEP',label:'Mantenerlo en pista',detail:'Más talento y anotación, pero puede cometer la quinta falta.'},{id:'BENCH',label:'Sentarlo unos minutos',detail:'Proteges al jugador, aunque pierdes impacto ofensivo.'}]};
   if(key===1)return {type:'LAST_DEFENSE',title:'Última defensa del partido',text:'El rival prepara la última posesión con el marcador apretado. Elige cómo proteger la ventaja.',choices:[{id:'MAN',label:'Defensa individual',detail:'Presiona al creador y protege mejor el tiro exterior.'},{id:'ZONE',label:'Defensa en zona',detail:'Protege la pintura, pero concede más opciones de pase.'},{id:'FOUL',label:'Hacer falta táctica',detail:'Evita el triple, pero envía al rival a los tiros libres.'}]};
   return {type:'LAST_SHOT',title:'Decisión para la última posesión',text:'Tienes una última posesión para cerrar el partido. Elige el tipo de lanzamiento.',choices:[{id:'THREE',label:'Buscar el triple',detail:'Puedes ganar el partido, pero el porcentaje de acierto es menor.'},{id:'TWO',label:'Atacar para dos',detail:'Opción más segura, aunque quizá no sea suficiente para ganar.'},{id:'STAR',label:'Jugar para la estrella',detail:'Concentra la responsabilidad en tu mejor jugador.'}]};
@@ -1367,7 +1377,7 @@ function matchDecisionClockV48(type){return type==='STAR_FOULS'?'3:00':type==='L
 function matchSimulationSeedV4811(m){
   if(Number.isFinite(m.simulationSeed))return m.simulationSeed;
   // El mismo partido debe tener el mismo guion antes y después de abrir una decisión.
-  m.simulationSeed=Math.abs(hashCode(`${state.season}-${m.id}-${m.date}-${m.homeClubId}-${m.awayClubId}-match-v4811`));
+  m.simulationSeed=Math.abs(hashCode(`${careerSeedV4813()}-${state.season}-${m.id}-${m.date}-${m.homeClubId}-${m.awayClubId}-match-v4811`));
   return m.simulationSeed;
 }
 function projectedMatchResultV4811(m){
@@ -1376,7 +1386,7 @@ function projectedMatchResultV4811(m){
 function matchDecisionLiveScoreV48(m,type='LAST_SHOT',projected=null){
   // El marcador mostrado es el marcador real justo antes de la jugada final.
   // Nunca se genera por separado del partido que después se va a cerrar.
-  const rng=new BBGM.RNG(Math.abs(hashCode(`${state.season}-${m.id}-live-v4811`)));
+  const rng=new BBGM.RNG(Math.abs(hashCode(`${careerSeedV4813()}-${state.season}-${m.id}-live-v4811`)));
   const base=projected?Math.round((projected.homeScore+projected.awayScore)/2):72+Math.floor(rng.next()*9);
   const userHome=m.homeClubId===state.userClubId;
   let user=base,opponent=base;
@@ -1414,7 +1424,7 @@ function applyMatchDecisionV48(m,res){
   if(Number.isFinite(d.live?.home)&&Number.isFinite(d.live?.away)){
     res.homeScore=d.live.home;res.awayScore=d.live.away;
   }
-  const userHome=m.homeClubId===state.userClubId,uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],coach=uc.coach||{},quality=BBGM.clamp(((top?BBGM.overall(top):70)-70)*.008+((coach.manManagement||65)-65)*.004, -.12,.16),rng=new BBGM.RNG(Math.abs(hashCode(`${state.season}-${m.id}-decision-result-v48`))),success=rng.next()<BBGM.clamp(.52+quality,-.02,.92);
+  const userHome=m.homeClubId===state.userClubId,uc=userClub(),top=uc.roster.slice().sort((a,b)=>BBGM.overall(b)-BBGM.overall(a))[0],coach=uc.coach||{},quality=BBGM.clamp(((top?BBGM.overall(top):70)-70)*.008+((coach.manManagement||65)-65)*.004, -.12,.16),rng=new BBGM.RNG(Math.abs(hashCode(`${careerSeedV4813()}-${state.season}-${m.id}-decision-result-v48`))),success=rng.next()<BBGM.clamp(.52+quality,-.02,.92);
   const add=(points,opponent=0)=>{if(userHome){res.homeScore+=points;res.awayScore+=opponent}else{res.awayScore+=points;res.homeScore+=opponent}};
   let summary='';
   if(d.type==='STAR_FOULS'){if(d.choice==='KEEP'&&success){add(2);summary=`${top?fullName(top):'Tu estrella'} respondió y anotó la jugada decisiva.`}else if(d.choice==='KEEP'){add(0,2);summary=`${top?fullName(top):'Tu estrella'} cometió la quinta falta y el rival aprovechó el cambio.`}else if(success){summary='La segunda unidad defendió el resultado y el descanso protegió a tu estrella.'}else{add(2,0);summary='Faltó talento en la última posesión y el rival tomó la iniciativa.'}}
@@ -2347,6 +2357,6 @@ function renderDiagnosticsV19(v){
   v.querySelector('#diagBack').onclick=()=>{currentView='more';render()};v.querySelector('#diagSnapshot').onclick=()=>{recordBalanceSnapshotV19('manual');saveLocal(false);renderDiagnosticsV19(v);toast('Snapshot guardado')};v.querySelector('#diagExport').onclick=()=>{const blob=new Blob([JSON.stringify({diagnostic:d,verdict:ver,history:state.balanceHistory||[]},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`basketball-gm-diagnostico-${state.season.replace('/','-')}.json`;a.click();URL.revokeObjectURL(a.href)};v.querySelector('#diagProject20').onclick=()=>showProjectionV19();
 }
 function showProjectionV19(){const rows=projectedBalanceV19(20),back=modal(`<div class="modal-head"><div><div class="eyebrow">Proyección sin modificar partida</div><h2>Equilibrio a 20 años</h2></div><button class="btn" data-close>Cerrar</button></div><div class="projection-grid">${rows.map(x=>`<div class="projection-card"><small>Año +${x.year}</small><b>${x.avgOvr.toFixed(1)} OVR</b><span>${x.avgAge.toFixed(1)} años · ${x.elite} jugadores 85+ · ${x.super90} 90+</span></div>`).join('')}</div><p class="muted">Es una proyección de estrés basada en la curva anual de balance; no simula resultados de partidos ni altera el guardado.</p>`);back.querySelector('[data-close]').onclick=()=>back.remove()}
-g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,pendingDecision,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState,decisionActionLabel,decisionChoiceDetail,captainInterventionChance,resolveCaptainDelegation,resolveDecision,ensureCareerV21,scheduleDeferredV21,processDeferredConsequencesV21,evaluateCareerV21,generateCareerOffersV21,acceptCareerOfferV21,rejectCareerOfferV21,cScore,matchDecisionLiveScoreV48,isCloseMatchDecisionV4810,applyMatchDecisionV48};
+g.BBGM_APP_TEST={setState:x=>state=x,getState:()=>state,pendingDecision,ensureV20State,generateWorldNewsV20,weakestPositionV20,v20AiRenewalsAndPlanning,ensureV14State,ensureV15State,ensureV16State,ensureV17State,fitScoreV17,fitLabelV17,searchAllEntities,createPreseasonFriendlies,monthEventsV17,maybeRecordWeeklySummary,agentProfile,agentRelation,changeAgentRelation,personalityArchetype,playerDesire,chemistryPair,changeRelationship,ensureMentorPairs,financeEntry,financeTotals,processMatchEconomy,financialBoardState,rolloverClubEconomies,createSponsorOffers,advancedStatsRow,archiveCurrentSeason,careerRecordSummary,evaluateAchievements,currentUserGameRecords,ensureV19State,applyAnnualPlayerCurveV19,ensureRosterBalanceV19,collectDiagnosticsV19,diagnosticVerdictV19,recordBalanceSnapshotV19,projectedBalanceV19,startNextSeason,processAcademyTo,newGame,ensureClubProjects,projectObjectives,boardObjectiveState,decisionActionLabel,decisionChoiceDetail,captainInterventionChance,resolveCaptainDelegation,resolveDecision,ensureCareerV21,scheduleDeferredV21,processDeferredConsequencesV21,evaluateCareerV21,generateCareerOffersV21,acceptCareerOfferV21,rejectCareerOfferV21,cScore,matchSimulationSeedV4811,matchDecisionScenarioV48,matchDecisionLiveScoreV48,isCloseMatchDecisionV4810,applyMatchDecisionV48};
 if(app)render();
 })(typeof globalThis!=='undefined'?globalThis:this);

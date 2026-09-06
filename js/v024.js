@@ -184,7 +184,9 @@ function maybeCreateDecision(s){
   const unhappy=uc.roster.filter(p=>(p.state?.roleSatisfaction??75)<56||(p.state?.morale??70)<48).sort((a,b)=>(a.state?.roleSatisfaction??75)-(b.state?.roleSatisfaction??75));
   const results=recentResults(s,4), losing=results.length>=3&&results.slice(-3).every(x=>x==='L');
   const needs=positionNeeds(uc);
-  const roll=rand01(`decision-${date}-${uc.id}`);
+  // La narrativa también pertenece a la carrera: misma fecha y club no deben
+  // forzar la misma historia al empezar una partida nueva.
+  const roll=rand01(`decision-${s.careerSeed||0}-${date}-${uc.id}`);
   let d=null;
   if(unhappy.length&&roll<.42*dmod){const p=unhappy[0];d={id:`d_${date}_${p.id}`,kind:'PLAYER_ROLE',title:`${fullName(p)} pide una reunión`,text:'No está satisfecho con su situación deportiva y quiere una respuesta clara.',playerId:p.id,choices:[{id:'PLAYER',label:'Apoyar al jugador',hint:'Mejora su moral, pero puede tensar la relación con el entrenador.'},{id:'COACH',label:'Respaldar al entrenador',hint:'Refuerza al técnico, pero el jugador puede pedir salir.'},{id:'MEDIATE',label:'Intentar mediar',hint:'Puede estabilizar el problema, pero no siempre funciona.'}]};}
   else if(losing&&roll<.68*dmod){d={id:`d_${date}_media`,kind:'MEDIA',title:'La prensa cuestiona la planificación',text:'La mala racha aumenta la presión y te piden una explicación pública.',choices:[{id:'DEFEND',label:'Defender a la plantilla',hint:'Proteges el vestuario y asumes parte de la presión.'},{id:'DEMAND',label:'Exigir una reacción',hint:'Puede activar al equipo, pero algunos jugadores lo recibirán mal.'},{id:'PATIENCE',label:'Pedir paciencia',hint:'Una respuesta prudente; la afición puede verla insuficiente.'}]};}

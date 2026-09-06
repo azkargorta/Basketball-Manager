@@ -131,11 +131,11 @@
     return {homeScore:h,awayScore:a,homeStats:Object.values(hs),awayStats:Object.values(as),homeTeamStats:{possessions:p,offensiveRating:h/p*100,defensiveRating:a/p*100,pace:p},awayTeamStats:{possessions:p,offensiveRating:a/p*100,defensiveRating:h/p*100,pace:p},overtimePeriods:ot};
   }
   function roundRobin(teamIds,doubleRound=true){let arr=teamIds.slice();if(arr.length%2)arr.push(null);let n=arr.length,rounds=[];for(let r=0;r<n-1;r++){let games=[];for(let i=0;i<n/2;i++){let a=arr[i],b=arr[n-1-i];if(a!=null&&b!=null){let home=(r%2===0)?a:b,away=(r%2===0)?b:a;games.push({homeClubId:home,awayClubId:away})}}rounds.push(games);arr=[arr[0],arr[n-1],...arr.slice(1,n-1)]}if(doubleRound){let second=rounds.map(g=>g.map(m=>({homeClubId:m.awayClubId,awayClubId:m.homeClubId})));return rounds.concat(second)}return rounds}
-  function buildCalendar(competitions,startDate){
+  function buildCalendar(competitions,startDate,seed=1){
     let date=new Date(startDate),all=[];const addDays=(d,n)=>{let x=new Date(d);x.setDate(x.getDate()+n);return x};
     let maxRounds=Math.max(...competitions.map(c=>c.rounds.length));
     for(let r=0;r<maxRounds;r++){
-      for(const c of competitions){if(!c.rounds[r])continue;for(const g of c.rounds[r])all.push({id:`${c.id}-${r}-${g.homeClubId}-${g.awayClubId}`,competitionId:c.id,round:r+1,date:date.toISOString().slice(0,10),homeClubId:g.homeClubId,awayClubId:g.awayClubId,status:'SCHEDULED'}) ;date=addDays(date,c.id==='EL'?3:4)}
+      for(const c of competitions){const code=String(c.id).split('').reduce((n,x)=>n+x.charCodeAt(0),0),roundIndex=(r+((seed>>>0)+code*97)%c.rounds.length)%c.rounds.length;if(!c.rounds[roundIndex])continue;const rng=new RNG((seed>>>0)+r*4099+code*97),games=c.rounds[roundIndex].slice();for(let i=games.length-1;i>0;i--){const j=Math.floor(rng.next()*(i+1));[games[i],games[j]]=[games[j],games[i]]}for(const g of games)all.push({id:`${c.id}-${r}-${g.homeClubId}-${g.awayClubId}`,competitionId:c.id,round:r+1,date:date.toISOString().slice(0,10),homeClubId:g.homeClubId,awayClubId:g.awayClubId,status:'SCHEDULED'}) ;date=addDays(date,c.id==='EL'?3:4)}
     }
     return all.sort((a,b)=>a.date.localeCompare(b.date));
   }
